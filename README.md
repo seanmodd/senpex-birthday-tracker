@@ -14,7 +14,7 @@ links, and one-click yearly-recurring Google Calendar events. Owners get
 Edit/Delete; everyone else sees a "This is me" claim button until they own a
 card.
 
-<img src="docs/screenshots/wall.png" alt="Birthday wall" width="320">
+<img src="docs/screenshots/wall.png" alt="Birthday wall" width="600">
 
 ## The form
 
@@ -24,7 +24,7 @@ click the logo, authorize in a popup, and your verified handle fills itself
 in. Deep link: [`/?add=1`](https://senpex-birthday-tracker.seansmodd.workers.dev/?add=1)
 opens it directly.
 
-<img src="docs/screenshots/form.png" alt="Add your birthday popup" width="320">
+<img src="docs/screenshots/form.png" alt="Add your birthday popup" width="600">
 
 ## The visitor tracker
 
@@ -35,14 +35,14 @@ your throw), plus play/pause and reset. Stat cards break down cities and
 countries with flags — click one and the globe flies there, pulsing the dot
 blue.
 
-<img src="docs/screenshots/visitors.png" alt="Visitor tracker" width="320">
+<img src="docs/screenshots/visitors.png" alt="Visitor tracker" width="600">
 
 ## The changelog
 
 Everything shipped, batched into at most one dated entry per day, at
 [`/changelog`](https://senpex-birthday-tracker.seansmodd.workers.dev/changelog).
 
-<img src="docs/screenshots/changelog.png" alt="Changelog" width="320">
+<img src="docs/screenshots/changelog.png" alt="Changelog" width="600">
 
 ## Architecture
 
