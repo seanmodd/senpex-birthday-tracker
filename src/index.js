@@ -1248,6 +1248,16 @@ const PAGE = `<!doctype html>
   .wall-head h2 { margin: 0; font-size: 22px; font-weight: 600; }
   .wall-head span { color: var(--muted); font-size: 14px; font-weight: 500; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .grid[hidden] { display: none; }
+  .today-banner {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--tint); border: 1.5px solid var(--brand);
+    border-radius: 14px; padding: 16px 20px; margin: 30px 4px 0;
+  }
+  .tb-emoji { font-size: 34px; line-height: 1; }
+  .tb-title { font-size: 17px; font-weight: 700; color: var(--brand-deep); }
+  .tb-sub { font-size: 13.5px; color: var(--brand-dark); margin-top: 2px; }
+  .tb-avs { margin-left: auto; display: flex; gap: 6px; }
   .person { display: flex; flex-direction: column; gap: 6px; padding: 16px; }
   .person.today { outline: 2px solid var(--brand); }
   .p-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -1511,11 +1521,21 @@ const PAGE = `<!doctype html>
     </form>
   </section>
 
+  <div id="todayBanner" class="today-banner" hidden></div>
+
   <div class="wall-head">
     <h2>Upcoming birthdays</h2>
     <span id="count"></span>
   </div>
+  <p id="upEmpty" class="muted" style="margin:4px 4px 0;font-size:13.5px" hidden>No birthdays in the next 30 days.</p>
   <div id="grid" class="grid"></div>
+
+  <div class="wall-head" id="laterHead" hidden>
+    <h2>Later birthdays</h2>
+    <span id="count2"></span>
+  </div>
+  <div id="grid2" class="grid" hidden></div>
+
   <p id="empty" hidden>No birthdays yet — be the first! 🎈</p>
 
   <section class="card subscribe">
@@ -1900,11 +1920,15 @@ const PAGE = `<!doctype html>
   function render(list) {
     allBirthdays = list.slice();
     var grid = document.getElementById("grid");
+    var grid2 = document.getElementById("grid2");
     var empty = document.getElementById("empty");
     var count = document.getElementById("count");
+    var count2 = document.getElementById("count2");
     grid.innerHTML = "";
-    count.textContent = list.length ? list.length + (list.length === 1 ? " person" : " people") : "";
+    grid2.innerHTML = "";
     empty.hidden = list.length > 0;
+    var todays = [];
+    var nUpcoming = 0, nLater = 0;
 
     list.sort(function (a, b) { return daysUntil(a.month, a.day) - daysUntil(b.month, b.day) || a.name.localeCompare(b.name); });
 
@@ -2009,8 +2033,44 @@ const PAGE = `<!doctype html>
         card.appendChild(cake);
         cake.addEventListener("animationend", function () { cake.remove(); });
       });
-      grid.appendChild(card);
+      // Today's people are announced in the banner; within 30 days stays
+      // under Upcoming, everything further out moves to Later.
+      if (days === 0) todays.push(b);
+      if (days <= 30) {
+        grid.appendChild(card);
+        nUpcoming++;
+      } else {
+        grid2.appendChild(card);
+        nLater++;
+      }
     });
+
+    count.textContent = nUpcoming ? nUpcoming + (nUpcoming === 1 ? " person" : " people") : "";
+    count2.textContent = nLater ? nLater + (nLater === 1 ? " person" : " people") : "";
+    document.getElementById("upEmpty").hidden = !(list.length && nUpcoming === 0);
+    document.getElementById("laterHead").hidden = nLater === 0;
+    grid2.hidden = nLater === 0;
+
+    var banner = document.getElementById("todayBanner");
+    banner.innerHTML = "";
+    if (todays.length) {
+      var names = todays.map(function (b) { return b.name; });
+      var nameStr = names.length === 1
+        ? names[0]
+        : names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
+      banner.appendChild(el("span", "tb-emoji", "🎂"));
+      var twrap = el("div");
+      twrap.appendChild(el("div", "tb-title", "Today is " + nameStr + "'s birthday!"));
+      twrap.appendChild(el("div", "tb-sub",
+        "Go wish " + (names.length === 1 ? "them" : "them all") + " a happy one 🎉"));
+      banner.appendChild(twrap);
+      var avs = el("div", "tb-avs");
+      todays.forEach(function (b) { avs.appendChild(avatarEl(b)); });
+      banner.appendChild(avs);
+      banner.hidden = false;
+    } else {
+      banner.hidden = true;
+    }
   }
 
   function load() {
@@ -3312,6 +3372,7 @@ const CHANGELOG_PAGE = `<!doctype html>
     <h2>June 12, 2026</h2>
     <p class="d-sub">Visitor analytics, editing, and personality features</p>
     <ul>
+      <li><b>Today banner + Later birthdays</b> <span>— a celebration banner appears when it's someone's birthday today; Upcoming shows only the next 30 days, everything else lives under Later birthdays.</span></li>
       <li><b>Sign in with Instagram</b> <span>— the Instagram logo in the form now opens Instagram's login popup and fills in your verified username (business/creator accounts; personal accounts type their handle).</span></li>
       <li><b>Sign in with X</b> <span>— click the X logo in the form, authorize in the popup, and your verified @handle fills itself in. Platform logos now show on every social field.</span></li>
       <li><b>Join date simplified</b> <span>— month + year you joined (both required); the day is gone. Cards show "🗓 Joined Mar 2023".</span></li>
