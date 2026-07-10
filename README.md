@@ -39,7 +39,7 @@ blue.
 
 ## The changelog
 
-Everything shipped, batched into at most one dated entry per day, at
+Everything shipped, up to five entries per day, at
 [`/changelog`](https://senpex-birthday-tracker.seansmodd.workers.dev/changelog).
 
 <img src="docs/screenshots/changelog.png" alt="Changelog" width="600">

@@ -58,7 +58,7 @@ export const CHANGELOG_PAGE = `<!doctype html>
 <header class="top">
   <div>
     <h1>📋 Changelog</h1>
-    <p>Everything shipped to the Senpex / Pckup birthday tracker, newest first. One dated entry per day at most — same-day changes are batched together. Times are PST.</p>
+    <p>Everything shipped to the Senpex / Pckup birthday tracker, newest first — up to five entries per day. Times are PST.</p>
   </div>
   <div class="links">
     <a class="back" href="/">← Birthday tracker</a>
@@ -76,7 +76,7 @@ export const CHANGELOG_PAGE = `<!doctype html>
       <li><b>Upcoming vs. Later birthdays</b> <span>— Upcoming now shows only the next 30 days; everyone further out lives under a new Later birthdays section.</span></li>
       <li><b>Open source on GitHub</b> <span>— the tracker's code is public at <a href="https://github.com/seanmodd/senpex-birthday-tracker" style="color:var(--brand)">github.com/seanmodd/senpex-birthday-tracker</a> (linked from the GitHub logo in the site's corner); every change ships as a commit, and all API keys live outside the repo.</span></li>
       <li><b>Build transparency</b> <span>— every page footer now shows the AI model that builds this site, refreshed with each update.</span></li>
-      <li><b>Daily changelog</b> <span>— this page batches changes into at most one dated entry per 24 hours.</span></li>
+      <li><b>Daily changelog</b> <span>— this page logs up to five entries per day.</span></li>
     </ul>
   </section>
   <section class="day">
