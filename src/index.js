@@ -1265,6 +1265,7 @@ const PAGE = `<!doctype html>
   .tb-title { font-size: 17px; font-weight: 700; color: var(--brand-deep); }
   .tb-sub { font-size: 13.5px; color: var(--brand-dark); margin-top: 2px; }
   .tb-avs { margin-left: auto; display: flex; gap: 6px; }
+  .today-banner[hidden] { display: none; }
   .person { display: flex; flex-direction: column; gap: 6px; padding: 16px; }
   .person.today { outline: 2px solid var(--brand); }
   .p-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -1397,10 +1398,26 @@ const PAGE = `<!doctype html>
   .overlay {
     position: fixed; inset: 0; z-index: 50;
     background: rgba(27, 27, 27, 0.55);
+    backdrop-filter: blur(3px);
     display: flex; align-items: center; justify-content: center;
     padding: 16px;
   }
   .overlay[hidden] { display: none; }
+  #fmodal { z-index: 45; }
+  .dialog { animation: dlgIn 0.18s ease-out; }
+  @keyframes dlgIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to { opacity: 1; transform: none; }
+  }
+  .dialog.wide { max-width: 580px; max-height: 88vh; overflow-y: auto; }
+  .hero-cta {
+    margin-top: 18px;
+    font: inherit; font-size: 15.5px; font-weight: 700;
+    background: var(--brand); color: #fff;
+    border: 0; border-radius: 999px; padding: 12px 30px;
+    cursor: pointer; box-shadow: 0 6px 18px rgba(255, 92, 51, 0.35);
+  }
+  .hero-cta:hover { background: var(--brand-dark); }
   .dialog {
     background: var(--card); border: 1px solid var(--line); border-radius: 14px;
     padding: 22px; max-width: 480px; width: 100%; position: relative;
@@ -1449,10 +1466,48 @@ const PAGE = `<!doctype html>
   <img class="logo" src="/logo.png?v=2" alt="Senpex / Pckup logo">
   <h1>Team Birthday Tracker</h1>
   <p>Add your birthday so we know the most important day in your life!</p>
+  <button class="hero-cta" id="openForm" type="button">🎈 Add your birthday</button>
 </header>
 <main>
-  <section class="card">
-    <h2>Add your birthday</h2>
+  <div id="todayBanner" class="today-banner" hidden></div>
+
+  <div class="wall-head">
+    <h2>Upcoming birthdays</h2>
+    <span id="count"></span>
+  </div>
+  <p id="upEmpty" class="muted" style="margin:4px 4px 0;font-size:13.5px" hidden>No birthdays in the next 30 days.</p>
+  <div id="grid" class="grid"></div>
+
+  <div class="wall-head" id="laterHead" hidden>
+    <h2>Later birthdays</h2>
+    <span id="count2"></span>
+  </div>
+  <div id="grid2" class="grid" hidden></div>
+
+  <p id="empty" hidden>No birthdays yet — be the first! 🎈</p>
+
+  <section class="card subscribe">
+    <h2>📅 Get these on your Google Calendar all at once</h2>
+    <ol>
+      <li>
+        <b>All birthdays, auto-updating (recommended):</b> in Google Calendar, go to
+        <i>Other calendars → + → From URL</i> and paste
+        <code id="icsurl"></code><button id="copyics" type="button">Copy</button><br>
+        <span class="muted">New submissions appear automatically — every birthday repeats yearly.</span>
+      </li>
+      <li>
+        <b>One person on your own calendar:</b> click “＋ Google Calendar” on their card —
+        it creates a yearly recurring event you just save.
+      </li>
+    </ol>
+  </section>
+</main>
+
+<div id="fmodal" class="overlay" hidden>
+  <div class="dialog wide" role="dialog" aria-modal="true" aria-labelledby="fTitle">
+    <button class="dlg-x" id="fClose" type="button" aria-label="Close">×</button>
+    <h3 id="fTitle">🎂 Add your birthday</h3>
+    <p class="dlg-sub">Get yourself on the wall so the team never misses your day.</p>
     <form id="bform">
       <div class="row">
         <div class="field" style="flex:2 1 240px">
@@ -1526,41 +1581,8 @@ const PAGE = `<!doctype html>
         Already on the wall? Submitting again with the same name updates your entry. Year is never shown to the team.
       </p>
     </form>
-  </section>
-
-  <div id="todayBanner" class="today-banner" hidden></div>
-
-  <div class="wall-head">
-    <h2>Upcoming birthdays</h2>
-    <span id="count"></span>
   </div>
-  <p id="upEmpty" class="muted" style="margin:4px 4px 0;font-size:13.5px" hidden>No birthdays in the next 30 days.</p>
-  <div id="grid" class="grid"></div>
-
-  <div class="wall-head" id="laterHead" hidden>
-    <h2>Later birthdays</h2>
-    <span id="count2"></span>
-  </div>
-  <div id="grid2" class="grid" hidden></div>
-
-  <p id="empty" hidden>No birthdays yet — be the first! 🎈</p>
-
-  <section class="card subscribe">
-    <h2>📅 Get these on your Google Calendar all at once</h2>
-    <ol>
-      <li>
-        <b>All birthdays, auto-updating (recommended):</b> in Google Calendar, go to
-        <i>Other calendars → + → From URL</i> and paste
-        <code id="icsurl"></code><button id="copyics" type="button">Copy</button><br>
-        <span class="muted">New submissions appear automatically — every birthday repeats yearly.</span>
-      </li>
-      <li>
-        <b>One person on your own calendar:</b> click “＋ Google Calendar” on their card —
-        it creates a yearly recurring event you just save.
-      </li>
-    </ol>
-  </section>
-</main>
+</div>
 
 <div id="modal" class="overlay" hidden>
   <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
@@ -2126,6 +2148,7 @@ const PAGE = `<!doctype html>
             "; path=/; max-age=31536000; SameSite=Lax";
           if (res.j.id && res.j.token) saveToken(res.j.id, res.j.token);
           load();
+          setTimeout(closeFormModal, 900);
         } else {
           status.className = "err";
           status.textContent = res.j.error || "Something went wrong — try again.";
@@ -2198,6 +2221,7 @@ const PAGE = `<!doctype html>
     if (ev.key === "Escape") {
       closeModal();
       document.getElementById("emodal").hidden = true;
+      document.getElementById("fmodal").hidden = true;
     }
   });
   document.getElementById("dlgNew").addEventListener("click", function () {
@@ -2383,6 +2407,20 @@ const PAGE = `<!doctype html>
         err.hidden = false;
       })
       .finally(function () { btn.disabled = false; });
+  });
+
+  // The submission form lives in a popup now.
+  function openFormModal() {
+    document.getElementById("fmodal").hidden = false;
+    document.getElementById("name").focus();
+  }
+  function closeFormModal() {
+    document.getElementById("fmodal").hidden = true;
+  }
+  document.getElementById("openForm").addEventListener("click", openFormModal);
+  document.getElementById("fClose").addEventListener("click", closeFormModal);
+  document.getElementById("fmodal").addEventListener("click", function (ev) {
+    if (ev.target === document.getElementById("fmodal")) closeFormModal();
   });
 
   var form = document.getElementById("bform");
@@ -3381,6 +3419,7 @@ const CHANGELOG_PAGE = `<!doctype html>
     <h2>July 10, 2026</h2>
     <p class="d-sub">Wall sections, the repo, and transparency</p>
     <ul>
+      <li><b>The form is a popup now</b> <span>— "🎈 Add your birthday" opens a polished dialog instead of a big card at the top; the wall gets the spotlight. Also fixed an empty orange box that showed when nobody's birthday is today.</span></li>
       <li><b>Today's-birthday banner</b> <span>— when it's someone's birthday today, a celebration banner with their photo appears at the top of the wall.</span></li>
       <li><b>Upcoming vs. Later birthdays</b> <span>— Upcoming now shows only the next 30 days; everyone further out lives under a new Later birthdays section.</span></li>
       <li><b>On GitHub</b> <span>— the tracker's code now lives in a private repo (github.com/seanmodd/senpex-birthday-tracker) and every change ships as a commit.</span></li>
