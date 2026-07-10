@@ -46,11 +46,21 @@ Everything shipped, batched into at most one dated entry per day, at
 
 ## Architecture
 
-One Cloudflare Worker, no build step: [`src/index.js`](src/index.js) contains
-the API, the visit logging, and all pages as template literals. Data lives in
-Cloudflare D1 (`birthday-tracker-db`) — see [`schema.sql`](schema.sql).
-Embedded assets ([`src/favicon.js`](src/favicon.js),
-[`src/logo.js`](src/logo.js)) are base64 of the official brand files.
+One Cloudflare Worker (wrangler bundles the modules; no separate build
+step). Data lives in Cloudflare D1 (`birthday-tracker-db`) — see
+[`schema.sql`](schema.sql).
+
+```
+src/
+  index.js         entry point — routing only
+  config.js        site-wide constants
+  lib/             http + small shared helpers
+  api/             birthdays (CRUD + ownership), visits, calendar feed
+  auth/            Sign in with X / Instagram, social validation
+  pages/           the three HTML pages (home, visitors, changelog)
+  proxies/         same-origin world-map + flag proxies
+  assets/          embedded brand assets (favicon, logo) + serving
+```
 
 Notable details:
 
