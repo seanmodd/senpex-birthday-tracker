@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "senpex-birthday-tracker",
+  "main": "src/index.js",
+  "compatibility_date": "2026-01-01",
+  "vars": {
+    // OAuth 2.0 Client ID for "Sign in with X" (public identifier; the
+    // client SECRET lives in a wrangler secret: X_CLIENT_SECRET).
+    "X_CLIENT_ID": "X0hrdEJrWU5ZZDRhbG5SN0hQSkM6MTpjaQ"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "birthday-tracker-db",
+      "database_id": "033be922-c6df-4e51-88bb-a201a9cad674"
+    }
+  ]
+}
