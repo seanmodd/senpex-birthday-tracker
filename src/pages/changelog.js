@@ -5,6 +5,7 @@ export const CHANGELOG_PAGE = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="rgb(27, 27, 27)">
 <title>Changelog — Senpex / Pckup Birthday Tracker</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -35,23 +36,34 @@ export const CHANGELOG_PAGE = `<!doctype html>
   }
   header.top h1 { margin: 0 0 4px; font-size: 26px; font-weight: 600; }
   header.top p { margin: 0; color: var(--muted); font-size: 14px; }
-  .links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .links { display: flex; gap: 10px; flex-wrap: wrap; }
   a.back {
     color: #cfc9c2; text-decoration: none; font-size: 13px; font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 999px; padding: 7px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 999px;
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px;
     white-space: nowrap;
   }
+  a.back:active { color: #fff; border-color: var(--brand); background: rgba(255, 92, 51, 0.12); }
   a.back:hover { color: #fff; border-color: var(--brand); }
   main { max-width: 760px; margin: 30px auto 60px; padding: 0 16px; }
   .day { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 18px; }
-  .day h2 { margin: 0 0 4px; font-size: 18px; font-weight: 700; color: var(--brand); }
+  .day h2 { margin: 0 -24px 4px; padding: 8px 24px 6px; font-size: 18px; font-weight: 700; color: var(--brand); position: sticky; top: 0; z-index: 1; background: var(--panel); }
   .day .d-sub { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
   .day ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 9px; }
   .day li { font-size: 14px; line-height: 1.5; }
   .day li b { color: var(--text); }
   .day li span { color: var(--muted); }
-  footer { text-align: center; color: var(--muted); font-size: 12.5px; padding-bottom: 30px; }
-  footer a { color: var(--brand); }
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 0 16px 30px; }
+  footer a { color: var(--brand); display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px; }
+  @media (max-width: 640px) {
+    header.top { padding: 20px 16px; }
+    header.top h1 { font-size: 22px; }
+    header.top p { font-size: 13px; }
+    main { padding: 0 13px; margin: 22px auto 44px; }
+    .day { padding: 18px 16px; }
+    .day h2 { margin: 0 -16px 4px; padding: 8px 16px 6px; }
+    .day li { font-size: 13.5px; }
+  }
 </style>
 </head>
 <body>
@@ -68,6 +80,17 @@ export const CHANGELOG_PAGE = `<!doctype html>
 <main>
   <section class="day">
     <h2>July 10, 2026</h2>
+    <p class="d-sub">Mobile polish — a full design review on phones · added 2:19 PM PST</p>
+    <ul>
+      <li><b>Comfortable to tap</b> <span>— every button, link, icon, and slider across all three pages now meets the 44px touch-target standard: card actions, social icons, nav pills, popup close buttons, the Copy button, footer links.</span></li>
+      <li><b>The globe behaves on phones</b> <span>— vertical swipes scroll the page instead of getting trapped spinning the globe, dots are actually tappable fingertip-size, the spin controls align into a tidy grid, and feed rows stack cleanly instead of crushing into four lines.</span></li>
+      <li><b>A better form popup</b> <span>— full-width sticky submit button that stays visible while you scroll, a 44px close target, branded photo-picker button, tidier field rows, and the clickable Instagram/X logos now look clickable.</span></li>
+      <li><b>Easier to find your way</b> <span>— the visitor tracker now links to the changelog, dates stick to the top while you scroll the changelog, and your phone's browser chrome matches the dark theme.</span></li>
+      <li><b>Sharper details</b> <span>— all buttons share the pill shape, text contrast lifted to accessibility standards in five spots, the calendar URL no longer tears mid-address, and page edges got proper breathing room.</span></li>
+    </ul>
+  </section>
+  <section class="day">
+    <h2>July 10, 2026</h2>
     <p class="d-sub">Wall sections, the repo, and transparency · last updated 1:02 PM PST</p>
     <ul>
       <li><b>Codebase reorganized</b> <span>— the single 3,500-line worker file is now a clean module layout (router, api/, auth/, pages/, lib/, proxies/, assets/) with every page byte-identical before and after.</span></li>
@@ -81,7 +104,7 @@ export const CHANGELOG_PAGE = `<!doctype html>
   </section>
   <section class="day">
     <h2>June 12, 2026</h2>
-    <p class="d-sub">Visitor analytics, editing, and personality features</p>
+    <p class="d-sub">Visitor analytics, editing, and personality features · launch-week batch, pre-dates the daily policy</p>
     <ul>
       <li><b>Sign in with Instagram</b> <span>— the Instagram logo in the form now opens Instagram's login popup and fills in your verified username (business/creator accounts; personal accounts type their handle).</span></li>
       <li><b>Sign in with X</b> <span>— click the X logo in the form, authorize in the popup, and your verified @handle fills itself in. Platform logos now show on every social field.</span></li>
@@ -126,6 +149,6 @@ export const CHANGELOG_PAGE = `<!doctype html>
   </section>
 </main>
 <footer>Senpex / Pckup internal tool · <a href="/">birthday wall</a> · <a href="/visitors">visitor tracker</a>
-<div style="margin-top:7px;font-size:11.5px;opacity:.85">__BUILDINFO__</div></footer>
+<div style="margin-top:7px;font-size:12px;color:#a39d97">__BUILDINFO__</div></footer>
 </body>
 </html>`;

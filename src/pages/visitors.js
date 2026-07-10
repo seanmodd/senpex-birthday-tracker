@@ -5,6 +5,7 @@ export const VISITORS_PAGE = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="rgb(27, 27, 27)">
 <title>Visitor Tracker — Senpex / Pckup</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -43,6 +44,7 @@ export const VISITORS_PAGE = `<!doctype html>
     white-space: nowrap;
   }
   a.back:hover { color: #fff; border-color: var(--brand); }
+  .links { display: flex; gap: 10px; flex-wrap: wrap; }
   main { max-width: 1000px; margin: 26px auto 50px; padding: 0 16px; display: flex; flex-direction: column; gap: 18px; }
   .stats { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
   .stat {
@@ -54,7 +56,7 @@ export const VISITORS_PAGE = `<!doctype html>
   .stat.has-pop:hover, .stat.has-pop:focus-within { border-color: var(--brand); }
   .stat.has-pop::after {
     content: "▾"; position: absolute; top: 10px; right: 12px;
-    color: var(--muted); font-size: 11px;
+    color: var(--brand); font-size: 14px;
   }
   .stat-pop {
     display: none; position: absolute; top: 100%; left: 50%; z-index: 20;
@@ -65,6 +67,7 @@ export const VISITORS_PAGE = `<!doctype html>
     padding: 6px; box-shadow: 0 14px 38px rgba(0, 0, 0, 0.55);
   }
   .stat.has-pop:hover .stat-pop, .stat.has-pop:focus-within .stat-pop { display: block; }
+  .stat.has-pop.tapped .stat-pop { display: block; }
   .pop-row {
     display: flex; align-items: center; gap: 8px;
     padding: 7px 9px; border-radius: 7px; font-size: 13px;
@@ -129,9 +132,11 @@ export const VISITORS_PAGE = `<!doctype html>
   .dialog h3 .nm { color: var(--brand); }
   .dlg-sub { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
   .dlg-x {
-    position: absolute; top: 8px; right: 12px;
-    border: 0; background: none; font-size: 22px; color: var(--muted);
-    cursor: pointer; line-height: 1; padding: 4px;
+    position: absolute; top: 4px; right: 4px;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    border: 0; background: none; font-size: 24px; color: var(--muted);
+    cursor: pointer; line-height: 1; padding: 0;
   }
   .dlg-x:hover { color: #fff; }
   .plist { max-height: 340px; overflow-y: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); }
@@ -139,7 +144,7 @@ export const VISITORS_PAGE = `<!doctype html>
   .pv:last-child { border-bottom: 0; }
   .pv-when { color: var(--text); font-weight: 600; white-space: nowrap; }
   .pv-what { color: var(--muted); text-align: right; }
-  #globe { width: 100%; max-width: 620px; height: auto; display: block; cursor: grab; touch-action: none; }
+  #globe { width: 100%; max-width: 620px; height: auto; display: block; cursor: grab; touch-action: pan-y; }
   #globe:active { cursor: grabbing; }
   .spin-controls {
     display: flex; gap: 18px; align-items: center; justify-content: center;
@@ -181,8 +186,32 @@ export const VISITORS_PAGE = `<!doctype html>
     100% { background-color: transparent; }
   }
   #feed-empty { color: var(--muted); text-align: center; padding: 26px 0; }
-  footer { text-align: center; color: var(--muted); font-size: 12.5px; padding-bottom: 30px; }
+  footer { text-align: center; color: var(--muted); font-size: 12.5px; padding: 0 16px 30px; }
   footer a { color: var(--brand); }
+  @media (max-width: 640px) {
+    header.top { padding: 20px 16px; }
+    header.top h1 { font-size: 22px; }
+    header.top p { font-size: 13px; }
+    main { margin: 20px auto 40px; padding: 0 13px; gap: 14px; }
+    .panel { padding: 16px; }
+    .stat { padding: 11px 14px; min-width: 120px; }
+    .stat b { font-size: 22px; }
+    .stat.has-pop::after { top: 8px; right: 10px; }
+    a.back { padding: 13px 16px; }
+    .range-box select { padding: 12px 10px; font-size: 16px; }
+    .pop-row { padding: 12px 10px; }
+    .spin-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 10px; }
+    .spin-controls label { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; }
+    .spin-controls input[type="range"] { width: auto; max-width: none; flex: 1 1 auto; margin-left: 12px; height: 36px; }
+    .spin-controls button { width: 100%; padding: 13px 18px; }
+    .visit { flex-wrap: wrap; row-gap: 3px; }
+    .v-right { flex: 1 1 100%; margin-left: 20px; text-align: left; display: flex; gap: 8px; align-items: baseline; }
+    .v-path { margin-top: 0; }
+    .stat-pop { max-height: 240px; min-width: 210px; }
+    #pmodal .dialog, .overlay .dialog { padding: 18px 16px; }
+    .pv, .visit { font-size: 12.5px; }
+    .v-time { font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -191,7 +220,7 @@ export const VISITORS_PAGE = `<!doctype html>
     <h1>📡 Visitor Tracker</h1>
     <p>Every visit to the birthday tracker in real-time: exact time, IP address, and city.</p>
   </div>
-  <a class="back" href="/">← Birthday tracker</a>
+  <div class="links"><a class="back" href="/">← Birthday tracker</a><a class="back" href="/changelog">📋 Changelog</a></div>
 </header>
 <main>
   <div class="stats">
@@ -228,7 +257,7 @@ export const VISITORS_PAGE = `<!doctype html>
       <button id="spinReset" type="button" title="Reset spin to defaults">↺ Reset spin</button>
     </div>
     <p id="globe-fallback" hidden>Couldn't load the world map — the live feed below still works.</p>
-    <p class="legend"><span class="dot"></span> one dot per visitor · bigger dot = more visits · hover for who, click for their history · drag to spin</p>
+    <p class="legend"><span class="dot"></span> one dot per visitor · bigger dot = more visits · tap a dot for visit history · drag to spin</p>
   </section>
 
   <section class="panel">
@@ -247,7 +276,7 @@ export const VISITORS_PAGE = `<!doctype html>
   </div>
 </div>
 <footer>Senpex / Pckup internal tool · <a href="/">team birthday tracker</a>
-<div style="margin-top:7px;font-size:11.5px;opacity:.85">__BUILDINFO__</div></footer>
+<div style="margin-top:7px;font-size:12px;color:#a39d97">__BUILDINFO__</div></footer>
 <script>
 (function () {
   var points = [];
@@ -446,6 +475,19 @@ export const VISITORS_PAGE = `<!doctype html>
     stat.addEventListener("mouseenter", fit);
     stat.addEventListener("focusin", fit);
   });
+
+  // Touch devices: tap a stat card to toggle its breakdown popover.
+  if (window.matchMedia("(hover: none)").matches) {
+    document.addEventListener("click", function (ev) {
+      var st = ev.target.closest(".stat.has-pop");
+      var open = document.querySelectorAll(".stat.has-pop.tapped");
+      for (var i = 0; i < open.length; i++) if (open[i] !== st) open[i].classList.remove("tapped");
+      if (st && !ev.target.closest(".pop-row")) {
+        st.classList.toggle("tapped");
+        if (st.classList.contains("tapped")) requestAnimationFrame(function () { fitPop(st); });
+      }
+    });
+  }
 
   document.getElementById("range").addEventListener("change", function () {
     curRange = this.value;
@@ -689,12 +731,14 @@ export const VISITORS_PAGE = `<!doctype html>
     return [(ev.clientX - rect.left) * scale, (ev.clientY - rect.top) * scale];
   }
 
-  function hitDot(ev) {
+  function hitDot(ev, slopCss) {
     var pos = canvasPos(ev);
+    var scale = 640 / canvas.getBoundingClientRect().width;
+    var slop = (slopCss || 6) * scale;
     for (var i = dotHits.length - 1; i >= 0; i--) {
       var d = dotHits[i];
       var dx = pos[0] - d.x, dy = pos[1] - d.y;
-      if (dx * dx + dy * dy <= (d.r + 4) * (d.r + 4)) return d;
+      if (dx * dx + dy * dy <= (d.r + slop) * (d.r + slop)) return d;
     }
     return null;
   }
@@ -816,7 +860,7 @@ export const VISITORS_PAGE = `<!doctype html>
     pointerDown = false;
     lastInteraction = Date.now();
     if (!draggingActive) {
-      var d = hitDot(ev);
+      var d = hitDot(ev, ev.pointerType === "mouse" ? 8 : 22);
       if (d) openPersonModal(d.p);
     } else if (Date.now() - lastMoveT < 120) {
       // Flick: release while moving hands the globe the drag velocity, and

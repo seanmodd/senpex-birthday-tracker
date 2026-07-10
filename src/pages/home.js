@@ -5,6 +5,7 @@ export const PAGE = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="rgb(27, 27, 27)">
 <title>Senpex / Pckup — Team Birthday Tracker</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -108,7 +109,7 @@ export const PAGE = `<!doctype html>
     background: var(--brand);
     color: #fff;
     border: 0;
-    border-radius: 9px;
+    border-radius: 999px;
     padding: 12px 24px;
     cursor: pointer;
   }
@@ -129,15 +130,15 @@ export const PAGE = `<!doctype html>
   }
   .tb-emoji { font-size: 34px; line-height: 1; }
   .tb-title { font-size: 17px; font-weight: 700; color: var(--brand-deep); }
-  .tb-sub { font-size: 13.5px; color: var(--brand-dark); margin-top: 2px; }
+  .tb-sub { font-size: 13.5px; color: var(--brand-deep); margin-top: 2px; }
   .tb-avs { margin-left: auto; display: flex; gap: 6px; }
   .today-banner[hidden] { display: none; }
   .person { display: flex; flex-direction: column; gap: 6px; padding: 16px; }
   .person.today { outline: 2px solid var(--brand); }
   .p-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .p-name { font-weight: 700; font-size: 15px; }
-  .zwrap { position: relative; cursor: default; }
-  .zbadge { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+  .zwrap { position: relative; cursor: pointer; padding: 10px 0 10px 10px; margin: -10px 0 -10px -10px; }
+  .zbadge { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; padding: 4px 9px; border: 1px solid var(--line); border-radius: 999px; }
   .zwrap:hover .zbadge { color: var(--brand-dark); }
   .zpop {
     display: none; position: absolute; top: 100%; right: 0; z-index: 30;
@@ -145,6 +146,7 @@ export const PAGE = `<!doctype html>
     padding: 12px 14px; box-shadow: 0 14px 36px rgba(26, 23, 20, 0.18); text-align: left;
   }
   .zwrap:hover .zpop { display: block; }
+  .zwrap.tapped .zpop { display: block; }
   .zp-title { font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
   .zp-sub { color: var(--brand-dark); font-size: 12px; font-weight: 600; margin-bottom: 6px; }
   .zp-text { color: var(--muted); font-size: 12.5px; line-height: 1.45; }
@@ -182,12 +184,18 @@ export const PAGE = `<!doctype html>
     color: var(--ink); background: #fff;
   }
   .soc-ico svg { width: 17px; height: 17px; fill: currentColor; display: block; }
-  .soc-ico.soc-click { cursor: pointer; }
+  .soc-ico.soc-click { cursor: pointer; border-color: var(--brand); color: var(--brand-dark); background: var(--tint); }
   .soc-ico.soc-click:hover { border-color: var(--brand); color: var(--brand-dark); background: var(--tint); }
   input.x-verified { border-color: var(--ok); background: #f1faf3; }
   .av-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .av-prev { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 2px var(--tint); }
-  .av-row input[type="file"] { font-size: 12.5px; color: var(--muted); max-width: 220px; }
+  .av-row input[type="file"] { font-size: 12.5px; color: var(--muted); max-width: 260px; }
+  input[type="file"]::file-selector-button {
+    font: inherit; font-size: 13px; font-weight: 600;
+    color: var(--brand-deep); background: var(--tint);
+    border: 1px solid #ffc9b3; border-radius: 7px;
+    padding: 8px 12px; margin-right: 10px; cursor: pointer;
+  }
   img.flag {
     width: 16px; height: auto; border-radius: 2px;
     box-shadow: 0 0 0 1px rgba(26, 23, 20, 0.12);
@@ -195,11 +203,12 @@ export const PAGE = `<!doctype html>
   .p-when { font-size: 13.5px; color: var(--ink-2); }
   .p-when b { color: var(--brand-dark); }
   a.gcal {
-    margin-top: 4px;
+    margin-top: 0;
     font-size: 13px;
     font-weight: 600;
-    color: var(--brand-dark);
+    color: var(--brand-deep);
     text-decoration: none;
+    display: inline-flex; align-items: center; min-height: 44px;
   }
   a.gcal:hover { text-decoration: underline; }
   .actions { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; align-items: center; }
@@ -223,6 +232,7 @@ export const PAGE = `<!doctype html>
     text-decoration: none; border-bottom: 1px dashed var(--line);
   }
   a.claimlink:hover { color: var(--brand-dark); border-bottom-color: var(--brand); }
+  #bform .row:last-of-type .field { flex: 1 1 100%; }
   .claim-note {
     background: var(--tint); border: 1px solid #ffc9b3; border-radius: 8px;
     color: var(--brand-deep); font-size: 12.5px; line-height: 1.45;
@@ -251,14 +261,16 @@ export const PAGE = `<!doctype html>
     background: #f1efea;
     border: 1px solid var(--line);
     border-radius: 6px;
-    padding: 2px 7px;
+    padding: 4px 8px;
     font-size: 12.5px;
     word-break: break-all;
+    display: inline-block; max-width: 100%; margin: 2px 0;
   }
+  .subscribe i { white-space: nowrap; }
   .subscribe button {
     font: inherit; font-size: 12.5px; font-weight: 600; color: var(--ink);
     border: 1px solid var(--line); background: #fff; border-radius: 7px;
-    padding: 3px 10px; cursor: pointer; margin-left: 6px;
+    padding: 10px 16px; cursor: pointer; margin-left: 6px; vertical-align: middle;
   }
   .subscribe button:hover { border-color: var(--brand); color: var(--brand-dark); }
   .overlay {
@@ -292,9 +304,11 @@ export const PAGE = `<!doctype html>
   .dialog h3 { margin: 0 0 8px; font-size: 18px; }
   .dlg-sub { margin: 0 0 14px; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
   .dlg-x {
-    position: absolute; top: 8px; right: 12px;
-    border: 0; background: none; font-size: 22px; color: var(--muted);
-    cursor: pointer; line-height: 1; padding: 4px;
+    position: absolute; top: 4px; right: 4px;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    border: 0; background: none; font-size: 24px; color: var(--muted);
+    cursor: pointer; line-height: 1; padding: 0;
   }
   .dlg-x:hover { color: var(--ink); }
   .match {
@@ -306,21 +320,50 @@ export const PAGE = `<!doctype html>
   .match .m-sub { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
   button.mini {
     font: inherit; font-size: 13px; font-weight: 700;
-    background: var(--brand); color: #fff; border: 0; border-radius: 8px;
+    background: var(--brand); color: #fff; border: 0; border-radius: 999px;
     padding: 8px 14px; cursor: pointer; white-space: nowrap;
   }
   button.mini:hover { background: var(--brand-dark); }
   button.ghost {
     font: inherit; font-size: 13.5px; font-weight: 600;
     background: #fff; color: var(--ink);
-    border: 1px solid var(--line); border-radius: 9px;
+    border: 1px solid var(--line); border-radius: 999px;
     padding: 10px 16px; cursor: pointer;
   }
   button.ghost:hover { border-color: var(--brand); color: var(--brand-dark); }
   .dlg-row { display: flex; justify-content: space-between; gap: 10px; margin-top: 14px; }
   .muted { color: var(--muted); }
-  footer { text-align: center; color: var(--muted); font-size: 12.5px; padding-bottom: 30px; }
+  footer { text-align: center; color: var(--muted); font-size: 12.5px; padding: 0 16px 30px; }
   footer a { color: var(--brand-dark); }
+  @media (max-width: 640px) {
+    header { padding: 18px 14px 26px; }
+    .corner { position: static; flex-direction: row; justify-content: center; margin: 0 auto 14px; }
+    .gh-corner { top: 10px; left: 10px; width: 40px; height: 40px; }
+    .tracker-link { padding: 10px 16px; }
+    .logo { height: 40px; margin-bottom: 12px; }
+    header h1 { font-size: 25px; }
+    header p { font-size: 14px; }
+    .hero-cta { font-size: 15px; padding: 11px 22px; margin-top: 14px; }
+    main { margin: 24px auto 44px; padding: 0 13px; }
+    .card { padding: 18px; }
+    .wall-head { margin: 24px 2px 10px; }
+    .wall-head h2 { font-size: 20px; }
+    .grid { grid-template-columns: 1fr; }
+    .today-banner { padding: 14px 16px; margin: 24px 2px 0; }
+    .tb-title { font-size: 16px; }
+    .tb-emoji { font-size: 28px; }
+    .tb-avs .av-img, .tb-avs .av-init { width: 38px; height: 38px; }
+    a.social { width: 38px; height: 38px; }
+    a.social svg { width: 17px; height: 17px; }
+    .soc-ico { width: 44px; height: 44px; }
+    .soc-ico svg { width: 19px; height: 19px; }
+    a.editbtn, a.delbtn { padding: 10px 17px; font-size: 13px; }
+    .overlay { padding: 10px; align-items: flex-start; overflow-y: auto; }
+    .dialog { padding: 18px 16px; border-radius: 14px; margin-top: 8px; }
+    .dialog.wide { max-height: none; }
+    #submitBtn { position: sticky; bottom: 10px; width: 100%; margin-top: 14px; box-shadow: 0 -10px 18px rgba(255, 254, 252, 0.95); }
+    .subscribe code { font-size: 11.5px; }
+  }
 </style>
 </head>
 <body>
@@ -387,25 +430,25 @@ export const PAGE = `<!doctype html>
           <label for="position">Position</label>
           <input id="position" required maxlength="100" placeholder="e.g. Operations Manager">
         </div>
-        <div class="field">
+        <div class="field" style="flex:2 1 240px">
           <label for="month">Birthday month</label>
           <select id="month" required></select>
         </div>
-        <div class="field" style="flex:0 1 110px">
+        <div class="field" style="flex:1 1 100px">
           <label for="day">Day</label>
           <select id="day" required></select>
         </div>
-        <div class="field" style="flex:0 1 140px">
+        <div class="field" style="flex:1 1 120px">
           <label for="year">Year <span style="text-transform:none">(optional)</span></label>
           <input id="year" type="number" min="1900" max="2020" placeholder="—">
         </div>
       </div>
       <div class="row">
-        <div class="field">
+        <div class="field" style="flex:2 1 180px">
           <label for="jmonth">Month joined</label>
           <select id="jmonth" required></select>
         </div>
-        <div class="field" style="flex:0 1 160px">
+        <div class="field" style="flex:1 1 120px">
           <label for="jyear">Year joined</label>
           <input id="jyear" type="number" required min="1990" max="2030" placeholder="e.g. 2023">
         </div>
@@ -550,7 +593,7 @@ export const PAGE = `<!doctype html>
 </div>
 
 <footer>Senpex / Pckup internal tool · data is confidential · <a href="/calendar.ics">calendar feed</a>
-<div style="margin-top:7px;font-size:11.5px;opacity:.85">__BUILDINFO__</div></footer>
+<div style="margin-top:7px;font-size:11.5px;color:#5f5952">__BUILDINFO__</div></footer>
 <script>
 (function () {
   var COMPANY = "Senpex / Pckup";
@@ -923,7 +966,7 @@ export const PAGE = `<!doctype html>
         card.appendChild(claim);
       }
       card.addEventListener("click", function (ev) {
-        if (ev.target.closest("a, button, .zpop, input, select")) return;
+        if (ev.target.closest("a, button, .zwrap, input, select")) return;
         var cake = el("span", "cake-float", "🎂");
         cake.style.right = (10 + Math.random() * 40) + "px";
         cake.style.bottom = "12px";
@@ -1287,6 +1330,16 @@ export const PAGE = `<!doctype html>
   document.getElementById("openForm").addEventListener("click", openFormModal);
   // Deep link: /?add=1 opens the form straight away (shareable).
   if (new URLSearchParams(location.search).has("add")) openFormModal();
+
+  // Touch devices have no hover, so tap toggles the zodiac popovers.
+  if (window.matchMedia("(hover: none)").matches) {
+    document.addEventListener("click", function (ev) {
+      var z = ev.target.closest(".zwrap");
+      var open = document.querySelectorAll(".zwrap.tapped");
+      for (var i = 0; i < open.length; i++) if (open[i] !== z) open[i].classList.remove("tapped");
+      if (z) z.classList.toggle("tapped");
+    });
+  }
   document.getElementById("fClose").addEventListener("click", closeFormModal);
   document.getElementById("fmodal").addEventListener("click", function (ev) {
     if (ev.target === document.getElementById("fmodal")) closeFormModal();
