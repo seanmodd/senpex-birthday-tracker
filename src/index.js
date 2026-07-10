@@ -11,7 +11,7 @@ const COMPANY = "Senpex / Pckup";
 // usage isn't exposed to the model, so the figure is a maintained estimate
 // of cumulative tokens across all Claude sessions building this app.)
 const BUILD_NOTE =
-  "🤖 Built with Claude Fable 5 (claude-fable-5) · ~50M tokens used to date (estimate) · updated July 10, 2026";
+  "🤖 Built with Claude Fable 5 (claude-fable-5) · updated July 10, 2026";
 const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 export default {
@@ -1578,7 +1578,7 @@ const PAGE = `<!doctype html>
       <button class="primary" id="submitBtn" type="submit">Add me to the wall 🎈</button>
       <p id="status"></p>
       <p class="muted" style="font-size:12.5px;margin:10px 0 0">
-        Already on the wall? Submitting again with the same name updates your entry. Year is never shown to the team.
+        Already on the wall? Submitting again with the same name updates your entry. Year of birth is never shown to the team.
       </p>
     </form>
   </div>
@@ -3423,7 +3423,7 @@ const CHANGELOG_PAGE = `<!doctype html>
       <li><b>Today's-birthday banner</b> <span>— when it's someone's birthday today, a celebration banner with their photo appears at the top of the wall.</span></li>
       <li><b>Upcoming vs. Later birthdays</b> <span>— Upcoming now shows only the next 30 days; everyone further out lives under a new Later birthdays section.</span></li>
       <li><b>On GitHub</b> <span>— the tracker's code now lives in a private repo (github.com/seanmodd/senpex-birthday-tracker) and every change ships as a commit.</span></li>
-      <li><b>Build transparency</b> <span>— every page footer now shows the AI model that builds this site and the estimated total tokens used, refreshed with each update.</span></li>
+      <li><b>Build transparency</b> <span>— every page footer now shows the AI model that builds this site, refreshed with each update.</span></li>
       <li><b>Daily changelog</b> <span>— this page batches changes into at most one dated entry per 24 hours.</span></li>
     </ul>
   </section>
