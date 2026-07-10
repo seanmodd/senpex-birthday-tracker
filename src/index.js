@@ -2418,6 +2418,8 @@ const PAGE = `<!doctype html>
     document.getElementById("fmodal").hidden = true;
   }
   document.getElementById("openForm").addEventListener("click", openFormModal);
+  // Deep link: /?add=1 opens the form straight away (shareable).
+  if (new URLSearchParams(location.search).has("add")) openFormModal();
   document.getElementById("fClose").addEventListener("click", closeFormModal);
   document.getElementById("fmodal").addEventListener("click", function (ev) {
     if (ev.target === document.getElementById("fmodal")) closeFormModal();
@@ -3419,7 +3421,7 @@ const CHANGELOG_PAGE = `<!doctype html>
     <h2>July 10, 2026</h2>
     <p class="d-sub">Wall sections, the repo, and transparency</p>
     <ul>
-      <li><b>The form is a popup now</b> <span>— "🎈 Add your birthday" opens a polished dialog instead of a big card at the top; the wall gets the spotlight. Also fixed an empty orange box that showed when nobody's birthday is today.</span></li>
+      <li><b>The form is a popup now</b> <span>— "🎈 Add your birthday" opens a polished dialog instead of a big card at the top; the wall gets the spotlight (deep link: /?add=1 opens it directly). Also fixed an empty orange box that showed when nobody's birthday is today.</span></li>
       <li><b>Today's-birthday banner</b> <span>— when it's someone's birthday today, a celebration banner with their photo appears at the top of the wall.</span></li>
       <li><b>Upcoming vs. Later birthdays</b> <span>— Upcoming now shows only the next 30 days; everyone further out lives under a new Later birthdays section.</span></li>
       <li><b>On GitHub</b> <span>— the tracker's code now lives in a private repo (github.com/seanmodd/senpex-birthday-tracker) and every change ships as a commit.</span></li>
