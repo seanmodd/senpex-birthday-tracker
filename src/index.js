@@ -5,6 +5,13 @@ import { FAVICON_ICO_B64, FAVICON_PNG_B64 } from "./favicon.js";
 import { LOGO_B64 } from "./logo.js";
 
 const COMPANY = "Senpex / Pckup";
+
+// Shown in every page footer via the __BUILDINFO__ placeholder. UPDATE THIS
+// on every shipped change: keep the token estimate and date fresh. (Exact
+// usage isn't exposed to the model, so the figure is a maintained estimate
+// of cumulative tokens across all Claude sessions building this app.)
+const BUILD_NOTE =
+  "🤖 Built with Claude Fable 5 (claude-fable-5) · ~50M tokens used to date (estimate) · updated July 10, 2026";
 const DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 export default {
@@ -13,7 +20,7 @@ export default {
     try {
       if (url.pathname === "/" && request.method === "GET") {
         ctx.waitUntil(logVisit(env, request, "/"));
-        return new Response(PAGE, {
+        return new Response(PAGE.replace("__BUILDINFO__", BUILD_NOTE), {
           // no-store: stale cached pages kept biting us (old form JS posting
           // outdated payloads, missing features after deploys).
           headers: {
@@ -24,7 +31,7 @@ export default {
       }
       if (url.pathname === "/visitors" && request.method === "GET") {
         ctx.waitUntil(logVisit(env, request, "/visitors"));
-        return new Response(VISITORS_PAGE, {
+        return new Response(VISITORS_PAGE.replace("__BUILDINFO__", BUILD_NOTE), {
           headers: {
             "content-type": "text/html; charset=utf-8",
             "cache-control": "no-store",
@@ -33,7 +40,7 @@ export default {
       }
       if (url.pathname === "/changelog" && request.method === "GET") {
         ctx.waitUntil(logVisit(env, request, "/changelog"));
-        return new Response(CHANGELOG_PAGE, {
+        return new Response(CHANGELOG_PAGE.replace("__BUILDINFO__", BUILD_NOTE), {
           headers: {
             "content-type": "text/html; charset=utf-8",
             "cache-control": "no-store",
@@ -1653,7 +1660,8 @@ const PAGE = `<!doctype html>
   </div>
 </div>
 
-<footer>Senpex / Pckup internal tool · data stays in our database · <a href="/calendar.ics">calendar feed</a></footer>
+<footer>Senpex / Pckup internal tool · data stays in our database · <a href="/calendar.ics">calendar feed</a>
+<div style="margin-top:7px;font-size:11.5px;opacity:.85">__BUILDINFO__</div></footer>
 <script>
 (function () {
   var COMPANY = "Senpex / Pckup";
@@ -2662,7 +2670,8 @@ const VISITORS_PAGE = `<!doctype html>
     <div id="pList" class="plist"></div>
   </div>
 </div>
-<footer>Senpex / Pckup internal tool · <a href="/">team birthday tracker</a></footer>
+<footer>Senpex / Pckup internal tool · <a href="/">team birthday tracker</a>
+<div style="margin-top:7px;font-size:11.5px;opacity:.85">__BUILDINFO__</div></footer>
 <script>
 (function () {
   var points = [];
@@ -3360,7 +3369,7 @@ const CHANGELOG_PAGE = `<!doctype html>
 <header class="top">
   <div>
     <h1>📋 Changelog</h1>
-    <p>Everything shipped to the Senpex / Pckup birthday tracker, newest first.</p>
+    <p>Everything shipped to the Senpex / Pckup birthday tracker, newest first. One dated entry per day at most — same-day changes are batched together.</p>
   </div>
   <div class="links">
     <a class="back" href="/">← Birthday tracker</a>
@@ -3369,10 +3378,20 @@ const CHANGELOG_PAGE = `<!doctype html>
 </header>
 <main>
   <section class="day">
+    <h2>July 10, 2026</h2>
+    <p class="d-sub">Wall sections, the repo, and transparency</p>
+    <ul>
+      <li><b>Today's-birthday banner</b> <span>— when it's someone's birthday today, a celebration banner with their photo appears at the top of the wall.</span></li>
+      <li><b>Upcoming vs. Later birthdays</b> <span>— Upcoming now shows only the next 30 days; everyone further out lives under a new Later birthdays section.</span></li>
+      <li><b>On GitHub</b> <span>— the tracker's code now lives in a private repo (github.com/seanmodd/senpex-birthday-tracker) and every change ships as a commit.</span></li>
+      <li><b>Build transparency</b> <span>— every page footer now shows the AI model that builds this site and the estimated total tokens used, refreshed with each update.</span></li>
+      <li><b>Daily changelog</b> <span>— this page batches changes into at most one dated entry per 24 hours.</span></li>
+    </ul>
+  </section>
+  <section class="day">
     <h2>June 12, 2026</h2>
     <p class="d-sub">Visitor analytics, editing, and personality features</p>
     <ul>
-      <li><b>Today banner + Later birthdays</b> <span>— a celebration banner appears when it's someone's birthday today; Upcoming shows only the next 30 days, everything else lives under Later birthdays.</span></li>
       <li><b>Sign in with Instagram</b> <span>— the Instagram logo in the form now opens Instagram's login popup and fills in your verified username (business/creator accounts; personal accounts type their handle).</span></li>
       <li><b>Sign in with X</b> <span>— click the X logo in the form, authorize in the popup, and your verified @handle fills itself in. Platform logos now show on every social field.</span></li>
       <li><b>Join date simplified</b> <span>— month + year you joined (both required); the day is gone. Cards show "🗓 Joined Mar 2023".</span></li>
@@ -3415,6 +3434,7 @@ const CHANGELOG_PAGE = `<!doctype html>
     </ul>
   </section>
 </main>
-<footer>Senpex / Pckup internal tool · <a href="/">birthday wall</a> · <a href="/visitors">visitor tracker</a></footer>
+<footer>Senpex / Pckup internal tool · <a href="/">birthday wall</a> · <a href="/visitors">visitor tracker</a>
+<div style="margin-top:7px;font-size:11.5px;opacity:.85">__BUILDINFO__</div></footer>
 </body>
 </html>`;
