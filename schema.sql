@@ -24,6 +24,9 @@ CREATE TABLE IF NOT EXISTS birthdays (
   UNIQUE (name_key, company)
 );
 
+-- Retained for backward compatibility only: since July 11, 2026 title
+-- recommendations are emailed by the employee directly (mailto: flow) and the
+-- app no longer reads or writes this table.
 CREATE TABLE IF NOT EXISTS title_recommendations (
   id TEXT PRIMARY KEY,             -- client-generated UUID (idempotency key)
   title TEXT NOT NULL,

@@ -80,12 +80,21 @@ export const CHANGELOG_PAGE = `<!doctype html>
 <main>
   <section class="day">
     <h2>July 11, 2026</h2>
+    <p class="d-sub">Recommendations now go by email — from you · added 4:03 PM PST</p>
+    <ul>
+      <li><b>You send the recommendation yourself</b> <span>— "Recommend a title" now opens your own email app with the message already written: addressed to sean@senpex.com, subject "New Recommended Job Title for Birthday Tracker", with the title, intended use, explanation, and your name prefilled. You review it and hit send — the app never emails anyone on your behalf.</span></li>
+      <li><b>No email app? No problem</b> <span>— the popup always shows the full recipient, subject, and message with a Copy Email Details button, so you can paste it into webmail or anything else.</span></li>
+      <li><b>Leaner behind the scenes</b> <span>— automatic server-side email sending, the retry-email flow, and the recommendation endpoint were all removed; recommendations no longer touch the database at all.</span></li>
+    </ul>
+  </section>
+  <section class="day">
+    <h2>July 11, 2026</h2>
     <p class="d-sub">Job titles &amp; additional roles · added 3:04 PM PST</p>
     <ul>
       <li><b>Primary Job Title</b> <span>— the form's position field is now a searchable autocomplete over an approved library of 267 titles across 12 departments, with the primary title displayed prominently on every card.</span></li>
       <li><b>Additional Roles</b> <span>— add up to four optional extra roles, each removable; cards show a "+N additional roles" chip that opens the full Roles view. No duplicates, and the primary title can't repeat as a role.</span></li>
       <li><b>Search the wall</b> <span>— a search box finds people by name, primary title, or any additional role (primary matches rank first).</span></li>
-      <li><b>Recommend a title</b> <span>— can't find the right title? Recommend one from any title field: it checks for near-duplicates, saves for Sean's review, emails him, and you can use the pending title right away.</span></li>
+      <li><b>Recommend a title</b> <span>— can't find the right title? Recommend one from any title field: it checks for near-duplicates, sends it to Sean for review, and you can use the pending title right away.</span></li>
       <li><b>Streamlined title hierarchy</b> <span>— dispatch and delivery operations use clean Specialist → Manager → Director families (say hello to "Dispatch Fleet Specialist").</span></li>
     </ul>
   </section>

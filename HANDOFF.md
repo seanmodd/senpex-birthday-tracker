@@ -1,5 +1,15 @@
 # HANDOFF — Senpex / Pckup Team Birthday Tracker
 
+> **ADDENDUM (2026-07-11, ~4:30 PM PT, later the same day):** the
+> recommendation-email pipeline this document describes was REPLACED by a
+> pure client-side `mailto:` flow — the employee sends the email themselves
+> from their own mail app. `src/api/recommendations.js` and
+> `POST /api/recommend-title` no longer exist, nothing writes to
+> `title_recommendations` (table retained, unused), and NO Cloudflare Email
+> Sending setup is needed anymore. Ignore the email items in §3 (row 1),
+> §10, §13 (email tests), §14 (email_status risk), and §21 (step 3); the
+> rest of this document still stands.
+
 Written 2026-07-11 ~3:15 PM PT at the end of a Claude Code session, from
 verified repository/database state. Everything below was checked against
 `git status`, `git log`, `wrangler secret list`, and read-only D1 queries

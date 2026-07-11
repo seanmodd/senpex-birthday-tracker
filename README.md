@@ -92,8 +92,7 @@ birthday-tracker/
 | [`api/birthdays.js`](src/api/birthdays.js) | The wall's whole lifecycle: list (with per-requester `mine` flags), validated submit with upsert-by-name, edit/delete guarded by `ownsEntry` (token → cookie → unique network → named visits, plus the explicit "This is me" claim), and avatar serving from D1. |
 | [`api/visits.js`](src/api/visits.js) | Visit logging (`ctx.waitUntil`, geo from `request.cf`), the tracker's aggregate feed (`/api/visits` with time-range filtering, city/country breakdowns, per-visitor globe points), and per-person history (`/api/person-visits`). |
 | [`api/calendar.js`](src/api/calendar.js) | The auto-updating ICS feed (`/calendar.ics`): one yearly-recurring all-day `VEVENT` per person, Feb 29 anchored to a leap year. |
-| [`api/titles.js`](src/api/titles.js) / [`lib/titles.js`](src/lib/titles.js) | The approved job-title library (267 titles, 12 departments, streamlined Specialist → Manager → Director hierarchy) serving the form's autocomplete. |
-| [`api/recommendations.js`](src/api/recommendations.js) | Title recommendations: stored first (idempotent), then emailed to the reviewer; email failures are tracked and retryable. |
+| [`api/titles.js`](src/api/titles.js) / [`lib/titles.js`](src/lib/titles.js) | The approved job-title library (267 titles, 12 departments, streamlined Specialist → Manager → Director hierarchy) serving the form's autocomplete. Title *recommendations* are client-side only: the form drafts a prefilled `mailto:` to the reviewer, which the employee reviews and sends from their own email app — the Worker sends no email and stores nothing. |
 
 **`src/auth/` — identity & verification**
 

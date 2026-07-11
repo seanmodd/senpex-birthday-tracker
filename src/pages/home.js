@@ -220,6 +220,22 @@ export const PAGE = `<!doctype html>
     color: var(--brand-deep); font-size: 13px; padding: 10px 12px; margin-top: 10px;
   }
   .rec-ok { color: var(--ok); font-size: 13.5px; font-weight: 600; margin-top: 10px; }
+  .rec-fallback {
+    margin-top: 12px; padding: 12px 14px; border: 1px solid var(--line);
+    border-radius: 9px; background: #fff; font-size: 13px;
+  }
+  .rec-fallback .fb-hint { margin: 0 0 8px; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+  .rec-fallback .fb-row { margin-bottom: 6px; overflow-wrap: anywhere; }
+  .rec-fallback .fb-lbl {
+    display: inline-block; min-width: 62px; font-weight: 700;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
+  }
+  .rec-fallback pre {
+    font: inherit; white-space: pre-wrap; overflow-wrap: anywhere;
+    margin: 4px 0 0; padding: 8px 10px; border: 1px solid var(--line);
+    border-radius: 8px; background: var(--bg);
+  }
+  .rec-fallback .fb-copy { margin-top: 8px; min-height: 44px; }
   textarea {
     font: inherit; padding: 10px 12px; border: 1px solid var(--line);
     border-radius: 9px; background: #fff; color: var(--ink); width: 100%;
@@ -625,7 +641,7 @@ export const PAGE = `<!doctype html>
   <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="recTitle">
     <button class="dlg-x" id="recClose" type="button" aria-label="Close">×</button>
     <h3 id="recTitle">💡 Recommend a title</h3>
-    <p class="dlg-sub">Suggest a job title for the approved library. Sean reviews every recommendation.</p>
+    <p class="dlg-sub">Suggest a job title for the approved library. You send it to Sean by email, and he reviews every recommendation.</p>
     <div style="margin-bottom:10px">
       <label class="lbl" for="recName">Recommended job title</label>
       <input id="recName" maxlength="120" placeholder="e.g. Dispatch Fleet Manager">
@@ -643,10 +659,17 @@ export const PAGE = `<!doctype html>
     </div>
     <div class="rec-warn" id="recWarn" hidden></div>
     <p class="rec-ok" id="recOk" hidden></p>
+    <div class="rec-fallback" id="recFallback" hidden>
+      <p class="fb-hint">If your email app didn't open, copy the details below and send them from any email account:</p>
+      <div class="fb-row"><span class="fb-lbl">To</span><span id="fbTo">sean@senpex.com</span></div>
+      <div class="fb-row"><span class="fb-lbl">Subject</span><span id="fbSubject"></span></div>
+      <div class="fb-row"><span class="fb-lbl">Body</span><pre id="fbBody"></pre></div>
+      <button class="ghost fb-copy" id="fbCopy" type="button">Copy Email Details</button>
+    </div>
     <p class="role-err" id="recErr" hidden></p>
     <div class="dlg-row">
       <button class="ghost" id="recCancel" type="button">Cancel</button>
-      <button class="primary" id="recSubmit" type="button">Submit recommendation</button>
+      <button class="primary" id="recSubmit" type="button">Open Email to Send Recommendation</button>
     </div>
   </div>
 </div>
@@ -1696,31 +1719,35 @@ export const PAGE = `<!doctype html>
   });
 
   // ----- Recommend-a-title modal -----
-  var recSource = null, recId = null;
+  // The recommendation is sent by the employee from their own email app via a
+  // mailto: link. The app never sends email and never stores recommendations.
+  var recSource = null;
+  var REC_EMAIL = "sean@senpex.com";
+  var REC_SUBJECT = "New Recommended Job Title for Birthday Tracker";
   function openRecModal(sourceInput, intendedUse, prefill) {
     recSource = sourceInput;
-    recId = (window.crypto && crypto.randomUUID)
-      ? crypto.randomUUID()
-      : Date.now().toString(16) + "-" + Math.random().toString(16).slice(2) + Math.random().toString(16).slice(2);
     document.getElementById("recName").value = normSpace(prefill || "");
     document.getElementById("recWhy").value = "";
     var radios = document.getElementsByName("recUse");
     Array.prototype.forEach.call(radios, function (r) { r.checked = r.value === intendedUse; });
-    document.getElementById("recWarn").hidden = true;
-    document.getElementById("recOk").hidden = true;
+    resetRecOutcome();
     document.getElementById("recErr").hidden = true;
-    document.getElementById("recSubmit").disabled = false;
-    document.getElementById("recSubmit").hidden = false;
-    document.getElementById("recSubmit").textContent = "Submit recommendation";
-    recWarnAccepted = false;
     document.getElementById("recmodal").hidden = false;
     document.getElementById("recName").focus();
   }
-  document.getElementById("recName").addEventListener("input", function () {
+  // Hide the outcome sections whenever the drafted email would go stale, so
+  // the fallback To/Subject/Body can never disagree with the fields.
+  function resetRecOutcome() {
     recWarnAccepted = false;
     document.getElementById("recWarn").hidden = true;
-    var sb = document.getElementById("recSubmit");
-    if (!sb.hidden && !sb.disabled) sb.textContent = "Submit recommendation";
+    document.getElementById("recOk").hidden = true;
+    document.getElementById("recFallback").hidden = true;
+    document.getElementById("recSubmit").textContent = "Open Email to Send Recommendation";
+  }
+  document.getElementById("recName").addEventListener("input", resetRecOutcome);
+  document.getElementById("recWhy").addEventListener("input", resetRecOutcome);
+  Array.prototype.forEach.call(document.getElementsByName("recUse"), function (r) {
+    r.addEventListener("change", resetRecOutcome);
   });
   function closeRecModal() { document.getElementById("recmodal").hidden = true; }
   document.getElementById("recClose").addEventListener("click", closeRecModal);
@@ -1749,6 +1776,13 @@ export const PAGE = `<!doctype html>
   }
 
   var recWarnAccepted = false;
+  // The wall form sets the bt_name cookie client-side after a submission, so
+  // the drafted email can name its sender when this browser has an entry.
+  function currentUserName() {
+    var m = document.cookie.match(/(?:^|;\\s*)bt_name=([^;]+)/);
+    if (!m) return "";
+    try { return decodeURIComponent(m[1]); } catch (e) { return ""; }
+  }
   document.getElementById("recSubmit").addEventListener("click", function () {
     var btn = this;
     var errEl = document.getElementById("recErr");
@@ -1774,7 +1808,7 @@ export const PAGE = `<!doctype html>
     if (match && match.kind === "near" && !recWarnAccepted) {
       warnEl.innerHTML = "";
       warnEl.appendChild(document.createTextNode(
-        'This looks close to the approved title "' + match.title + '". Submit anyway, or use the approved one?'));
+        'This looks close to the approved title "' + match.title + '". Recommend it anyway, or use the approved one?'));
       var useBtn = el("button", "ghost", 'Use "' + match.title + '"');
       useBtn.type = "button";
       useBtn.style.marginTop = "8px";
@@ -1789,55 +1823,76 @@ export const PAGE = `<!doctype html>
       btnWrap.appendChild(useBtn);
       warnEl.appendChild(btnWrap);
       warnEl.hidden = false;
+      document.getElementById("recOk").hidden = true;
+      document.getElementById("recFallback").hidden = true;
       recWarnAccepted = true;
-      btn.textContent = "Submit anyway";
+      btn.textContent = "Open Email Anyway";
       return;
     }
-    recWarnAccepted = false;
-    btn.disabled = true;
-    btn.textContent = "Sending…";
+    // recWarnAccepted stays true after a send so re-clicking to relaunch the
+    // mail app on unchanged input doesn't re-ask; any edit resets it.
     var use = "primary";
     Array.prototype.forEach.call(document.getElementsByName("recUse"), function (r) { if (r.checked) use = r.value; });
-    fetch("/api/recommend-title", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        id: recId,
-        title: norm,
-        intended_use: use,
-        explanation: document.getElementById("recWhy").value
-      })
-    })
-      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-      .then(function (res) {
-        if (res.ok && res.j.ok) {
-          var okEl = document.getElementById("recOk");
-          if (res.j.emailed) {
-            okEl.textContent = "Your job-title recommendation has been sent to Sean for review. You may use the title on your profile while it is being reviewed.";
-            btn.hidden = true;
-          } else {
-            okEl.textContent = "Your recommendation is saved for Sean's review (the notification email couldn't be delivered yet). You may use the title on your profile while it is being reviewed.";
-            btn.disabled = false;
-            btn.textContent = "Retry email";
-          }
-          okEl.hidden = false;
-          if (recSource) {
-            recSource.value = norm;
-            recSource.dispatchEvent(new Event("change"));
-          }
-        } else {
-          errEl.textContent = res.j.error || "Couldn't submit — try again.";
-          errEl.hidden = false;
-          btn.disabled = false;
-          btn.textContent = "Submit recommendation";
-        }
-      })
-      .catch(function () {
-        errEl.textContent = "Network error — try again.";
-        errEl.hidden = false;
-        btn.disabled = false;
-        btn.textContent = "Submit recommendation";
-      });
+    var why = document.getElementById("recWhy").value.trim();
+    var who = currentUserName();
+    var body = [
+      "Recommended Job Title: " + norm,
+      "Intended Use: " + (use === "additional" ? "Additional Role" : "Primary Job Title"),
+      "Explanation: " + (why || "None provided"),
+      "Submitted By: " + (who || "Not available")
+    ].join("\\r\\n"); // RFC 6068: mailto body line breaks must encode as %0D%0A
+    // The fallback details always show: the browser can't detect whether a
+    // mail app actually opened, and the copy path must stay available.
+    document.getElementById("fbSubject").textContent = REC_SUBJECT;
+    document.getElementById("fbBody").textContent = body;
+    document.getElementById("fbCopy").textContent = "Copy Email Details";
+    var okEl = document.getElementById("recOk");
+    okEl.textContent = "Your email app has been opened. Review the recommendation and send it to Sean.";
+    okEl.hidden = false;
+    document.getElementById("recFallback").hidden = false;
+    warnEl.hidden = true;
+    btn.textContent = "Open Email to Send Recommendation";
+    if (recSource) {
+      recSource.value = norm;
+      recSource.dispatchEvent(new Event("change"));
+    }
+    // An anchor click is the most reliable cross-platform way to launch the
+    // default mail app from a mailto: URL (incl. iOS Safari and Android).
+    var a = document.createElement("a");
+    a.href = "mailto:" + REC_EMAIL +
+      "?subject=" + encodeURIComponent(REC_SUBJECT) +
+      "&body=" + encodeURIComponent(body);
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+  document.getElementById("fbCopy").addEventListener("click", function () {
+    var copyBtn = this;
+    var details = "To: " + REC_EMAIL +
+      "\\r\\nSubject: " + document.getElementById("fbSubject").textContent +
+      "\\r\\n\\r\\n" + document.getElementById("fbBody").textContent;
+    function done(copied) {
+      copyBtn.textContent = copied ? "Copied!" : "Copy failed — select the text above and copy it manually";
+      setTimeout(function () { copyBtn.textContent = "Copy Email Details"; }, 2500);
+    }
+    function legacyCopy() {
+      var ta = document.createElement("textarea");
+      ta.value = details;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      var copied = false;
+      try { copied = document.execCommand("copy"); } catch (e) {}
+      ta.remove();
+      done(copied);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(details).then(function () { done(true); }, legacyCopy);
+    } else {
+      legacyCopy();
+    }
   });
 
   // ----- Roles view modal (from the +N roles chip on cards) -----
