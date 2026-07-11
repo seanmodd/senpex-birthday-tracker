@@ -7,6 +7,8 @@ import { serveFaviconIco, serveFaviconPng, serveLogo } from "./assets/serve.js";
 import { avatarImg, listBirthdays, submit, editEntry, deleteEntry } from "./api/birthdays.js";
 import { logVisit, listVisits, personVisits } from "./api/visits.js";
 import { icsFeed } from "./api/calendar.js";
+import { listTitles } from "./api/titles.js";
+import { recommendTitle } from "./api/recommendations.js";
 import { xAuthStart, xAuthCallback } from "./auth/x.js";
 import { igAuthStart, igAuthCallback } from "./auth/instagram.js";
 import { worldJson } from "./proxies/world.js";
@@ -33,6 +35,12 @@ export default {
       }
       if (url.pathname === "/api/birthdays" && request.method === "GET") {
         return listBirthdays(env, request);
+      }
+      if (url.pathname === "/api/titles" && request.method === "GET") {
+        return listTitles();
+      }
+      if (url.pathname === "/api/recommend-title" && request.method === "POST") {
+        return recommendTitle(request, env);
       }
       if (url.pathname === "/api/submit" && request.method === "POST") {
         return submit(request, env);

@@ -42,7 +42,7 @@ export async function listBirthdays(env, request) {
   const { results } = await env.DB.prepare(
     "SELECT id, name, name_key, company, position, month, day, city, country, ip, " +
       "avatar IS NOT NULL AS has_avatar, instagram, linkedin, x_handle, " +
-      "join_month, join_day, join_year " +
+      "join_month, join_day, join_year, additional_roles " +
       "FROM birthdays ORDER BY month, day, name"
   ).all();
   const ipCounts = {};
@@ -55,6 +55,12 @@ export async function listBirthdays(env, request) {
   // several teammates share an office IP.
   const netNames = await namesOnNetwork(env, reqIp);
   for (const r of results) {
+    try {
+      r.roles = r.additional_roles ? JSON.parse(r.additional_roles) : [];
+    } catch {
+      r.roles = [];
+    }
+    delete r.additional_roles;
     const k = ipKey(r.ip);
     r.mine =
       (!!me && r.name_key === me) ||
@@ -70,7 +76,7 @@ export async function listBirthdays(env, request) {
 // the cleaned fields.
 function parseEntry(body) {
   const name = String(body.name || "").trim().replace(/\s+/g, " ");
-  const position = String(body.position || "").trim();
+  const position = String(body.position || "").trim().replace(/\s+/g, " ");
   const month = Number.parseInt(body.month, 10);
   const day = Number.parseInt(body.day, 10);
   const year =
@@ -97,7 +103,23 @@ function parseEntry(body) {
   if (!Number.isInteger(joinYear) || joinYear < 1990 || joinYear > 2030)
     return { error: "Please add the year you joined the team." };
 
-  return { name, position, month, day, year, joinMonth, joinYear };
+  // Additional roles: 0-4, no blanks, no duplicates (case-insensitive),
+  // and never a copy of the primary title.
+  const rawRoles = Array.isArray(body.additional_roles) ? body.additional_roles : [];
+  const roles = [];
+  const seen = new Set([position.toLowerCase()]);
+  for (const r of rawRoles) {
+    const t = String(r || "").trim().replace(/\s+/g, " ").slice(0, 100);
+    if (!t) continue;
+    if (seen.has(t.toLowerCase()))
+      return { error: "This role has already been added. Please select a different role." };
+    seen.add(t.toLowerCase());
+    roles.push(t);
+  }
+  if (roles.length > 4)
+    return { error: "You can add at most four additional roles." };
+
+  return { name, position, month, day, year, joinMonth, joinYear, roles };
 }
 
 export async function submit(request, env) {
@@ -116,7 +138,8 @@ export async function submit(request, env) {
   const geoCountry = cf.country || null;
   const entry = parseEntry(body);
   if (entry.error) return json({ error: entry.error }, 400);
-  const { name, position, month, day, year, joinMonth, joinYear } = entry;
+  const { name, position, month, day, year, joinMonth, joinYear, roles } = entry;
+  const rolesJson = roles.length ? JSON.stringify(roles) : null;
 
   const socials = await normalizeAndCheckSocials(env, body);
   if (socials.error) return json({ error: socials.error }, 400);
@@ -150,12 +173,12 @@ export async function submit(request, env) {
           "month = ?5, day = ?6, year = ?7, ip = ?8, edit_token = ?9, " +
           "city = ?10, country = ?11, avatar = ?12, instagram = ?13, linkedin = ?14, " +
           "x_handle = ?15, join_month = ?16, join_day = ?17, join_year = ?18, " +
-          "updated_at = datetime('now') WHERE id = ?19"
+          "additional_roles = ?20, updated_at = datetime('now') WHERE id = ?19"
       )
         .bind(
           name, name.toLowerCase(), COMPANY, position, month, day, year, ip, token,
           geoCity, geoCountry, avatar, instagram, linkedin, xHandle,
-          joinMonth, null, joinYear, replaceId
+          joinMonth, null, joinYear, replaceId, rolesJson
         )
         .run();
       if (!res.meta || res.meta.changes === 0)
@@ -174,8 +197,8 @@ export async function submit(request, env) {
   // let the same person duplicate. Same name = same person, full stop.
   await env.DB.prepare(
     "INSERT INTO birthdays (name, name_key, company, position, month, day, year, ip, edit_token, city, country, " +
-      "avatar, instagram, linkedin, x_handle, join_month, join_day, join_year) " +
-      "VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18) " +
+      "avatar, instagram, linkedin, x_handle, join_month, join_day, join_year, additional_roles) " +
+      "VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19) " +
       "ON CONFLICT (name_key) DO UPDATE SET " +
       "name = excluded.name, company = excluded.company, position = excluded.position, " +
       "month = excluded.month, day = excluded.day, year = excluded.year, " +
@@ -183,11 +206,12 @@ export async function submit(request, env) {
       "city = excluded.city, country = excluded.country, " +
       "avatar = excluded.avatar, instagram = excluded.instagram, linkedin = excluded.linkedin, " +
       "x_handle = excluded.x_handle, join_month = excluded.join_month, " +
-      "join_day = excluded.join_day, join_year = excluded.join_year, updated_at = datetime('now')"
+      "join_day = excluded.join_day, join_year = excluded.join_year, " +
+      "additional_roles = excluded.additional_roles, updated_at = datetime('now')"
   )
     .bind(
       name, name.toLowerCase(), COMPANY, position, month, day, year, ip, token, geoCity, geoCountry,
-      avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear
+      avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, rolesJson
     )
     .run();
 
@@ -234,7 +258,8 @@ export async function editEntry(request, env) {
     return json({ error: "Missing entry id." }, 400);
   const entry = parseEntry(body);
   if (entry.error) return json({ error: entry.error }, 400);
-  const { name, position, month, day, year, joinMonth, joinYear } = entry;
+  const { name, position, month, day, year, joinMonth, joinYear, roles } = entry;
+  const rolesJson = roles.length ? JSON.stringify(roles) : null;
 
   const socials = await normalizeAndCheckSocials(env, body);
   if (socials.error) return json({ error: socials.error }, 400);
@@ -286,12 +311,12 @@ export async function editEntry(request, env) {
         "month = ?5, day = ?6, year = ?7, ip = ?8, edit_token = ?9, " +
         "city = ?10, country = ?11, avatar = ?12, instagram = ?13, linkedin = ?14, " +
         "x_handle = ?15, join_month = ?16, join_day = ?17, join_year = ?18, " +
-        "updated_at = datetime('now') WHERE id = ?19"
+        "additional_roles = ?20, updated_at = datetime('now') WHERE id = ?19"
     )
       .bind(
         name, name.toLowerCase(), COMPANY, position, month, day, year, ip,
         newToken, cf.city || null, cf.country || null,
-        avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, id
+        avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, id, rolesJson
       )
       .run();
   } catch (e) {

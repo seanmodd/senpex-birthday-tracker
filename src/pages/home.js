@@ -155,6 +155,80 @@ export const PAGE = `<!doctype html>
     font-weight: 700; font-size: 12.5px; color: var(--brand-dark); margin-bottom: 3px;
   }
   .p-pos { color: var(--muted); font-size: 13px; min-height: 17px; }
+  .roles-chip {
+    display: inline-flex; align-items: center; min-height: 28px;
+    font-size: 11.5px; font-weight: 700; color: var(--brand-deep);
+    background: var(--tint); border: 1px solid #ffc9b3; border-radius: 999px;
+    padding: 2px 10px; margin-top: 2px; text-decoration: none;
+    align-self: flex-start; cursor: pointer;
+  }
+  .roles-chip:hover { border-color: var(--brand); }
+  .req-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.4px;
+    color: #fff; background: var(--brand); border-radius: 999px;
+    padding: 2px 8px; margin-left: 6px; vertical-align: 1px;
+  }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 4px; text-transform: none; letter-spacing: 0; font-weight: 500; }
+  .ac-wrap { position: relative; }
+  .ac-drop {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 60;
+    background: #fff; border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: 0 14px 36px rgba(26, 23, 20, 0.16);
+    max-height: 240px; overflow-y: auto; padding: 4px;
+  }
+  .ac-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 10px; border-radius: 7px; font-size: 14px; cursor: pointer;
+  }
+  .ac-item b { color: var(--brand-deep); }
+  .ac-item.sel, .ac-item:hover { background: var(--tint); }
+  .ac-dept { font-size: 10.5px; color: var(--muted); white-space: nowrap; flex: none; }
+  .ac-rec {
+    display: block; width: 100%; text-align: left; font: inherit;
+    font-size: 12.5px; font-weight: 600; color: var(--brand-deep);
+    background: none; border: 0; border-top: 1px solid var(--line);
+    padding: 11px 10px 7px; margin-top: 4px; cursor: pointer;
+  }
+  .ac-rec:hover { text-decoration: underline; }
+  .roles-sec { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
+  .role-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .role-num { font-size: 11px; font-weight: 700; color: var(--muted); flex: none; width: 44px; }
+  .role-row .ac-wrap { flex: 1; min-width: 0; }
+  .role-x {
+    flex: none; width: 40px; height: 40px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; color: var(--muted); background: #fff;
+    border: 1px solid var(--line); cursor: pointer;
+  }
+  .role-x:hover { color: var(--err); border-color: var(--err); }
+  .role-err { color: var(--err); font-size: 12px; font-weight: 600; margin-top: 5px; }
+  .wall-search { margin: 26px 4px 0; }
+  .wall-search input {
+    font: inherit; font-size: 14.5px; width: 100%;
+    padding: 12px 14px; border: 1px solid var(--line); border-radius: 999px;
+    background: #fff; color: var(--ink);
+  }
+  .wall-search input:focus { outline: 2px solid var(--brand); border-color: transparent; }
+  .rolesview .lbl { display: block; margin-bottom: 4px; }
+  .rolesview .rv-primary { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+  .rolesview ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+  #recmodal { z-index: 55; }
+  .rec-note { font-size: 12.5px; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+  .rec-warn {
+    background: var(--tint); border: 1px solid #ffc9b3; border-radius: 8px;
+    color: var(--brand-deep); font-size: 13px; padding: 10px 12px; margin-top: 10px;
+  }
+  .rec-ok { color: var(--ok); font-size: 13.5px; font-weight: 600; margin-top: 10px; }
+  textarea {
+    font: inherit; padding: 10px 12px; border: 1px solid var(--line);
+    border-radius: 9px; background: #fff; color: var(--ink); width: 100%;
+    min-height: 70px; resize: vertical;
+  }
+  textarea:focus { outline: 2px solid var(--brand); border-color: transparent; }
+  .radio-row { display: flex; gap: 14px; margin-top: 6px; font-size: 13.5px; flex-wrap: wrap; }
+  .radio-row label { display: flex; align-items: center; gap: 6px; text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--ink); font-size: 13.5px; cursor: pointer; }
+  .radio-row input { width: auto; accent-color: var(--brand); }
   .p-loc { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12.5px; }
   .p-joined { color: var(--muted); font-size: 12.5px; }
   .p-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
@@ -381,6 +455,10 @@ export const PAGE = `<!doctype html>
 <main>
   <div id="todayBanner" class="today-banner" hidden></div>
 
+  <div class="wall-search">
+    <input id="wallSearch" type="search" placeholder="🔍 Search people or roles…" autocomplete="off" aria-label="Search people or roles">
+  </div>
+
   <div class="wall-head">
     <h2>Upcoming birthdays</h2>
     <span id="count"></span>
@@ -395,6 +473,7 @@ export const PAGE = `<!doctype html>
   <div id="grid2" class="grid" hidden></div>
 
   <p id="empty" hidden>No birthdays yet — be the first! 🎈</p>
+  <p id="searchEmpty" class="muted" style="text-align:center;padding:26px 0" hidden>No people or roles match your search.</p>
 
   <section class="card subscribe">
     <h2>📅 Get these on your Google Calendar all at once</h2>
@@ -426,9 +505,20 @@ export const PAGE = `<!doctype html>
         </div>
       </div>
       <div class="row">
-        <div class="field" style="flex:2 1 240px">
-          <label for="position">Position</label>
-          <input id="position" required maxlength="100" placeholder="e.g. Operations Manager">
+        <div class="field" style="flex:1 1 100%">
+          <label for="position">Primary Job Title <span class="req-badge">Primary</span></label>
+          <div class="ac-wrap">
+            <input id="position" required maxlength="100" placeholder="Start typing your job title…" autocomplete="off">
+          </div>
+          <span class="hint">Select the title that best represents your main role at the company.</span>
+        </div>
+        <div class="field roles-sec" style="flex:1 1 100%">
+          <span class="lbl">Additional Roles <span style="text-transform:none">(optional)</span></span>
+          <div id="fRolesList"></div>
+          <div class="role-err" id="fRolesErr" hidden></div>
+          <button class="ghost" type="button" id="fAddRole" style="margin-top:10px">＋ Add Additional Role</button>
+          <p class="hint" id="fRolesHint">Add up to four other roles or responsibilities you hold within the company.</p>
+          <p class="hint" id="fRolesMax" hidden>Maximum of four additional roles reached.</p>
         </div>
         <div class="field" style="flex:2 1 240px">
           <label for="month">Birthday month</label>
@@ -516,6 +606,51 @@ export const PAGE = `<!doctype html>
   </div>
 </div>
 
+<div id="rmodal" class="overlay" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="rTitle">
+    <button class="dlg-x" id="rClose" type="button" aria-label="Close">×</button>
+    <h3 id="rTitle">Roles</h3>
+    <div class="rolesview">
+      <span class="lbl">Primary Job Title</span>
+      <div class="rv-primary" id="rvPrimary"></div>
+      <div id="rvAddWrap">
+        <span class="lbl">Additional Roles</span>
+        <ul id="rvRoles"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="recmodal" class="overlay" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="recTitle">
+    <button class="dlg-x" id="recClose" type="button" aria-label="Close">×</button>
+    <h3 id="recTitle">💡 Recommend a title</h3>
+    <p class="dlg-sub">Suggest a job title for the approved library. Sean reviews every recommendation.</p>
+    <div style="margin-bottom:10px">
+      <label class="lbl" for="recName">Recommended job title</label>
+      <input id="recName" maxlength="120" placeholder="e.g. Dispatch Fleet Manager">
+    </div>
+    <div style="margin-bottom:10px">
+      <label class="lbl" for="recWhy">Why this title? <span style="text-transform:none">(optional)</span></label>
+      <textarea id="recWhy" maxlength="1000" placeholder="What does this role cover?"></textarea>
+    </div>
+    <div>
+      <span class="lbl">Intended use</span>
+      <div class="radio-row">
+        <label><input type="radio" name="recUse" value="primary"> Primary Job Title</label>
+        <label><input type="radio" name="recUse" value="additional"> Additional Role</label>
+      </div>
+    </div>
+    <div class="rec-warn" id="recWarn" hidden></div>
+    <p class="rec-ok" id="recOk" hidden></p>
+    <p class="role-err" id="recErr" hidden></p>
+    <div class="dlg-row">
+      <button class="ghost" id="recCancel" type="button">Cancel</button>
+      <button class="primary" id="recSubmit" type="button">Submit recommendation</button>
+    </div>
+  </div>
+</div>
+
 <div id="emodal" class="overlay" hidden>
   <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="eTitle">
     <button class="dlg-x" id="eClose" type="button" aria-label="Close">×</button>
@@ -527,8 +662,18 @@ export const PAGE = `<!doctype html>
       <input id="eName" maxlength="100" autocomplete="name">
     </div>
     <div style="margin-bottom:10px">
-      <label class="lbl" for="ePos">Position</label>
-      <input id="ePos" maxlength="100">
+      <label class="lbl" for="ePos">Primary Job Title <span class="req-badge">Primary</span></label>
+      <div class="ac-wrap">
+        <input id="ePos" maxlength="100" placeholder="Start typing your job title…" autocomplete="off">
+      </div>
+      <span class="hint">Select the title that best represents your main role at the company.</span>
+      <div class="roles-sec" style="margin-top:12px">
+        <span class="lbl">Additional Roles <span style="text-transform:none">(optional)</span></span>
+        <div id="eRolesList"></div>
+        <div class="role-err" id="eRolesErr" hidden></div>
+        <button class="ghost" type="button" id="eAddRole" style="margin-top:10px">＋ Add Additional Role</button>
+        <p class="hint" id="eRolesMax" hidden>Maximum of four additional roles reached.</p>
+      </div>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <div style="flex:2 1 140px">
@@ -858,7 +1003,6 @@ export const PAGE = `<!doctype html>
   }
 
   function render(list) {
-    allBirthdays = list.slice();
     var grid = document.getElementById("grid");
     var grid2 = document.getElementById("grid2");
     var empty = document.getElementById("empty");
@@ -866,11 +1010,17 @@ export const PAGE = `<!doctype html>
     var count2 = document.getElementById("count2");
     grid.innerHTML = "";
     grid2.innerHTML = "";
-    empty.hidden = list.length > 0;
+    var searching = normSpace(wallQuery || "") !== "";
+    empty.hidden = list.length > 0 || searching;
+    document.getElementById("searchEmpty").hidden = !(searching && list.length === 0);
     var todays = [];
     var nUpcoming = 0, nLater = 0;
 
-    list.sort(function (a, b) { return daysUntil(a.month, a.day) - daysUntil(b.month, b.day) || a.name.localeCompare(b.name); });
+    list.sort(function (a, b) {
+      return (a.__rank || 0) - (b.__rank || 0) ||
+        daysUntil(a.month, a.day) - daysUntil(b.month, b.day) ||
+        a.name.localeCompare(b.name);
+    });
 
     var myTokens = getTokens();
     // One person = one birthday: once this browser owns any card, it has no
@@ -904,6 +1054,16 @@ export const PAGE = `<!doctype html>
       top.appendChild(zw);
       card.appendChild(top);
       card.appendChild(el("div", "p-pos", b.position));
+      if (b.roles && b.roles.length) {
+        var rc = el("a", "roles-chip",
+          "+" + b.roles.length + " additional role" + (b.roles.length === 1 ? "" : "s"));
+        rc.href = "#";
+        rc.addEventListener("click", function (ev) {
+          ev.preventDefault();
+          openRolesModal(b);
+        });
+        card.appendChild(rc);
+      }
       if (b.city || b.country) {
         var loc = el("div", "p-loc");
         var lf = flagEl(b.country);
@@ -1016,7 +1176,10 @@ export const PAGE = `<!doctype html>
   function load() {
     fetch("/api/birthdays")
       .then(function (r) { return r.json(); })
-      .then(render)
+      .then(function (list) {
+        allBirthdays = list;
+        renderWall();
+      })
       .catch(function () {});
   }
 
@@ -1039,7 +1202,8 @@ export const PAGE = `<!doctype html>
       month: payload.month, day: payload.day, year: payload.year,
       join_month: payload.join_month, join_year: payload.join_year,
       instagram: payload.instagram, linkedin: payload.linkedin, x: payload.x,
-      avatar: payload.avatar
+      avatar: payload.avatar,
+      additional_roles: payload.additional_roles || []
     };
     if (replaceId) body.replace_id = replaceId;
     fetch("/api/submit", {
@@ -1132,6 +1296,8 @@ export const PAGE = `<!doctype html>
       closeModal();
       document.getElementById("emodal").hidden = true;
       document.getElementById("fmodal").hidden = true;
+      document.getElementById("rmodal").hidden = true;
+      document.getElementById("recmodal").hidden = true;
     }
   });
   document.getElementById("dlgNew").addEventListener("click", function () {
@@ -1152,7 +1318,8 @@ export const PAGE = `<!doctype html>
       month: dupPayload.month, day: dupPayload.day, year: dupPayload.year,
       join_month: dupPayload.join_month, join_year: dupPayload.join_year,
       instagram: dupPayload.instagram, linkedin: dupPayload.linkedin, x: dupPayload.x,
-      avatar: dupPayload.avatar
+      avatar: dupPayload.avatar,
+      additional_roles: dupPayload.additional_roles || []
     };
     var target = dupTarget;
     closeModal();
@@ -1213,6 +1380,12 @@ export const PAGE = `<!doctype html>
     sel.value = String(Math.min(keep || 1, max));
   }
 
+  var editRoles = setupRoles("eRolesList", "eAddRole", "eRolesMax", "eRolesErr", document.getElementById("ePos"));
+  attachTitleAutocomplete(document.getElementById("ePos"), {
+    intendedUse: "primary",
+    getExcluded: function () { return editRoles.getRoles(); }
+  });
+
   function openEditModal(b, claimMode) {
     editing = b;
     editingClaim = claimMode === true;
@@ -1240,6 +1413,7 @@ export const PAGE = `<!doctype html>
     }
     document.getElementById("eName").value = b.name;
     document.getElementById("ePos").value = b.position || "";
+    editRoles.setRoles(b.roles || []);
     em.value = String(b.month);
     fillDayOptions(edd, b.month, b.day);
     document.getElementById("eYear").value = "";
@@ -1280,7 +1454,8 @@ export const PAGE = `<!doctype html>
       join_year: document.getElementById("eJYear").value || null,
       instagram: document.getElementById("eIg").value,
       linkedin: document.getElementById("eLi").value,
-      x: document.getElementById("eX").value
+      x: document.getElementById("eX").value,
+      additional_roles: editRoles.getRoles()
     };
     if (avatarData !== undefined) payload.avatar = avatarData;
     if (editingClaim) payload.claim = true;
@@ -1317,6 +1492,392 @@ export const PAGE = `<!doctype html>
         err.hidden = false;
       })
       .finally(function () { btn.disabled = false; });
+  });
+
+  // ----- Job titles: approved library, autocomplete, additional roles -----
+  var TITLE_GROUPS = [];
+  var TITLES = []; // [{ t: title, tl: lowercase, d: dept }]
+  fetch("/api/titles")
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      TITLE_GROUPS = d.groups || [];
+      TITLE_GROUPS.forEach(function (g) {
+        g.titles.forEach(function (t) {
+          TITLES.push({ t: t, tl: t.toLowerCase(), d: g.dept });
+        });
+      });
+    })
+    .catch(function () {});
+
+  var ACRONYMS = { "ai": "AI", "qa": "QA", "it": "IT", "ios": "iOS", "api": "API",
+    "ux": "UX", "ui": "UI", "mlops": "MLOps", "devops": "DevOps", "seo": "SEO",
+    "sem": "SEM", "hr": "HR", "of": "of", "and": "and", "the": "the" };
+  function titleCase(str) {
+    return normSpace(str).split(" ").map(function (w, i) {
+      var key = w.toLowerCase();
+      if (ACRONYMS[key]) return (i === 0 && (key === "of" || key === "and" || key === "the"))
+        ? key.charAt(0).toUpperCase() + key.slice(1) : ACRONYMS[key];
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    }).join(" ");
+  }
+
+  function titleMatches(q) {
+    var ql = q.toLowerCase();
+    var starts = [], words = [], subs = [];
+    TITLES.forEach(function (x) {
+      if (x.tl.indexOf(ql) === 0) starts.push(x);
+      else if (x.tl.split(" ").some(function (w) { return w.indexOf(ql) === 0; })) words.push(x);
+      else if (x.tl.indexOf(ql) >= 0) subs.push(x);
+    });
+    return starts.concat(words, subs);
+  }
+
+  // Searchable autocomplete with keyboard navigation, match highlighting,
+  // dept tags, already-selected exclusion, and a recommend-a-title footer.
+  function attachTitleAutocomplete(input, opts) {
+    var wrap = input.parentElement; // .ac-wrap
+    var drop = null, items = [], sel = -1;
+    function close() { if (drop) { drop.remove(); drop = null; items = []; sel = -1; } }
+    function pick(title) {
+      input.value = title;
+      close();
+      if (opts.onPick) opts.onPick(title);
+    }
+    function render() {
+      close();
+      var q = normSpace(input.value);
+      if (!q) return;
+      var excluded = (opts.getExcluded ? opts.getExcluded() : []).map(function (x) { return x.toLowerCase(); });
+      var list = titleMatches(q).filter(function (x) { return excluded.indexOf(x.tl) === -1; }).slice(0, 8);
+      drop = el("div", "ac-drop");
+      var ql = q.toLowerCase();
+      list.forEach(function (x) {
+        var row = el("div", "ac-item");
+        var name = el("span");
+        var at = x.tl.indexOf(ql);
+        if (at >= 0) {
+          name.appendChild(document.createTextNode(x.t.slice(0, at)));
+          name.appendChild(el("b", null, x.t.slice(at, at + q.length)));
+          name.appendChild(document.createTextNode(x.t.slice(at + q.length)));
+        } else {
+          name.textContent = x.t;
+        }
+        row.appendChild(name);
+        row.appendChild(el("span", "ac-dept", x.d));
+        row.addEventListener("mousedown", function (ev) { ev.preventDefault(); pick(x.t); });
+        drop.appendChild(row);
+        items.push({ row: row, title: x.t });
+      });
+      var recBtn = el("button", "ac-rec", "Can't find the right title? Recommend a title");
+      recBtn.type = "button";
+      recBtn.addEventListener("mousedown", function (ev) {
+        ev.preventDefault();
+        close();
+        openRecModal(input, opts.intendedUse, input.value);
+      });
+      drop.appendChild(recBtn);
+      wrap.appendChild(drop);
+    }
+    function move(delta) {
+      if (!items.length) return;
+      if (sel >= 0) items[sel].row.classList.remove("sel");
+      sel = (sel + delta + items.length) % items.length;
+      items[sel].row.classList.add("sel");
+      items[sel].row.scrollIntoView({ block: "nearest" });
+    }
+    input.addEventListener("input", render);
+    input.addEventListener("focus", render);
+    input.addEventListener("keydown", function (ev) {
+      if (!drop) return;
+      if (ev.key === "ArrowDown") { ev.preventDefault(); move(1); }
+      else if (ev.key === "ArrowUp") { ev.preventDefault(); move(-1); }
+      else if (ev.key === "Enter") {
+        if (sel >= 0) { ev.preventDefault(); pick(items[sel].title); }
+        else close();
+      }
+      else if (ev.key === "Escape") { close(); ev.stopPropagation(); }
+    });
+    input.addEventListener("blur", function () { setTimeout(close, 150); });
+  }
+
+  // Additional-roles list manager (used by both the form and the edit modal).
+  function setupRoles(listId, addBtnId, maxId, errId, primaryInput) {
+    var listEl = document.getElementById(listId);
+    var addBtn = document.getElementById(addBtnId);
+    var maxEl = document.getElementById(maxId);
+    var errEl = document.getElementById(errId);
+    function inputs() {
+      return Array.prototype.slice.call(listEl.querySelectorAll("input"));
+    }
+    function values() {
+      return inputs().map(function (i) { return normSpace(i.value); }).filter(Boolean);
+    }
+    function showErr(msg) {
+      errEl.textContent = msg;
+      errEl.hidden = false;
+      setTimeout(function () { errEl.hidden = true; }, 4000);
+    }
+    function refresh() {
+      var rows = listEl.querySelectorAll(".role-row");
+      Array.prototype.forEach.call(rows, function (row, i) {
+        row.querySelector(".role-num").textContent = "Role " + (i + 1);
+      });
+      var full = rows.length >= 4;
+      addBtn.hidden = full;
+      maxEl.hidden = !full;
+    }
+    function isDup(title, exceptInput) {
+      var tl = normSpace(title).toLowerCase();
+      if (!tl) return false;
+      if (normSpace(primaryInput.value).toLowerCase() === tl) return true;
+      return inputs().some(function (i) {
+        return i !== exceptInput && normSpace(i.value).toLowerCase() === tl;
+      });
+    }
+    function addRow(value) {
+      if (listEl.querySelectorAll(".role-row").length >= 4) return null;
+      var row = el("div", "role-row");
+      row.appendChild(el("span", "role-num", ""));
+      var wrap = el("div", "ac-wrap");
+      var input = document.createElement("input");
+      input.maxLength = 100;
+      input.placeholder = "Start typing a role…";
+      input.autocomplete = "off";
+      input.value = value || "";
+      wrap.appendChild(input);
+      row.appendChild(wrap);
+      var x = el("button", "role-x", "×");
+      x.type = "button";
+      x.title = "Remove this role";
+      x.setAttribute("aria-label", "Remove this role");
+      x.addEventListener("click", function () { row.remove(); refresh(); });
+      row.appendChild(x);
+      listEl.appendChild(row);
+      attachTitleAutocomplete(input, {
+        intendedUse: "additional",
+        getExcluded: function () {
+          return [normSpace(primaryInput.value)].concat(
+            inputs().filter(function (i) { return i !== input; }).map(function (i) { return normSpace(i.value); })
+          ).filter(Boolean);
+        },
+        onPick: function (title) {
+          if (isDup(title, input)) {
+            input.value = "";
+            showErr("This role has already been added. Please select a different role.");
+          }
+        }
+      });
+      input.addEventListener("change", function () {
+        if (input.value && isDup(input.value, input)) {
+          input.value = "";
+          showErr("This role has already been added. Please select a different role.");
+        }
+      });
+      refresh();
+      if (!value) input.focus();
+      return row;
+    }
+    addBtn.addEventListener("click", function () { addRow(""); });
+    return {
+      getRoles: values,
+      setRoles: function (roles) {
+        listEl.innerHTML = "";
+        (roles || []).slice(0, 4).forEach(function (r) { addRow(r); });
+        refresh();
+      },
+      reset: function () { listEl.innerHTML = ""; refresh(); }
+    };
+  }
+
+  var formRoles = setupRoles("fRolesList", "fAddRole", "fRolesMax", "fRolesErr", document.getElementById("position"));
+  attachTitleAutocomplete(document.getElementById("position"), {
+    intendedUse: "primary",
+    getExcluded: function () { return formRoles.getRoles(); }
+  });
+
+  // ----- Recommend-a-title modal -----
+  var recSource = null, recId = null;
+  function openRecModal(sourceInput, intendedUse, prefill) {
+    recSource = sourceInput;
+    recId = (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : Date.now().toString(16) + "-" + Math.random().toString(16).slice(2) + Math.random().toString(16).slice(2);
+    document.getElementById("recName").value = normSpace(prefill || "");
+    document.getElementById("recWhy").value = "";
+    var radios = document.getElementsByName("recUse");
+    Array.prototype.forEach.call(radios, function (r) { r.checked = r.value === intendedUse; });
+    document.getElementById("recWarn").hidden = true;
+    document.getElementById("recOk").hidden = true;
+    document.getElementById("recErr").hidden = true;
+    document.getElementById("recSubmit").disabled = false;
+    document.getElementById("recSubmit").hidden = false;
+    document.getElementById("recSubmit").textContent = "Submit recommendation";
+    recWarnAccepted = false;
+    document.getElementById("recmodal").hidden = false;
+    document.getElementById("recName").focus();
+  }
+  document.getElementById("recName").addEventListener("input", function () {
+    recWarnAccepted = false;
+    document.getElementById("recWarn").hidden = true;
+    var sb = document.getElementById("recSubmit");
+    if (!sb.hidden && !sb.disabled) sb.textContent = "Submit recommendation";
+  });
+  function closeRecModal() { document.getElementById("recmodal").hidden = true; }
+  document.getElementById("recClose").addEventListener("click", closeRecModal);
+  document.getElementById("recCancel").addEventListener("click", closeRecModal);
+  document.getElementById("recmodal").addEventListener("click", function (ev) {
+    if (ev.target === document.getElementById("recmodal")) closeRecModal();
+  });
+
+  function nearestTitle(norm) {
+    var nl = norm.toLowerCase();
+    var exact = TITLES.filter(function (x) { return x.tl === nl; })[0];
+    if (exact) return { kind: "exact", title: exact.t };
+    var contains = TITLES.filter(function (x) {
+      return x.tl.indexOf(nl) >= 0 || nl.indexOf(x.tl) >= 0;
+    })[0];
+    if (contains) return { kind: "near", title: contains.t };
+    var words = nl.split(" ").filter(function (w) { return w.length > 2; });
+    var best = null, bestShared = 1;
+    TITLES.forEach(function (x) {
+      var tw = x.tl.split(" ");
+      var shared = words.filter(function (w) { return tw.indexOf(w) >= 0; }).length;
+      if (shared > bestShared) { bestShared = shared; best = x.t; }
+    });
+    if (best) return { kind: "near", title: best };
+    return null;
+  }
+
+  var recWarnAccepted = false;
+  document.getElementById("recSubmit").addEventListener("click", function () {
+    var btn = this;
+    var errEl = document.getElementById("recErr");
+    var warnEl = document.getElementById("recWarn");
+    errEl.hidden = true;
+    var norm = titleCase(document.getElementById("recName").value);
+    if (!norm) {
+      errEl.textContent = "Please enter the title you want to recommend.";
+      errEl.hidden = false;
+      return;
+    }
+    document.getElementById("recName").value = norm;
+    var match = nearestTitle(norm);
+    if (match && match.kind === "exact") {
+      errEl.textContent = '"' + match.title + '" already exists in the library — just select it from the list.';
+      errEl.hidden = false;
+      if (recSource) {
+        recSource.value = match.title;
+        recSource.dispatchEvent(new Event("change"));
+      }
+      return;
+    }
+    if (match && match.kind === "near" && !recWarnAccepted) {
+      warnEl.innerHTML = "";
+      warnEl.appendChild(document.createTextNode(
+        'This looks close to the approved title "' + match.title + '". Submit anyway, or use the approved one?'));
+      var useBtn = el("button", "ghost", 'Use "' + match.title + '"');
+      useBtn.type = "button";
+      useBtn.style.marginTop = "8px";
+      useBtn.addEventListener("click", function () {
+        if (recSource) {
+          recSource.value = match.title;
+          recSource.dispatchEvent(new Event("change"));
+        }
+        closeRecModal();
+      });
+      var btnWrap = el("div");
+      btnWrap.appendChild(useBtn);
+      warnEl.appendChild(btnWrap);
+      warnEl.hidden = false;
+      recWarnAccepted = true;
+      btn.textContent = "Submit anyway";
+      return;
+    }
+    recWarnAccepted = false;
+    btn.disabled = true;
+    btn.textContent = "Sending…";
+    var use = "primary";
+    Array.prototype.forEach.call(document.getElementsByName("recUse"), function (r) { if (r.checked) use = r.value; });
+    fetch("/api/recommend-title", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        id: recId,
+        title: norm,
+        intended_use: use,
+        explanation: document.getElementById("recWhy").value
+      })
+    })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (res.ok && res.j.ok) {
+          var okEl = document.getElementById("recOk");
+          if (res.j.emailed) {
+            okEl.textContent = "Your job-title recommendation has been sent to Sean for review. You may use the title on your profile while it is being reviewed.";
+            btn.hidden = true;
+          } else {
+            okEl.textContent = "Your recommendation is saved for Sean's review (the notification email couldn't be delivered yet). You may use the title on your profile while it is being reviewed.";
+            btn.disabled = false;
+            btn.textContent = "Retry email";
+          }
+          okEl.hidden = false;
+          if (recSource) {
+            recSource.value = norm;
+            recSource.dispatchEvent(new Event("change"));
+          }
+        } else {
+          errEl.textContent = res.j.error || "Couldn't submit — try again.";
+          errEl.hidden = false;
+          btn.disabled = false;
+          btn.textContent = "Submit recommendation";
+        }
+      })
+      .catch(function () {
+        errEl.textContent = "Network error — try again.";
+        errEl.hidden = false;
+        btn.disabled = false;
+        btn.textContent = "Submit recommendation";
+      });
+  });
+
+  // ----- Roles view modal (from the +N roles chip on cards) -----
+  function openRolesModal(b) {
+    document.getElementById("rTitle").textContent = b.name + " — Roles";
+    document.getElementById("rvPrimary").textContent = b.position;
+    var wrapEl = document.getElementById("rvAddWrap");
+    var ul = document.getElementById("rvRoles");
+    ul.innerHTML = "";
+    if (b.roles && b.roles.length) {
+      b.roles.forEach(function (r) { ul.appendChild(el("li", null, r)); });
+      wrapEl.hidden = false;
+    } else {
+      wrapEl.hidden = true;
+    }
+    document.getElementById("rmodal").hidden = false;
+  }
+  document.getElementById("rClose").addEventListener("click", function () {
+    document.getElementById("rmodal").hidden = true;
+  });
+  document.getElementById("rmodal").addEventListener("click", function (ev) {
+    if (ev.target === document.getElementById("rmodal")) document.getElementById("rmodal").hidden = true;
+  });
+
+  // ----- Wall search: name + primary title rank above additional-role matches -----
+  var wallQuery = "";
+  function applySearch(list) {
+    var q = normSpace(wallQuery).toLowerCase();
+    if (!q) return list.map(function (b) { b.__rank = 0; return b; });
+    return list.filter(function (b) {
+      var primary = (b.name + " " + b.position).toLowerCase().indexOf(q) >= 0;
+      var viaRole = (b.roles || []).some(function (r) { return r.toLowerCase().indexOf(q) >= 0; });
+      b.__rank = primary ? 0 : 1;
+      return primary || viaRole;
+    });
+  }
+  function renderWall() { render(applySearch(allBirthdays.slice())); }
+  document.getElementById("wallSearch").addEventListener("input", function () {
+    wallQuery = this.value;
+    renderWall();
   });
 
   // The submission form lives in a popup now.
@@ -1365,7 +1926,8 @@ export const PAGE = `<!doctype html>
       instagram: document.getElementById("fIg").value,
       linkedin: document.getElementById("fLi").value,
       x: document.getElementById("fX").value,
-      avatar: formAvatarData
+      avatar: formAvatarData,
+      additional_roles: formRoles.getRoles()
     };
     if (!payload.name) return;
     var dupes = allBirthdays.filter(function (b) {

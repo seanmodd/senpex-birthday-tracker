@@ -80,6 +80,17 @@ export const CHANGELOG_PAGE = `<!doctype html>
 <main>
   <section class="day">
     <h2>July 10, 2026</h2>
+    <p class="d-sub">Job titles &amp; additional roles · added 3:04 PM PST</p>
+    <ul>
+      <li><b>Primary Job Title</b> <span>— the form's position field is now a searchable autocomplete over an approved library of 267 titles across 12 departments, with the primary title displayed prominently on every card.</span></li>
+      <li><b>Additional Roles</b> <span>— add up to four optional extra roles, each removable; cards show a "+N additional roles" chip that opens the full Roles view. No duplicates, and the primary title can't repeat as a role.</span></li>
+      <li><b>Search the wall</b> <span>— a search box finds people by name, primary title, or any additional role (primary matches rank first).</span></li>
+      <li><b>Recommend a title</b> <span>— can't find the right title? Recommend one from any title field: it checks for near-duplicates, saves for Sean's review, emails him, and you can use the pending title right away.</span></li>
+      <li><b>Streamlined title hierarchy</b> <span>— dispatch and delivery operations use clean Specialist → Manager → Director families (say hello to "Dispatch Fleet Specialist").</span></li>
+    </ul>
+  </section>
+  <section class="day">
+    <h2>July 10, 2026</h2>
     <p class="d-sub">Mobile polish — a full design review on phones · added 2:19 PM PST</p>
     <ul>
       <li><b>Comfortable to tap</b> <span>— every button, link, icon, and slider across all three pages now meets the 44px touch-target standard: card actions, social icons, nav pills, popup close buttons, the Copy button, footer links.</span></li>

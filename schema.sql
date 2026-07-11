@@ -20,7 +20,23 @@ CREATE TABLE IF NOT EXISTS birthdays (
   join_month INTEGER,
   join_day INTEGER,
   join_year INTEGER,
+  additional_roles TEXT, -- JSON array of 0-4 additional role titles
   UNIQUE (name_key, company)
+);
+
+CREATE TABLE IF NOT EXISTS title_recommendations (
+  id TEXT PRIMARY KEY,             -- client-generated UUID (idempotency key)
+  title TEXT NOT NULL,
+  intended_use TEXT NOT NULL,      -- 'primary' | 'additional'
+  explanation TEXT,
+  employee_id INTEGER,
+  employee_name TEXT,
+  employee_email TEXT,
+  current_primary TEXT,
+  current_roles TEXT,
+  submitted_at TEXT NOT NULL DEFAULT (datetime('now')),
+  review_status TEXT NOT NULL DEFAULT 'Pending',   -- Pending | Approved | Rejected | Needs Revision
+  email_status TEXT NOT NULL DEFAULT 'Pending'     -- Pending | Sent | Failed
 );
 
 -- Same name = same person regardless of company value; upserts key on this.

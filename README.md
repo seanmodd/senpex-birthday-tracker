@@ -10,7 +10,9 @@ sync, a live visitor tracker with an interactive globe, and a changelog.
 A banner celebrates whoever's birthday is *today*; the next 30 days sit under
 **Upcoming**, everyone else under **Later**. Cards carry photos (or initials),
 zodiac signs with personality popovers, location flags, join dates, social
-links, and one-click yearly-recurring Google Calendar events. Owners get
+links, and one-click yearly-recurring Google Calendar events. Everyone has a
+primary job title (from a searchable approved library) plus up to four
+additional roles, and the wall is searchable by name or any role. Owners get
 Edit/Delete; everyone else sees a "This is me" claim button until they own a
 card.
 
@@ -90,6 +92,8 @@ birthday-tracker/
 | [`api/birthdays.js`](src/api/birthdays.js) | The wall's whole lifecycle: list (with per-requester `mine` flags), validated submit with upsert-by-name, edit/delete guarded by `ownsEntry` (token → cookie → unique network → named visits, plus the explicit "This is me" claim), and avatar serving from D1. |
 | [`api/visits.js`](src/api/visits.js) | Visit logging (`ctx.waitUntil`, geo from `request.cf`), the tracker's aggregate feed (`/api/visits` with time-range filtering, city/country breakdowns, per-visitor globe points), and per-person history (`/api/person-visits`). |
 | [`api/calendar.js`](src/api/calendar.js) | The auto-updating ICS feed (`/calendar.ics`): one yearly-recurring all-day `VEVENT` per person, Feb 29 anchored to a leap year. |
+| [`api/titles.js`](src/api/titles.js) / [`lib/titles.js`](src/lib/titles.js) | The approved job-title library (267 titles, 12 departments, streamlined Specialist → Manager → Director hierarchy) serving the form's autocomplete. |
+| [`api/recommendations.js`](src/api/recommendations.js) | Title recommendations: stored first (idempotent), then emailed to the reviewer; email failures are tracked and retryable. |
 
 **`src/auth/` — identity & verification**
 
