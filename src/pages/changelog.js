@@ -79,7 +79,7 @@ export const CHANGELOG_PAGE = `<!doctype html>
 </header>
 <main>
   <section class="day">
-    <h2>July 10, 2026</h2>
+    <h2>July 11, 2026</h2>
     <p class="d-sub">Job titles &amp; additional roles · added 3:04 PM PST</p>
     <ul>
       <li><b>Primary Job Title</b> <span>— the form's position field is now a searchable autocomplete over an approved library of 267 titles across 12 departments, with the primary title displayed prominently on every card.</span></li>
