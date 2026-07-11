@@ -1,5 +1,18 @@
 # HANDOFF — Senpex / Pckup Team Birthday Tracker
 
+> **ADDENDUM 3 (2026-07-11, ~5:00 PM PT):** changelog presentation refined
+> per Sean: ONE section per unique date (same-day releases consolidate under
+> a single date heading, each keeping its time-stamped sub-line — the
+> renderer groups the `DAYS` batches by date), and every reference pill now
+> shows the 7-character commit code it links to instead of a "GitHub"
+> label. The former self-referential entry now links to its real commit
+> (`ad9aaed`). Standing pattern for future ships: the feature commit adds
+> the changelog bullet with a `/commits/main` placeholder, and an immediate
+> follow-up commit records the real hash BEFORE deploying — so the live
+> page always shows true per-commit links. Wording corrections required for
+> accuracy: header + "Daily changelog" bullet now say "up to five entries
+> per release" (the per-day phrasing became wrong once days consolidate).
+>
 > **ADDENDUM 2 (2026-07-11, ~4:45 PM PT):** the changelog is now
 > data-driven and every bullet links to the GitHub commit that shipped it
 > (`src/pages/changelog.js`: a `DAYS` array of `{t, d, c, also?, label?}`

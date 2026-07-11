@@ -41,10 +41,11 @@ blue.
 
 ## The changelog
 
-Everything shipped, up to five entries per day, at
+Everything shipped, one section per day with up to five entries per release, at
 [`/changelog`](https://senpex-birthday-tracker.seansmodd.workers.dev/changelog).
-Every bullet links to the verified GitHub commit that shipped it (June's
-launch-week work links to the initial import, which pre-dates the repo).
+Every bullet carries a pill showing the 7-character code of the verified GitHub
+commit that shipped it, linking straight to that commit (June's launch-week
+work links to the initial import, which pre-dates the repo).
 
 <img src="docs/screenshots/changelog.png" alt="Changelog" width="600">
 

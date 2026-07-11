@@ -20,6 +20,8 @@ const C = {
   mobile: "edcac2cbce8559bcd0e63b478cf1ce4f61e3f0dc", // mobile UX pass
   titles: "ba549898e3e41774796164927e97e78f98ee33fb", // job titles + roles + recommendations
   mailto: "61886f4267a4e98731ec656b040fef8f699d91f4", // email-composer recommendation flow
+  ghRefs: "ad9aaedf6e6c85450b18d1f7705d2593d2c1f48b", // per-bullet GitHub commit links
+  tidy: REPO_URL + "/commits/main", // consolidation + hash pills; replaced with the real hash right after that commit exists
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
@@ -28,9 +30,17 @@ const C = {
 const DAYS = [
   {
     date: "July 11, 2026",
+    sub: "Changelog tidy-up · added 4:55 PM PST",
+    items: [
+      { t: "One section per day", d: "— same-day releases now consolidate under a single date heading, each release keeping its own time stamp inside it.", c: C.tidy },
+      { t: "Commit codes as links", d: "— every reference pill now shows the actual 7-character commit code it links to, so you can see at a glance which change shipped what.", c: C.tidy },
+    ],
+  },
+  {
+    date: "July 11, 2026",
     sub: "The changelog goes to the source · added 4:39 PM PST",
     items: [
-      { t: "Changelog entries link to GitHub", d: "— every bullet on this page now carries a small GitHub link to the exact commit that shipped it, verified against the repository history. June's launch-week work links to the initial import, since it pre-dates the repo — and this very entry links to the commit history, because a commit can't know its own hash.", c: REPO_URL + "/commits/main", label: "History" },
+      { t: "Changelog entries link to GitHub", d: "— every bullet on this page now carries a small GitHub link to the exact commit that shipped it, verified against the repository history. June's launch-week work links to the initial import, since it pre-dates the repo.", c: C.ghRefs },
     ],
   },
   {
@@ -74,52 +84,52 @@ const DAYS = [
       { t: "Upcoming vs. Later birthdays", d: "— Upcoming now shows only the next 30 days; everyone further out lives under a new Later birthdays section.", c: C.banner },
       { t: "Open source on GitHub", d: "— the tracker's code is public at <a href=\"https://github.com/seanmodd/senpex-birthday-tracker\" style=\"color:var(--brand)\">github.com/seanmodd/senpex-birthday-tracker</a> (linked from the GitHub logo in the site's corner); every change ships as a commit, and all API keys live outside the repo.", c: C.ghCorner },
       { t: "Build transparency", d: "— every page footer now shows the AI model that builds this site, refreshed with each update.", c: C.buildInfo, also: ["footerNote"] },
-      { t: "Daily changelog", d: "— this page logs up to five entries per day.", c: C.policy },
+      { t: "Daily changelog", d: "— this page logs up to five entries per release.", c: C.policy },
     ],
   },
   {
     date: "June 12, 2026",
     sub: "Visitor analytics, editing, and personality features · launch-week batch, pre-dates the daily policy",
     items: [
-      { t: "Sign in with Instagram", d: "— the Instagram logo in the form now opens Instagram's login popup and fills in your verified username (business/creator accounts; personal accounts type their handle).", c: C.initial, label: "Initial import" },
-      { t: "Sign in with X", d: "— click the X logo in the form, authorize in the popup, and your verified @handle fills itself in. Platform logos now show on every social field.", c: C.initial, label: "Initial import" },
-      { t: "Join date simplified", d: "— month + year you joined (both required); the day is gone. Cards show \"🗓 Joined Mar 2023\".", c: C.initial, label: "Initial import" },
-      { t: "Official API verification", d: "— X handles are verified through the X API and Instagram business/creator accounts through Meta's API (once keys are configured); everything else keeps the public checks.", c: C.initial, label: "Initial import" },
-      { t: "Fool-proof social links", d: "— handles, @handles, or any URL variant all get cleaned into the official profile link; impossible handles are rejected with specific errors, and Instagram/X handles are checked for existence where the platforms allow. Card icons always open the real profile.", c: C.initial, label: "Initial import" },
-      { t: "Globe play/pause", d: "— a ⏸/▶ button next to the spin controls; it tracks the real state (drops to ▶ if the speed hits zero, and throwing the globe un-pauses it).", c: C.initial, label: "Initial import" },
-      { t: "Photo, socials &amp; join date now required", d: "— the form collects your photo, Instagram, LinkedIn, X, and the month + day you joined the team (year optional). Cards show \"🗓 Joined\".", c: C.initial, label: "Initial import" },
-      { t: "Photos &amp; socials", d: "— add your face to your card (✏️ Edit → upload a photo) plus Instagram, LinkedIn, and X links shown as icons. No photo? You get smart initials.", c: C.initial, label: "Initial import" },
-      { t: "New font", d: "— the whole site now wears TASA Orbiter.", c: C.initial, label: "Initial import" },
-      { t: "Blue highlight on the globe", d: "— click a city or country in the breakdowns and its dot turns bright pulsing blue while the globe flies to it.", c: C.initial, label: "Initial import" },
-      { t: "Reset spin", d: "— one button puts the globe's speed, glide, and direction back to defaults (replaces the direction toggle — flicking sets direction now).", c: C.initial, label: "Initial import" },
-      { t: "One person, one card", d: "— once you own a card, the \"This is me\" button disappears from everyone else's (you don't have two birthdays).", c: C.initial, label: "Initial import" },
-      { t: "Flick handoff", d: "— throw the globe and the spin-speed slider updates to match your throw; the globe keeps spinning at that speed.", c: C.initial, label: "Initial import" },
-      { t: "Edit &amp; delete for everyone", d: "— every card now has Edit and Delete for its owner, and a \"This is me\" claim button so you're never locked out of your own entry, on any device.", c: C.initial, label: "Initial import" },
-      { t: "Globe spin controls", d: "— sliders for spin speed and glide plus a direction toggle on the visitor tracker, and you can now flick the globe and watch it coast.", c: C.initial, label: "Initial import" },
-      { t: "Birthday cakes", d: "— click anyone's card on the wall and a 🎂 floats up. No practical purpose. No regrets.", c: C.initial, label: "Initial import" },
-      { t: "Changelog page", d: "— this page, linked from the top of the birthday wall.", c: C.initial, label: "Initial import" },
-      { t: "Click a city or country to fly there", d: "— the Cities/Countries breakdowns on the visitor tracker now swing the globe to that spot when clicked.", c: C.initial, label: "Initial import" },
-      { t: "Sign × role fit notes", d: "— the horoscope popover now includes how each sign's commonly attributed strengths map onto that person's actual job title.", c: C.initial, label: "Initial import" },
-      { t: "City &amp; country breakdowns", d: "— hover the Cities or Countries stat for a full list with flags and visit counts.", c: C.initial, label: "Initial import" },
-      { t: "Real country flags", d: "— flag images (not emoji) next to every visitor in the feed, globe tooltips, and history popups.", c: C.initial, label: "Initial import" },
-      { t: "Location on birthday cards", d: "— each card shows the person's city, country, and flag.", c: C.initial, label: "Initial import" },
-      { t: "Owner-only editing", d: "— an \"Edit my card\" button appears on your own entry; ownership is recognized by edit token, submission cookie, or your network. Nobody can edit anyone else's card.", c: C.initial, label: "Initial import" },
-      { t: "Zodiac signs &amp; personality popovers", d: "— every card shows the person's sign; hover it for traits and dates.", c: C.initial, label: "Initial import" },
-      { t: "\"Is this you?\" duplicate guard", d: "— submitting a birthday someone already has asks whether it's you before creating a double, with an option to fix your name.", c: C.initial, label: "Initial import" },
-      { t: "Globe interactivity", d: "— hover any dot to see who it is; click for that person's full visit history. One dot per visitor.", c: C.initial, label: "Initial import" },
-      { t: "Time-range filter", d: "— view visitor stats for the last hour, day, week, month, or all time.", c: C.initial, label: "Initial import" },
-      { t: "Reliability fixes", d: "— duplicate entries resolved (your name is your identity), pages always load the latest version, calendar links verified as all-day yearly recurring events.", c: C.initial, label: "Initial import" },
+      { t: "Sign in with Instagram", d: "— the Instagram logo in the form now opens Instagram's login popup and fills in your verified username (business/creator accounts; personal accounts type their handle).", c: C.initial },
+      { t: "Sign in with X", d: "— click the X logo in the form, authorize in the popup, and your verified @handle fills itself in. Platform logos now show on every social field.", c: C.initial },
+      { t: "Join date simplified", d: "— month + year you joined (both required); the day is gone. Cards show \"🗓 Joined Mar 2023\".", c: C.initial },
+      { t: "Official API verification", d: "— X handles are verified through the X API and Instagram business/creator accounts through Meta's API (once keys are configured); everything else keeps the public checks.", c: C.initial },
+      { t: "Fool-proof social links", d: "— handles, @handles, or any URL variant all get cleaned into the official profile link; impossible handles are rejected with specific errors, and Instagram/X handles are checked for existence where the platforms allow. Card icons always open the real profile.", c: C.initial },
+      { t: "Globe play/pause", d: "— a ⏸/▶ button next to the spin controls; it tracks the real state (drops to ▶ if the speed hits zero, and throwing the globe un-pauses it).", c: C.initial },
+      { t: "Photo, socials &amp; join date now required", d: "— the form collects your photo, Instagram, LinkedIn, X, and the month + day you joined the team (year optional). Cards show \"🗓 Joined\".", c: C.initial },
+      { t: "Photos &amp; socials", d: "— add your face to your card (✏️ Edit → upload a photo) plus Instagram, LinkedIn, and X links shown as icons. No photo? You get smart initials.", c: C.initial },
+      { t: "New font", d: "— the whole site now wears TASA Orbiter.", c: C.initial },
+      { t: "Blue highlight on the globe", d: "— click a city or country in the breakdowns and its dot turns bright pulsing blue while the globe flies to it.", c: C.initial },
+      { t: "Reset spin", d: "— one button puts the globe's speed, glide, and direction back to defaults (replaces the direction toggle — flicking sets direction now).", c: C.initial },
+      { t: "One person, one card", d: "— once you own a card, the \"This is me\" button disappears from everyone else's (you don't have two birthdays).", c: C.initial },
+      { t: "Flick handoff", d: "— throw the globe and the spin-speed slider updates to match your throw; the globe keeps spinning at that speed.", c: C.initial },
+      { t: "Edit &amp; delete for everyone", d: "— every card now has Edit and Delete for its owner, and a \"This is me\" claim button so you're never locked out of your own entry, on any device.", c: C.initial },
+      { t: "Globe spin controls", d: "— sliders for spin speed and glide plus a direction toggle on the visitor tracker, and you can now flick the globe and watch it coast.", c: C.initial },
+      { t: "Birthday cakes", d: "— click anyone's card on the wall and a 🎂 floats up. No practical purpose. No regrets.", c: C.initial },
+      { t: "Changelog page", d: "— this page, linked from the top of the birthday wall.", c: C.initial },
+      { t: "Click a city or country to fly there", d: "— the Cities/Countries breakdowns on the visitor tracker now swing the globe to that spot when clicked.", c: C.initial },
+      { t: "Sign × role fit notes", d: "— the horoscope popover now includes how each sign's commonly attributed strengths map onto that person's actual job title.", c: C.initial },
+      { t: "City &amp; country breakdowns", d: "— hover the Cities or Countries stat for a full list with flags and visit counts.", c: C.initial },
+      { t: "Real country flags", d: "— flag images (not emoji) next to every visitor in the feed, globe tooltips, and history popups.", c: C.initial },
+      { t: "Location on birthday cards", d: "— each card shows the person's city, country, and flag.", c: C.initial },
+      { t: "Owner-only editing", d: "— an \"Edit my card\" button appears on your own entry; ownership is recognized by edit token, submission cookie, or your network. Nobody can edit anyone else's card.", c: C.initial },
+      { t: "Zodiac signs &amp; personality popovers", d: "— every card shows the person's sign; hover it for traits and dates.", c: C.initial },
+      { t: "\"Is this you?\" duplicate guard", d: "— submitting a birthday someone already has asks whether it's you before creating a double, with an option to fix your name.", c: C.initial },
+      { t: "Globe interactivity", d: "— hover any dot to see who it is; click for that person's full visit history. One dot per visitor.", c: C.initial },
+      { t: "Time-range filter", d: "— view visitor stats for the last hour, day, week, month, or all time.", c: C.initial },
+      { t: "Reliability fixes", d: "— duplicate entries resolved (your name is your identity), pages always load the latest version, calendar links verified as all-day yearly recurring events.", c: C.initial },
     ],
   },
   {
     date: "June 11, 2026",
     sub: "Launch day",
     items: [
-      { t: "Birthday tracker launched", d: "— submission form and a shared wall sorted by who's up next, live at this address.", c: C.initial, label: "Initial import" },
-      { t: "Google Calendar integration", d: "— subscribe once to the auto-updating feed (every birthday repeats yearly), or add any single person with one click.", c: C.initial, label: "Initial import" },
-      { t: "Visitor tracker", d: "— live feed of every site visit with exact time, IP address, and city, plus a hand-built rotating globe and stat cards.", c: C.initial, label: "Initial import" },
-      { t: "Visitor names", d: "— once someone adds themselves to the wall, their visits show their name; everyone else appears as an unknown visitor.", c: C.initial, label: "Initial import" },
-      { t: "Senpex / Pckup branding", d: "— official Pckup wordmark and favicon, IBM Plex Sans, brand red-orange (#FF5C33), solid dark hero, one company identity.", c: C.initial, label: "Initial import" },
+      { t: "Birthday tracker launched", d: "— submission form and a shared wall sorted by who's up next, live at this address.", c: C.initial },
+      { t: "Google Calendar integration", d: "— subscribe once to the auto-updating feed (every birthday repeats yearly), or add any single person with one click.", c: C.initial },
+      { t: "Visitor tracker", d: "— live feed of every site visit with exact time, IP address, and city, plus a hand-built rotating globe and stat cards.", c: C.initial },
+      { t: "Visitor names", d: "— once someone adds themselves to the wall, their visits show their name; everyone else appears as an unknown visitor.", c: C.initial },
+      { t: "Senpex / Pckup branding", d: "— official Pckup wordmark and favicon, IBM Plex Sans, brand red-orange (#FF5C33), solid dark hero, one company identity.", c: C.initial },
     ],
   },
 ];
@@ -134,31 +144,48 @@ function plainTitle(t) {
   return t.replace(/&amp;/g, "and").replace(/[\"\""]/g, "");
 }
 
+// Each pill shows the 7-character code of the commit it links to. The rare
+// non-commit reference (a /commits/main placeholder that exists only until
+// the follow-up commit records the real hash) is labeled "history".
 function refLinks(item) {
-  const url = item.c.indexOf("http") === 0 ? item.c : REPO_URL + "/commit/" + item.c;
-  const label = item.label || "GitHub";
+  const isUrl = item.c.indexOf("http") === 0;
+  const url = isUrl ? item.c : REPO_URL + "/commit/" + item.c;
+  const label = isUrl ? "history" : item.c.slice(0, 7);
+  const verb = item.c === C.initial
+    ? "View the initial GitHub import for: "
+    : "View the GitHub commit for: ";
   let html =
     ' <a class="gh-ref" href="' + url + '" target="_blank" rel="noopener noreferrer"' +
-    ' aria-label="' + escAttr("View the GitHub change for: " + plainTitle(item.t)) + '">' + label + "</a>";
+    ' aria-label="' + escAttr(verb + plainTitle(item.t)) + '">' + label + "</a>";
   (item.also || []).forEach(function (key) {
     const hash = C[key];
     html +=
       ' <a class="gh-ref" href="' + REPO_URL + "/commit/" + hash + '" target="_blank" rel="noopener noreferrer"' +
-      ' aria-label="' + escAttr("Related GitHub change for: " + plainTitle(item.t)) + '">+ ' + hash.slice(0, 7) + "</a>";
+      ' aria-label="' + escAttr("Related GitHub commit for: " + plainTitle(item.t)) + '">' + hash.slice(0, 7) + "</a>";
   });
   return html;
 }
 
+// One section per unique date: same-day releases render inside a single
+// dated section, each keeping its own time-stamped sub-line.
 function renderDays() {
-  return DAYS.map(function (day) {
-    const lis = day.items.map(function (item) {
-      return "      <li><b>" + item.t + "</b> <span>" + item.d + "</span>" + refLinks(item) + "</li>";
+  const grouped = [];
+  DAYS.forEach(function (batch) {
+    const g = grouped.find(function (x) { return x.date === batch.date; });
+    if (g) g.batches.push(batch);
+    else grouped.push({ date: batch.date, batches: [batch] });
+  });
+  return grouped.map(function (day) {
+    const inner = day.batches.map(function (batch) {
+      const lis = batch.items.map(function (item) {
+        return "      <li><b>" + item.t + "</b> <span>" + item.d + "</span>" + refLinks(item) + "</li>";
+      }).join("\n");
+      return '    <p class="d-sub">' + batch.sub + "</p>\n    <ul>\n" + lis + "\n    </ul>";
     }).join("\n");
     return (
       '  <section class="day">\n' +
       "    <h2>" + day.date + "</h2>\n" +
-      '    <p class="d-sub">' + day.sub + "</p>\n" +
-      "    <ul>\n" + lis + "\n    </ul>\n" +
+      inner + "\n" +
       "  </section>"
     );
   }).join("\n");
@@ -213,6 +240,7 @@ export const CHANGELOG_PAGE = `<!doctype html>
   .day { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 18px; }
   .day h2 { margin: 0 -24px 4px; padding: 8px 24px 6px; font-size: 18px; font-weight: 700; color: var(--brand); position: sticky; top: 0; z-index: 1; background: var(--panel); }
   .day .d-sub { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+  .day ul + .d-sub { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
   .day ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 9px; }
   .day li { font-size: 14px; line-height: 1.5; }
   .day li b { color: var(--text); }
@@ -243,7 +271,7 @@ export const CHANGELOG_PAGE = `<!doctype html>
 <header class="top">
   <div>
     <h1>📋 Changelog</h1>
-    <p>Everything shipped to the Senpex / Pckup birthday tracker, newest first — up to five entries per day. Times are PST.</p>
+    <p>Everything shipped to the Senpex / Pckup birthday tracker, newest first — one section per day, up to five entries per release. Times are PST.</p>
   </div>
   <div class="links">
     <a class="back" href="/">← Birthday tracker</a>
