@@ -1,5 +1,24 @@
 # HANDOFF — Senpex / Pckup Team Birthday Tracker
 
+> **ADDENDUM 2 (2026-07-11, ~4:45 PM PT):** the changelog is now
+> data-driven and every bullet links to the GitHub commit that shipped it
+> (`src/pages/changelog.js`: a `DAYS` array of `{t, d, c, also?, label?}`
+> items rendered by `renderDays()`; hashes live once in the `C` map).
+> Reconciliation method: all 53 pre-existing bullets were mapped by
+> verifying actual commit DIFFS (not messages) with a 5-agent adversarial
+> pass — all 53 verified, none unmappable. June 11–12 work pre-dates the
+> repo, so those 33 bullets link to the initial import `3b1968b` with the
+> visible label "Initial import". Multi-commit bullets carry a "+shorthash"
+> related link: form-popup (+`e3d1cb8` deep link), build transparency
+> (+`fb04ea5`), recommend-a-title (+`61886f4`). The new self-referential
+> entry links to `/commits/main` because a commit cannot contain its own
+> hash — the one documented exception. Wording of all historical bullets
+> is byte-identical to before (verified programmatically). Files:
+> changelog.js, README.md, this file. Shipped as
+> "feat: link changelog entries to GitHub changes" immediately after this
+> addendum was written; exact hash/version ID in that commit's session
+> report (self-hash limitation), deployed to the same production Worker.
+>
 > **ADDENDUM (2026-07-11, ~4:30 PM PT, later the same day):** the
 > recommendation-email pipeline this document describes was REPLACED by a
 > pure client-side `mailto:` flow — the employee sends the email themselves

@@ -43,6 +43,8 @@ blue.
 
 Everything shipped, up to five entries per day, at
 [`/changelog`](https://senpex-birthday-tracker.seansmodd.workers.dev/changelog).
+Every bullet links to the verified GitHub commit that shipped it (June's
+launch-week work links to the initial import, which pre-dates the repo).
 
 <img src="docs/screenshots/changelog.png" alt="Changelog" width="600">
 
@@ -108,7 +110,7 @@ birthday-tracker/
 |------|--------------|
 | [`pages/home.js`](src/pages/home.js) | The birthday wall: today-banner, Upcoming/Later sections, cards (avatars, zodiac popovers, flags, socials, calendar links), the popup form with photo pipeline and sign-in buttons, edit/claim modals, cake clicks. |
 | [`pages/visitors.js`](src/pages/visitors.js) | The tracker: hand-rolled canvas globe (orthographic projection, flick physics, play/pause), live feed, stats with hover breakdowns, fly-to + blue highlight. |
-| [`pages/changelog.js`](src/pages/changelog.js) | The changelog — one dated entry per day, times in PST. |
+| [`pages/changelog.js`](src/pages/changelog.js) | The changelog — one dated entry per day, times in PST. Data-driven: each bullet is an object carrying its text plus the verified GitHub commit hash(es) that shipped it, rendered into per-bullet commit links. |
 
 **`src/proxies/` & `src/assets/`**
 
