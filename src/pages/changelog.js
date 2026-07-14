@@ -31,12 +31,20 @@ const C = {
   globe2: "1d4d7a00cb3d188cfdd710d2f1240de0301edee6", // interactive globe, horoscope reorder, popup socials section
   openEdit: "f6658d1b7bb7b8aa9b6b5665e545fc85cae4f246", // edit on every card + socials under-construction notice
   globefix: "cf0acfef59b33d3d946542579260e4d31abcc1e3", // local-time fallback, HQ tz note, scrollable dialogs
+  socialsCopy: "c39c6f7f59d64f6019b7035153cd83a7c0d94460", // socials notice: add LinkedIn, "sign-in API isn't live yet"
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 13, 2026",
+    sub: "Clearer socials heads-up · added 11:37 PM PST",
+    items: [
+      { t: "Socials notice now covers all three", d: "— the under-construction message in the add and edit forms now names Instagram, LinkedIn, and X, and clarifies it's the official sign-in <i>API</i> that isn't live yet — meanwhile, just type your handle or paste your profile URL.", c: C.socialsCopy },
+    ],
+  },
   {
     date: "July 13, 2026",
     sub: "Globe &amp; popup polish · added 11:32 PM PST",
