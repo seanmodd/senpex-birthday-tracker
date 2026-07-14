@@ -265,7 +265,11 @@ export const PAGE = `<!doctype html>
   }
   .tg-side { flex: 1 1 280px; min-width: 250px; }
   .tg-title { margin: 0 0 4px; font-size: 17px; }
-  .tg-sub { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+  .tg-sub { margin: 0 0 6px; color: var(--muted); font-size: 13px; }
+  .tg-hq {
+    margin: 0 0 10px; font-size: 12px; line-height: 1.45; color: var(--brand-deep);
+    background: var(--tint); border: 1px solid #ffc9b3; border-radius: 8px; padding: 6px 10px;
+  }
   .tg-row {
     display: flex; align-items: baseline; gap: 8px; padding: 7px 0;
     border-top: 1px dashed var(--line); font-size: 13.5px; flex-wrap: wrap;
@@ -483,6 +487,7 @@ export const PAGE = `<!doctype html>
     background: var(--card); border: 1px solid var(--line); border-radius: 14px;
     padding: 22px; max-width: 480px; width: 100%; position: relative;
     box-shadow: 0 18px 50px rgba(26, 23, 20, 0.35);
+    max-height: 88vh; overflow-y: auto;
   }
   .dialog h3 { margin: 0 0 8px; font-size: 18px; }
   .dlg-sub { margin: 0 0 14px; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
@@ -542,8 +547,7 @@ export const PAGE = `<!doctype html>
     .soc-ico svg { width: 19px; height: 19px; }
     a.editbtn, a.delbtn { padding: 10px 17px; font-size: 13px; }
     .overlay { padding: 10px; align-items: flex-start; overflow-y: auto; }
-    .dialog { padding: 18px 16px; border-radius: 14px; margin-top: 8px; }
-    .dialog.wide { max-height: none; }
+    .dialog { padding: 18px 16px; border-radius: 14px; margin-top: 8px; max-height: none; overflow-y: visible; }
     #submitBtn { position: sticky; bottom: 10px; width: 100%; margin-top: 14px; box-shadow: 0 -10px 18px rgba(255, 254, 252, 0.95); }
     .subscribe code { font-size: 11.5px; }
   }
@@ -573,6 +577,7 @@ export const PAGE = `<!doctype html>
     <div class="tg-side">
       <h3 class="tg-title">🌍 One team, all around the world</h3>
       <p class="tg-sub">Where everyone is right now — and their local date &amp; time at this very moment.</p>
+      <p class="tg-hq">🏢 Team HQ is on <b>(UTC-08:00) Pacific Time (US &amp; Canada)</b> — compare everyone's local time against that.</p>
       <div id="tgList"></div>
     </div>
   </div>
@@ -2554,6 +2559,18 @@ export const PAGE = `<!doctype html>
             p.gI = k;
             p.gN = groups[key].length;
           });
+        });
+        // Fallback so we always know the time: if a teammate has a location
+        // but no stored IANA timezone yet, approximate one from longitude
+        // (Etc/GMT offset — refreshed to the exact zone next time they edit).
+        team.forEach(function (p) {
+          if (!p.timezone && p.longitude !== null && p.longitude !== undefined) {
+            var off = Math.round(p.longitude / 15);
+            if (off > 14) off = 14;
+            if (off < -12) off = -12;
+            p.timezone = off === 0 ? "Etc/GMT"
+              : "Etc/GMT" + (off > 0 ? "-" : "+") + Math.abs(off);
+          }
         });
         buildTeamList();
       })
