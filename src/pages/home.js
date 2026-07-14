@@ -1035,7 +1035,7 @@ export const PAGE = `<!doctype html>
     if (!country || String(country).length !== 2) return null;
     var img = document.createElement("img");
     img.className = "flag";
-    img.src = "/flag/" + String(country).toLowerCase() + ".png";
+    img.src = "/flag/" + String(country).toLowerCase() + ".png?v=2"; // v=2: crisp 160px source
     img.alt = country;
     img.onerror = function () { img.style.display = "none"; };
     return img;
