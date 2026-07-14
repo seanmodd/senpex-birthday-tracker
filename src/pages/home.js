@@ -683,8 +683,8 @@ export const PAGE = `<!doctype html>
       </div>
       <div class="row sep-top" style="margin-bottom:4px">
         <div class="field" style="flex:1 1 100%">
-          <span class="lbl">Your socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="socTipPop">?</button><span class="tip-pop" role="tooltip" id="socTipPop">The Instagram and X "sign in" buttons aren't connected yet — we're still working on the proper official API integrations. Until that's live, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way.</span></span></span>
-          <p class="soc-note">🌍 Why all three? Our team lives all around the world — sharing your socials helps teammates put a face to the name, cheer you on from afar, and keep our community and culture close across every timezone.<br><br>🚧 <b>Under construction:</b> signing in with Instagram / X isn't live yet while we finish the official API integration — for now, please just type your handle or paste your profile URL.</p>
+          <span class="lbl">Your socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="socTipPop">?</button><span class="tip-pop" role="tooltip" id="socTipPop">The Instagram, LinkedIn, and X "sign in" buttons aren't connected yet — the official sign-in API isn't live yet while we finish the integration. For now, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way.</span></span></span>
+          <p class="soc-note">🌍 Why all three? Our team lives all around the world — sharing your socials helps teammates put a face to the name, cheer you on from afar, and keep our community and culture close across every timezone.<br><br>🚧 <b>Under construction:</b> the Instagram / LinkedIn / X sign-in API isn't live yet while we finish the official integration — for now, please just type your handle or paste your profile URL.</p>
         </div>
       </div>
       <div class="row">
@@ -841,8 +841,8 @@ export const PAGE = `<!doctype html>
       </div>
     </div>
     <div class="sep-top">
-      <span class="lbl">Socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="eSocTipPop">?</button><span class="tip-pop" role="tooltip" id="eSocTipPop">The Instagram and X "sign in" buttons aren't connected yet — we're still working on the proper official API integrations. Until that's live, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way.</span></span></span>
-      <p class="soc-note" style="margin:6px 0 0">🚧 <b>Under construction:</b> Instagram / X sign-in isn't live yet — just type your handle or paste your profile URL.</p>
+      <span class="lbl">Socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="eSocTipPop">?</button><span class="tip-pop" role="tooltip" id="eSocTipPop">The Instagram, LinkedIn, and X "sign in" buttons aren't connected yet — the official sign-in API isn't live yet while we finish the integration. For now, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way.</span></span></span>
+      <p class="soc-note" style="margin:6px 0 0">🚧 <b>Under construction:</b> Instagram / LinkedIn / X sign-in API isn't live yet — just type your handle or paste your profile URL.</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
       <div style="flex:1 1 130px">
