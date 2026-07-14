@@ -37,12 +37,22 @@ const C = {
   legalPrefill: "d5cda91c788f170b2e930c0dcc6a5f036ff5124c", // legal names always prefill on edit; year stays token-gated
   sharpFlags: "19fddcb26d988629716a4c389da4a595bd3ac019", // 160px flag sources, cache-busted
   lightbox: "2dc02dad1c5b43214918f98da709741f0cf37774", // photo lightbox, 512px avatars, socials notice, 0.5s globe resume
+  polish3: "93756676f7344418a5bfda09569ff1286272b073", // proportional flags, hover-to-fly globe, 768px photos
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 14, 2026",
+    sub: "Beautiful flags, a livelier globe, crisper photos · added 12:32 AM PST",
+    items: [
+      { t: "Flags in true proportions", d: "— every flag now shares one uniform height with its country's real width and aspect ratio (a square-ish Japan next to a wide USA), so the hero row, roster, and cards all look tidy and correct.", c: C.polish3 },
+      { t: "Hover a teammate, fly to them", d: "— hovering anyone in the \"One team, all around the world\" list now spins the globe straight to their location and lights up their dot in blue, so you can place them at a glance.", c: C.polish3 },
+      { t: "Sharper profile photos", d: "— new photo uploads are now stored at 768px (up from 192px), so they look crisp in the click-to-enlarge lightbox. Re-upload your photo from Edit to sharpen an older one.", c: C.polish3 },
+    ],
+  },
   {
     date: "July 14, 2026",
     sub: "See your teammates properly · added 12:17 AM PST",
