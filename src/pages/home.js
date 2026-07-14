@@ -223,6 +223,36 @@ export const PAGE = `<!doctype html>
   }
   .role-x:hover { color: var(--err); border-color: var(--err); }
   .role-err { color: var(--err); font-size: 12px; font-weight: 600; margin-top: 5px; }
+  .p-created {
+    position: absolute; right: 14px; bottom: 10px;
+    font-size: 12px; color: var(--muted);
+  }
+  .soc-note {
+    margin: 2px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--brand-deep);
+    background: var(--tint); border: 1px solid #ffc9b3; border-radius: 9px;
+    padding: 9px 12px; text-transform: none; letter-spacing: normal; font-weight: 400;
+  }
+  .team-globe {
+    display: flex; gap: 22px; align-items: center; flex-wrap: wrap;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(26, 23, 20, 0.06);
+    padding: 18px 22px; margin: 26px 4px 0;
+  }
+  .tg-canvas { flex: 0 1 300px; min-width: 220px; margin: 0 auto; }
+  .tg-canvas canvas { width: 100%; height: auto; display: block; }
+  .tg-side { flex: 1 1 280px; min-width: 250px; }
+  .tg-title { margin: 0 0 4px; font-size: 17px; }
+  .tg-sub { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+  .tg-row {
+    display: flex; align-items: baseline; gap: 8px; padding: 7px 0;
+    border-top: 1px dashed var(--line); font-size: 13.5px; flex-wrap: wrap;
+  }
+  .tg-row:first-child { border-top: 0; }
+  .tg-loc { color: var(--muted); font-size: 12.5px; }
+  .tg-time {
+    margin-left: auto; color: var(--brand-dark); font-weight: 600;
+    font-size: 12.5px; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
   .wall-search { margin: 26px 4px 0; }
   .wall-search input {
     font: inherit; font-size: 14.5px; width: 100%;
@@ -510,6 +540,14 @@ export const PAGE = `<!doctype html>
 <main>
   <div id="todayBanner" class="today-banner" hidden></div>
 
+  <div class="team-globe">
+    <div class="tg-canvas"><canvas id="tglobe" width="440" height="440" role="img" aria-label="Spinning globe showing where every teammate is in the world"></canvas></div>
+    <div class="tg-side">
+      <h3 class="tg-title">🌍 One team, all around the world</h3>
+      <p class="tg-sub">Where everyone is right now — and their local date &amp; time at this very moment.</p>
+      <div id="tgList"></div>
+    </div>
+  </div>
   <div class="wall-search">
     <input id="wallSearch" type="search" placeholder="🔍 Search people or roles…" autocomplete="off" aria-label="Search people or roles">
   </div>
@@ -608,6 +646,12 @@ export const PAGE = `<!doctype html>
             <img id="fAvPrev" class="av-prev" alt="" hidden>
             <input id="fAvatar" type="file" accept="image/*" required>
           </div>
+        </div>
+      </div>
+      <div class="row sep-top" style="margin-bottom:4px">
+        <div class="field" style="flex:1 1 100%">
+          <span class="lbl">Your socials</span>
+          <p class="soc-note">🌍 Why all three? Our team lives all around the world — sharing your socials helps teammates put a face to the name, cheer you on from afar, and keep our community and culture close across every timezone.</p>
         </div>
       </div>
       <div class="row">
@@ -1157,6 +1201,13 @@ export const PAGE = `<!doctype html>
       a.target = "_blank";
       a.rel = "noopener";
       card.appendChild(a);
+      if (b.created_at) {
+        var cd = String(b.created_at).slice(0, 10).split("-");
+        if (cd.length === 3) {
+          card.appendChild(el("div", "p-created",
+            "Created: " + cd[1] + "/" + cd[2] + "/" + cd[0].slice(2)));
+        }
+      }
       if (myTokens[String(b.id)] || b.mine) {
         var actions = el("div", "actions");
         var ed = el("a", "editbtn", "✏️ Edit");
@@ -2141,6 +2192,195 @@ export const PAGE = `<!doctype html>
     if (dupes.length) { openDupModal(payload, dupes); return; }
     doSubmit(payload);
   });
+
+  // ----- Team globe: everyone's spot on the planet + their live local time.
+  // Same hand-rolled orthographic canvas approach as the visitor tracker,
+  // in a compact auto-spinning form tuned for the wall's light theme.
+  (function () {
+    var cv = document.getElementById("tglobe");
+    if (!cv || !cv.getContext) return;
+    var g = cv.getContext("2d");
+    var GC = 220, GR = 205;
+    var D2R = Math.PI / 180;
+    var gLon = -30, gLat = 18;
+    var gRings = null;
+    var team = [];
+
+    function gProject(lon, lat) {
+      var l = lon * D2R, p = lat * D2R, l0 = gLon * D2R, p0 = gLat * D2R;
+      var cosc = Math.sin(p0) * Math.sin(p) + Math.cos(p0) * Math.cos(p) * Math.cos(l - l0);
+      if (cosc < 0) return null;
+      return [
+        GC + GR * Math.cos(p) * Math.sin(l - l0),
+        GC - GR * (Math.cos(p0) * Math.sin(p) - Math.sin(p0) * Math.cos(p) * Math.cos(l - l0))
+      ];
+    }
+    function gTrace(pts) {
+      var pen = false;
+      for (var i = 0; i < pts.length; i++) {
+        var xy = gProject(pts[i][0], pts[i][1]);
+        if (xy) {
+          if (pen) g.lineTo(xy[0], xy[1]);
+          else { g.moveTo(xy[0], xy[1]); pen = true; }
+        } else {
+          pen = false;
+        }
+      }
+    }
+    function gSample(f) {
+      var pts = [];
+      for (var i = 0; i <= 72; i++) pts.push(f(i / 72));
+      return pts;
+    }
+    function decodeWorldTopo(topo) {
+      var tr = topo.transform;
+      var arcs = topo.arcs.map(function (arc) {
+        if (!tr) return arc;
+        var x = 0, y = 0;
+        return arc.map(function (pt) {
+          x += pt[0]; y += pt[1];
+          return [x * tr.scale[0] + tr.translate[0], y * tr.scale[1] + tr.translate[1]];
+        });
+      });
+      function ringOf(idxList) {
+        var ring = [];
+        idxList.forEach(function (ai) {
+          var pts = ai >= 0 ? arcs[ai] : arcs[~ai].slice().reverse();
+          if (ring.length) pts = pts.slice(1);
+          ring = ring.concat(pts);
+        });
+        return ring;
+      }
+      var out = [];
+      topo.objects.countries.geometries.forEach(function (geom) {
+        if (geom.type === "Polygon") {
+          geom.arcs.forEach(function (r) { out.push(ringOf(r)); });
+        } else if (geom.type === "MultiPolygon") {
+          geom.arcs.forEach(function (poly) {
+            poly.forEach(function (r) { out.push(ringOf(r)); });
+          });
+        }
+      });
+      return out;
+    }
+
+    function drawTeamGlobe() {
+      g.clearRect(0, 0, 440, 440);
+      g.beginPath();
+      g.arc(GC, GC, GR, 0, 2 * Math.PI);
+      g.fillStyle = "#fdfcfa";
+      g.fill();
+      g.strokeStyle = "#e3dcd3";
+      g.lineWidth = 1.5;
+      g.stroke();
+      g.beginPath();
+      for (var lon = -180; lon < 180; lon += 30) {
+        (function (LN) { gTrace(gSample(function (t) { return [LN, -90 + 180 * t]; })); })(lon);
+      }
+      for (var lat = -60; lat <= 60; lat += 30) {
+        (function (LT) { gTrace(gSample(function (t) { return [-180 + 360 * t, LT]; })); })(lat);
+      }
+      g.strokeStyle = "rgba(26, 23, 20, 0.05)";
+      g.lineWidth = 0.6;
+      g.stroke();
+      if (gRings) {
+        g.beginPath();
+        gRings.forEach(gTrace);
+        g.strokeStyle = "#b3a99e";
+        g.lineWidth = 0.8;
+        g.stroke();
+      }
+      var pulse = 1 + 0.18 * Math.sin(Date.now() / 300);
+      team.forEach(function (p) {
+        if (p.dlat === undefined) return;
+        var xy = gProject(p.dlon, p.dlat);
+        if (!xy) return;
+        g.beginPath();
+        g.arc(xy[0], xy[1], 11 * pulse, 0, 2 * Math.PI);
+        g.fillStyle = "rgba(255, 92, 51, 0.16)";
+        g.fill();
+        g.beginPath();
+        g.arc(xy[0], xy[1], 5, 0, 2 * Math.PI);
+        g.fillStyle = "#FF5C33";
+        g.fill();
+      });
+    }
+
+    var lastT = 0;
+    function gFrame(t) {
+      if (!lastT) lastT = t;
+      var dt = Math.min(0.1, (t - lastT) / 1000);
+      lastT = t;
+      gLon = gLon - 5.5 * dt;
+      if (gLon < -180) gLon += 360;
+      drawTeamGlobe();
+      requestAnimationFrame(gFrame);
+    }
+
+    var clockFmts = {};
+    function clockFor(tz) {
+      if (!(tz in clockFmts)) {
+        try {
+          clockFmts[tz] = new Intl.DateTimeFormat(undefined, {
+            timeZone: tz, weekday: "short", month: "2-digit", day: "2-digit",
+            hour: "numeric", minute: "2-digit", second: "2-digit"
+          });
+        } catch (e) { clockFmts[tz] = null; }
+      }
+      return clockFmts[tz];
+    }
+    function tickClocks() {
+      var els = document.querySelectorAll("#tgList .tg-time");
+      var now = new Date();
+      for (var i = 0; i < els.length; i++) {
+        var tz = els[i].getAttribute("data-tz");
+        var fmt = tz ? clockFor(tz) : null;
+        els[i].textContent = fmt ? fmt.format(now) : "local time unknown";
+      }
+    }
+    setInterval(tickClocks, 1000);
+
+    function buildTeamList() {
+      var list = document.getElementById("tgList");
+      list.innerHTML = "";
+      team.forEach(function (p) {
+        var row = el("div", "tg-row");
+        row.appendChild(el("b", null, p.name));
+        var loc = el("span", "tg-loc");
+        var f = flagEl(p.country);
+        if (f) loc.appendChild(f);
+        loc.appendChild(document.createTextNode(
+          (p.city ? p.city + " · " : "") + (p.country || "")));
+        row.appendChild(loc);
+        var tEl = el("span", "tg-time");
+        tEl.setAttribute("data-tz", p.timezone || "");
+        row.appendChild(tEl);
+        list.appendChild(row);
+      });
+      tickClocks();
+    }
+
+    fetch("/world.json")
+      .then(function (r) { return r.json(); })
+      .then(function (d) { gRings = decodeWorldTopo(d); })
+      .catch(function () {});
+    fetch("/api/team-locations")
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        team = (d || []).map(function (p, i) {
+          if (p.latitude !== null && p.latitude !== undefined &&
+              p.longitude !== null && p.longitude !== undefined) {
+            // Deterministic nudge so same-office teammates don't stack.
+            p.dlat = p.latitude + (((i * 37) % 10) - 5) * 0.06;
+            p.dlon = p.longitude + (((i * 53) % 10) - 5) * 0.06;
+          }
+          return p;
+        });
+        buildTeamList();
+      })
+      .catch(function () {});
+    requestAnimationFrame(gFrame);
+  })();
 
   load();
 })();

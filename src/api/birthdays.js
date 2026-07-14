@@ -42,7 +42,7 @@ export async function listBirthdays(env, request) {
   const { results } = await env.DB.prepare(
     "SELECT id, name, name_key, company, position, month, day, city, country, ip, " +
       "avatar IS NOT NULL AS has_avatar, instagram, linkedin, x_handle, " +
-      "join_month, join_day, join_year, additional_roles " +
+      "join_month, join_day, join_year, additional_roles, created_at " +
       "FROM birthdays ORDER BY month, day, name"
   ).all();
   const ipCounts = {};
@@ -144,6 +144,9 @@ export async function submit(request, env) {
   const cf = request.cf || {};
   const geoCity = cf.city || null;
   const geoCountry = cf.country || null;
+  const geoLat = cf.latitude !== undefined ? Number.parseFloat(cf.latitude) : null;
+  const geoLon = cf.longitude !== undefined ? Number.parseFloat(cf.longitude) : null;
+  const geoTz = cf.timezone || null;
   const entry = parseEntry(body);
   if (entry.error) return json({ error: entry.error }, 400);
   const { name, legalFirst, legalLast, position, month, day, year, joinMonth, joinYear, roles } = entry;
@@ -182,12 +185,14 @@ export async function submit(request, env) {
           "city = ?10, country = ?11, avatar = ?12, instagram = ?13, linkedin = ?14, " +
           "x_handle = ?15, join_month = ?16, join_day = ?17, join_year = ?18, " +
           "additional_roles = ?20, legal_first = ?21, legal_last = ?22, " +
+          "latitude = ?23, longitude = ?24, timezone = ?25, " +
           "updated_at = datetime('now') WHERE id = ?19"
       )
         .bind(
           name, name.toLowerCase(), COMPANY, position, month, day, year, ip, token,
           geoCity, geoCountry, avatar, instagram, linkedin, xHandle,
-          joinMonth, null, joinYear, replaceId, rolesJson, legalFirst, legalLast
+          joinMonth, null, joinYear, replaceId, rolesJson, legalFirst, legalLast,
+          geoLat, geoLon, geoTz
         )
         .run();
       if (!res.meta || res.meta.changes === 0)
@@ -206,8 +211,9 @@ export async function submit(request, env) {
   // let the same person duplicate. Same name = same person, full stop.
   await env.DB.prepare(
     "INSERT INTO birthdays (name, name_key, company, position, month, day, year, ip, edit_token, city, country, " +
-      "avatar, instagram, linkedin, x_handle, join_month, join_day, join_year, additional_roles, legal_first, legal_last) " +
-      "VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21) " +
+      "avatar, instagram, linkedin, x_handle, join_month, join_day, join_year, additional_roles, legal_first, legal_last, " +
+      "latitude, longitude, timezone) " +
+      "VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24) " +
       "ON CONFLICT (name_key) DO UPDATE SET " +
       "name = excluded.name, company = excluded.company, position = excluded.position, " +
       "month = excluded.month, day = excluded.day, year = excluded.year, " +
@@ -217,11 +223,13 @@ export async function submit(request, env) {
       "x_handle = excluded.x_handle, join_month = excluded.join_month, " +
       "join_day = excluded.join_day, join_year = excluded.join_year, " +
       "additional_roles = excluded.additional_roles, legal_first = excluded.legal_first, " +
-      "legal_last = excluded.legal_last, updated_at = datetime('now')"
+      "legal_last = excluded.legal_last, latitude = excluded.latitude, " +
+      "longitude = excluded.longitude, timezone = excluded.timezone, updated_at = datetime('now')"
   )
     .bind(
       name, name.toLowerCase(), COMPANY, position, month, day, year, ip, token, geoCity, geoCountry,
-      avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, rolesJson, legalFirst, legalLast
+      avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, rolesJson, legalFirst, legalLast,
+      geoLat, geoLon, geoTz
     )
     .run();
 
@@ -229,6 +237,17 @@ export async function submit(request, env) {
     .bind(name.toLowerCase())
     .first();
   return json({ ok: true, id: row ? row.id : null, token: token });
+}
+
+// Where everyone is: dots for the team globe plus IANA timezones for the
+// live local-time clocks. City-level geo only — same precision the visitor
+// tracker already shows publicly.
+export async function teamLocations(env) {
+  const { results } = await env.DB.prepare(
+    "SELECT name, city, country, latitude, longitude, timezone " +
+      "FROM birthdays ORDER BY name"
+  ).all();
+  return json(results);
 }
 
 // Private prefill for the edit modal: legal names and birth year are never
@@ -329,6 +348,9 @@ export async function editEntry(request, env) {
     request.headers.get("x-real-ip") ||
     null;
   const cf = request.cf || {};
+  const geoLat = cf.latitude !== undefined ? Number.parseFloat(cf.latitude) : null;
+  const geoLon = cf.longitude !== undefined ? Number.parseFloat(cf.longitude) : null;
+  const geoTz = cf.timezone || null;
 
   // Avatar: undefined = keep current, data URL = replace. A photo is
   // mandatory, so the result can never be empty.
@@ -351,13 +373,14 @@ export async function editEntry(request, env) {
         "city = ?10, country = ?11, avatar = ?12, instagram = ?13, linkedin = ?14, " +
         "x_handle = ?15, join_month = ?16, join_day = ?17, join_year = ?18, " +
         "additional_roles = ?20, legal_first = ?21, legal_last = ?22, " +
+        "latitude = ?23, longitude = ?24, timezone = ?25, " +
         "updated_at = datetime('now') WHERE id = ?19"
     )
       .bind(
         name, name.toLowerCase(), COMPANY, position, month, day, year, ip,
         newToken, cf.city || null, cf.country || null,
         avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, id, rolesJson,
-        legalFirst, legalLast
+        legalFirst, legalLast, geoLat, geoLon, geoTz
       )
       .run();
   } catch (e) {

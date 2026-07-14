@@ -4,7 +4,7 @@
 
 import { json, htmlPage } from "./lib/http.js";
 import { serveFaviconIco, serveFaviconPng, serveLogo } from "./assets/serve.js";
-import { avatarImg, listBirthdays, submit, editEntry, deleteEntry, myEntry } from "./api/birthdays.js";
+import { avatarImg, listBirthdays, submit, editEntry, deleteEntry, myEntry, teamLocations } from "./api/birthdays.js";
 import { logVisit, listVisits, personVisits } from "./api/visits.js";
 import { icsFeed } from "./api/calendar.js";
 import { listTitles } from "./api/titles.js";
@@ -37,6 +37,9 @@ export default {
       }
       if (url.pathname === "/api/titles" && request.method === "GET") {
         return listTitles();
+      }
+      if (url.pathname === "/api/team-locations" && request.method === "GET") {
+        return teamLocations(env);
       }
       if (url.pathname === "/api/submit" && request.method === "POST") {
         return submit(request, env);

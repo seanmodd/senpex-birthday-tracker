@@ -23,6 +23,9 @@ CREATE TABLE IF NOT EXISTS birthdays (
   join_day INTEGER,
   join_year INTEGER,
   additional_roles TEXT, -- JSON array of 0-4 additional role titles
+  latitude REAL,         -- geo of the submitting request (team globe);
+  longitude REAL,        --   legacy rows backfilled from their visits
+  timezone TEXT,         -- IANA tz for the live local-time clocks
   UNIQUE (name_key, company)
 );
 
