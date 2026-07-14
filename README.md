@@ -20,10 +20,14 @@ card.
 
 ## The form
 
-"🎈 Add your birthday" opens a popup — photo upload with live preview,
-required socials with platform logos, and **Sign in with X / Instagram**:
-click the logo, authorize in a popup, and your verified handle fills itself
-in. Deep link: [`/?add=1`](https://senpex-birthday-tracker.seansmodd.workers.dev/?add=1)
+"🎈 Add your birthday" opens a popup — legal first & last name plus the
+preferred name that appears on your card (all three required, with a tooltip
+explaining the difference), a single calendar date picker for the birthday,
+photo upload with live preview, required socials with platform logos, and
+**Sign in with X / Instagram**: click the logo, authorize in a popup, and
+your verified handle fills itself in. Legal names and birth year are
+returned by the API only to their owner — the wall shows preferred names.
+Deep link: [`/?add=1`](https://senpex-birthday-tracker.seansmodd.workers.dev/?add=1)
 opens it directly.
 
 <img src="docs/screenshots/form.png" alt="Add your birthday popup" width="600">

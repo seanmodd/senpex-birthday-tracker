@@ -75,7 +75,11 @@ export async function listBirthdays(env, request) {
 // Shared field validation for submit and edit. Returns { error, status } or
 // the cleaned fields.
 function parseEntry(body) {
+  // `name` is the PREFERRED name — the one shown on the card and the wall.
+  // Legal first/last names are mandatory but never displayed to the team.
   const name = String(body.name || "").trim().replace(/\s+/g, " ");
+  const legalFirst = String(body.legal_first || "").trim().replace(/\s+/g, " ");
+  const legalLast = String(body.legal_last || "").trim().replace(/\s+/g, " ");
   const position = String(body.position || "").trim().replace(/\s+/g, " ");
   const month = Number.parseInt(body.month, 10);
   const day = Number.parseInt(body.day, 10);
@@ -84,8 +88,12 @@ function parseEntry(body) {
       ? null
       : Number.parseInt(body.year, 10);
 
+  if (!legalFirst || legalFirst.length > 60)
+    return { error: "Please enter your legal first name (up to 60 characters)." };
+  if (!legalLast || legalLast.length > 60)
+    return { error: "Please enter your legal last name (up to 60 characters)." };
   if (!name || name.length > 100)
-    return { error: "Please enter your full name (up to 100 characters)." };
+    return { error: "Please enter your preferred name (up to 100 characters)." };
   if (!position || position.length > 100)
     return { error: "Please enter your position (up to 100 characters)." };
   if (!Number.isInteger(month) || month < 1 || month > 12)
@@ -119,7 +127,7 @@ function parseEntry(body) {
   if (roles.length > 4)
     return { error: "You can add at most four additional roles." };
 
-  return { name, position, month, day, year, joinMonth, joinYear, roles };
+  return { name, legalFirst, legalLast, position, month, day, year, joinMonth, joinYear, roles };
 }
 
 export async function submit(request, env) {
@@ -138,7 +146,7 @@ export async function submit(request, env) {
   const geoCountry = cf.country || null;
   const entry = parseEntry(body);
   if (entry.error) return json({ error: entry.error }, 400);
-  const { name, position, month, day, year, joinMonth, joinYear, roles } = entry;
+  const { name, legalFirst, legalLast, position, month, day, year, joinMonth, joinYear, roles } = entry;
   const rolesJson = roles.length ? JSON.stringify(roles) : null;
 
   const socials = await normalizeAndCheckSocials(env, body);
@@ -173,12 +181,13 @@ export async function submit(request, env) {
           "month = ?5, day = ?6, year = ?7, ip = ?8, edit_token = ?9, " +
           "city = ?10, country = ?11, avatar = ?12, instagram = ?13, linkedin = ?14, " +
           "x_handle = ?15, join_month = ?16, join_day = ?17, join_year = ?18, " +
-          "additional_roles = ?20, updated_at = datetime('now') WHERE id = ?19"
+          "additional_roles = ?20, legal_first = ?21, legal_last = ?22, " +
+          "updated_at = datetime('now') WHERE id = ?19"
       )
         .bind(
           name, name.toLowerCase(), COMPANY, position, month, day, year, ip, token,
           geoCity, geoCountry, avatar, instagram, linkedin, xHandle,
-          joinMonth, null, joinYear, replaceId, rolesJson
+          joinMonth, null, joinYear, replaceId, rolesJson, legalFirst, legalLast
         )
         .run();
       if (!res.meta || res.meta.changes === 0)
@@ -197,8 +206,8 @@ export async function submit(request, env) {
   // let the same person duplicate. Same name = same person, full stop.
   await env.DB.prepare(
     "INSERT INTO birthdays (name, name_key, company, position, month, day, year, ip, edit_token, city, country, " +
-      "avatar, instagram, linkedin, x_handle, join_month, join_day, join_year, additional_roles) " +
-      "VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19) " +
+      "avatar, instagram, linkedin, x_handle, join_month, join_day, join_year, additional_roles, legal_first, legal_last) " +
+      "VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21) " +
       "ON CONFLICT (name_key) DO UPDATE SET " +
       "name = excluded.name, company = excluded.company, position = excluded.position, " +
       "month = excluded.month, day = excluded.day, year = excluded.year, " +
@@ -207,11 +216,12 @@ export async function submit(request, env) {
       "avatar = excluded.avatar, instagram = excluded.instagram, linkedin = excluded.linkedin, " +
       "x_handle = excluded.x_handle, join_month = excluded.join_month, " +
       "join_day = excluded.join_day, join_year = excluded.join_year, " +
-      "additional_roles = excluded.additional_roles, updated_at = datetime('now')"
+      "additional_roles = excluded.additional_roles, legal_first = excluded.legal_first, " +
+      "legal_last = excluded.legal_last, updated_at = datetime('now')"
   )
     .bind(
       name, name.toLowerCase(), COMPANY, position, month, day, year, ip, token, geoCity, geoCountry,
-      avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, rolesJson
+      avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, rolesJson, legalFirst, legalLast
     )
     .run();
 
@@ -219,6 +229,35 @@ export async function submit(request, env) {
     .bind(name.toLowerCase())
     .first();
   return json({ ok: true, id: row ? row.id : null, token: token });
+}
+
+// Private prefill for the edit modal: legal names and birth year are never
+// on the public list, and the weak ownership signals (cookie, network) that
+// gate the edit BUTTON are spoofable — so this endpoint demands the one
+// strong proof, the edit token issued to the submitting browser.
+export async function myEntry(request, env) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "Invalid request body." }, 400);
+  }
+  const id = Number.parseInt(body.id, 10);
+  const token = String(body.token || "");
+  if (!Number.isInteger(id) || id <= 0 || !token)
+    return json({ error: "Missing entry id or token." }, 400);
+  const row = await env.DB.prepare(
+    "SELECT edit_token, legal_first, legal_last, year FROM birthdays WHERE id = ?1"
+  ).bind(id).first();
+  if (!row) return json({ error: "That entry no longer exists." }, 404);
+  if (!row.edit_token || row.edit_token !== token)
+    return json({ error: "Not authorized." }, 403);
+  return json({
+    ok: true,
+    legal_first: row.legal_first,
+    legal_last: row.legal_last,
+    year: row.year,
+  });
 }
 
 // Does this request prove ownership of the row? Four signals, in order:
@@ -258,7 +297,7 @@ export async function editEntry(request, env) {
     return json({ error: "Missing entry id." }, 400);
   const entry = parseEntry(body);
   if (entry.error) return json({ error: entry.error }, 400);
-  const { name, position, month, day, year, joinMonth, joinYear, roles } = entry;
+  const { name, legalFirst, legalLast, position, month, day, year, joinMonth, joinYear, roles } = entry;
   const rolesJson = roles.length ? JSON.stringify(roles) : null;
 
   const socials = await normalizeAndCheckSocials(env, body);
@@ -311,12 +350,14 @@ export async function editEntry(request, env) {
         "month = ?5, day = ?6, year = ?7, ip = ?8, edit_token = ?9, " +
         "city = ?10, country = ?11, avatar = ?12, instagram = ?13, linkedin = ?14, " +
         "x_handle = ?15, join_month = ?16, join_day = ?17, join_year = ?18, " +
-        "additional_roles = ?20, updated_at = datetime('now') WHERE id = ?19"
+        "additional_roles = ?20, legal_first = ?21, legal_last = ?22, " +
+        "updated_at = datetime('now') WHERE id = ?19"
     )
       .bind(
         name, name.toLowerCase(), COMPANY, position, month, day, year, ip,
         newToken, cf.city || null, cf.country || null,
-        avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, id, rolesJson
+        avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, id, rolesJson,
+        legalFirst, legalLast
       )
       .run();
   } catch (e) {

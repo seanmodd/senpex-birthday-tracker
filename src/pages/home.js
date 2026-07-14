@@ -192,6 +192,25 @@ export const PAGE = `<!doctype html>
   }
   .ac-rec:hover { text-decoration: underline; }
   .roles-sec { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
+  .sep-top { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); }
+  .tip-wrap { position: relative; display: inline-block; }
+  button.tip {
+    width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--line);
+    background: #fff; color: var(--muted); font-size: 11px; font-weight: 700;
+    line-height: 1; cursor: help; padding: 0; margin-left: 3px; vertical-align: -2px;
+    position: relative;
+  }
+  /* Invisible halo extends the tap target to the 44px standard. */
+  button.tip::after { content: ""; position: absolute; inset: -13px; border-radius: 50%; }
+  button.tip:hover { color: var(--brand-deep); border-color: var(--brand); }
+  button.tip:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+  .tip-pop {
+    position: absolute; left: -10px; top: calc(100% + 8px); width: 240px;
+    background: rgb(27, 27, 27); color: #f0eeec; font-size: 12px; font-weight: 400;
+    line-height: 1.5; padding: 10px 12px; border-radius: 9px; z-index: 60;
+    display: none; text-transform: none; letter-spacing: normal;
+  }
+  button.tip:hover + .tip-pop, button.tip:focus + .tip-pop { display: block; }
   .role-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
   .role-num { font-size: 11px; font-weight: 700; color: var(--muted); flex: none; width: 44px; }
   .role-row .ac-wrap { flex: 1; min-width: 0; }
@@ -515,9 +534,17 @@ export const PAGE = `<!doctype html>
     <p class="dlg-sub">Get yourself on the wall so the team never misses your day.</p>
     <form id="bform">
       <div class="row">
-        <div class="field" style="flex:2 1 240px">
-          <label for="name">Full name</label>
-          <input id="name" required maxlength="100" placeholder="e.g. Alex Petrovski" autocomplete="name">
+        <div class="field" style="flex:1 1 150px">
+          <label for="legalFirst">Legal first name</label>
+          <input id="legalFirst" required maxlength="60" placeholder="e.g. Alexander" autocomplete="given-name">
+        </div>
+        <div class="field" style="flex:1 1 150px">
+          <label for="legalLast">Legal last name</label>
+          <input id="legalLast" required maxlength="60" placeholder="e.g. Petrovski" autocomplete="family-name">
+        </div>
+        <div class="field" style="flex:1 1 100%">
+          <label for="name">Preferred name<span class="tip-wrap"><button type="button" class="tip" aria-describedby="prefTipPop">?</button><span class="tip-pop" role="tooltip" id="prefTipPop">Your preferred name is what appears on your birthday card and everywhere on the wall. Your legal first and last name are kept for company records and are never displayed to the team.</span></span></label>
+          <input id="name" required maxlength="100" placeholder="e.g. Alex Petrovski" autocomplete="nickname">
         </div>
       </div>
       <div class="row">
@@ -536,20 +563,15 @@ export const PAGE = `<!doctype html>
           <p class="hint" id="fRolesHint">Add up to four other roles or responsibilities you hold within the company.</p>
           <p class="hint" id="fRolesMax" hidden>Maximum of four additional roles reached.</p>
         </div>
-        <div class="field" style="flex:2 1 240px">
-          <label for="month">Birthday month</label>
-          <select id="month" required></select>
-        </div>
-        <div class="field" style="flex:1 1 100px">
-          <label for="day">Day</label>
-          <select id="day" required></select>
-        </div>
-        <div class="field" style="flex:1 1 120px">
-          <label for="year">Year <span style="text-transform:none">(optional)</span></label>
-          <input id="year" type="number" min="1900" max="2020" placeholder="—">
+      </div>
+      <div class="row sep-top">
+        <div class="field" style="flex:1 1 100%">
+          <label for="bdate">Birthday</label>
+          <input id="bdate" type="date" required min="1900-01-01" max="2020-12-31">
+          <span class="hint">Pick the month, day, and year in one go — the year is never shown to the team.</span>
         </div>
       </div>
-      <div class="row">
+      <div class="row sep-top">
         <div class="field" style="flex:2 1 180px">
           <label for="jmonth">Month joined</label>
           <select id="jmonth" required></select>
@@ -559,7 +581,7 @@ export const PAGE = `<!doctype html>
           <input id="jyear" type="number" required min="1990" max="2030" placeholder="e.g. 2023">
         </div>
       </div>
-      <div class="row">
+      <div class="row sep-top">
         <div class="field">
           <span class="lbl">Your photo</span>
           <div class="av-row">
@@ -680,9 +702,19 @@ export const PAGE = `<!doctype html>
     <h3 id="eTitle">✏️ Edit your entry</h3>
     <p class="dlg-sub">Change anything — your name, position, or the date. Only you can edit this card.</p>
     <p class="claim-note" id="claimNote" hidden>You're claiming this card as yours — after saving, you can edit or delete it from this browser. Please only claim your own entry.</p>
-    <div style="margin-bottom:10px">
-      <label class="lbl" for="eName">Full name</label>
-      <input id="eName" maxlength="100" autocomplete="name">
+    <div style="margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap">
+      <div style="flex:1 1 120px">
+        <label class="lbl" for="eLegalFirst">Legal first name</label>
+        <input id="eLegalFirst" maxlength="60" autocomplete="given-name">
+      </div>
+      <div style="flex:1 1 120px">
+        <label class="lbl" for="eLegalLast">Legal last name</label>
+        <input id="eLegalLast" maxlength="60" autocomplete="family-name">
+      </div>
+      <div style="flex:1 1 100%">
+        <label class="lbl" for="eName">Preferred name<span class="tip-wrap"><button type="button" class="tip" aria-describedby="ePrefTipPop">?</button><span class="tip-pop" role="tooltip" id="ePrefTipPop">Your preferred name is what appears on your birthday card and everywhere on the wall. Your legal first and last name are kept for company records and are never displayed to the team.</span></span></label>
+        <input id="eName" maxlength="100" autocomplete="nickname">
+      </div>
     </div>
     <div style="margin-bottom:10px">
       <label class="lbl" for="ePos">Primary Job Title <span class="req-badge">Primary</span></label>
@@ -698,21 +730,11 @@ export const PAGE = `<!doctype html>
         <p class="hint" id="eRolesMax" hidden>Maximum of four additional roles reached.</p>
       </div>
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <div style="flex:2 1 140px">
-        <label class="lbl" for="eMonth">Birthday month</label>
-        <select id="eMonth"></select>
-      </div>
-      <div style="flex:1 1 80px">
-        <label class="lbl" for="eDay">Day</label>
-        <select id="eDay"></select>
-      </div>
-      <div style="flex:1 1 100px">
-        <label class="lbl" for="eYear">Year <span style="text-transform:none">(optional)</span></label>
-        <input id="eYear" type="number" min="1900" max="2020" placeholder="—">
-      </div>
+    <div class="sep-top">
+      <label class="lbl" for="eBdate">Birthday</label>
+      <input id="eBdate" type="date" min="1900-01-01" max="2020-12-31" style="margin-top:5px">
     </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+    <div class="sep-top" style="display:flex;gap:10px;flex-wrap:wrap">
       <div style="flex:2 1 140px">
         <label class="lbl" for="eJMonth">Month joined</label>
         <select id="eJMonth"></select>
@@ -722,7 +744,7 @@ export const PAGE = `<!doctype html>
         <input id="eJYear" type="number" required min="1990" max="2030" placeholder="e.g. 2023">
       </div>
     </div>
-    <div style="margin-top:10px">
+    <div class="sep-top">
       <label class="lbl" for="eAvatar">Photo</label>
       <div class="av-row">
         <img id="eAvPrev" class="av-prev" alt="" hidden>
@@ -766,31 +788,17 @@ export const PAGE = `<!doctype html>
 (function () {
   var COMPANY = "Senpex / Pckup";
   var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  var MDAYS = [31,29,31,30,31,30,31,31,30,31,30,31];
   var allBirthdays = [];
 
-  var monthSel = document.getElementById("month");
-  var daySel = document.getElementById("day");
-  for (var i = 0; i < 12; i++) {
-    var o = document.createElement("option");
-    o.value = String(i + 1);
-    o.textContent = MONTHS[i];
-    monthSel.appendChild(o);
+  // The birthday is one native date input (month, day, and year in one go);
+  // the API still takes the three parts, split out of the YYYY-MM-DD value.
+  function splitDateInput(value) {
+    return {
+      year: parseInt(value.slice(0, 4), 10),
+      month: parseInt(value.slice(5, 7), 10),
+      day: parseInt(value.slice(8, 10), 10)
+    };
   }
-  function fillDays() {
-    var max = MDAYS[parseInt(monthSel.value, 10) - 1];
-    var cur = parseInt(daySel.value || "1", 10);
-    daySel.innerHTML = "";
-    for (var d = 1; d <= max; d++) {
-      var o = document.createElement("option");
-      o.value = String(d);
-      o.textContent = String(d);
-      daySel.appendChild(o);
-    }
-    daySel.value = String(Math.min(cur, max));
-  }
-  monthSel.addEventListener("change", fillDays);
-  fillDays();
 
   var jMonthSel = document.getElementById("jmonth");
   for (var ji = 0; ji < 12; ji++) {
@@ -1221,7 +1229,8 @@ export const PAGE = `<!doctype html>
     btn.disabled = true;
     status.className = "";
     var body = {
-      name: payload.name, position: payload.position,
+      name: payload.name, legal_first: payload.legal_first, legal_last: payload.legal_last,
+      position: payload.position,
       month: payload.month, day: payload.day, year: payload.year,
       join_month: payload.join_month, join_year: payload.join_year,
       instagram: payload.instagram, linkedin: payload.linkedin, x: payload.x,
@@ -1337,7 +1346,8 @@ export const PAGE = `<!doctype html>
     var nm = normSpace(ni.value);
     if (!nm) { ni.focus(); return; }
     var p = {
-      name: nm, position: dupPayload.position,
+      name: nm, legal_first: dupPayload.legal_first, legal_last: dupPayload.legal_last,
+      position: dupPayload.position,
       month: dupPayload.month, day: dupPayload.day, year: dupPayload.year,
       join_month: dupPayload.join_month, join_year: dupPayload.join_year,
       instagram: dupPayload.instagram, linkedin: dupPayload.linkedin, x: dupPayload.x,
@@ -1391,18 +1401,6 @@ export const PAGE = `<!doctype html>
       });
   }
 
-  function fillDayOptions(sel, month, keep) {
-    var max = MDAYS[month - 1];
-    sel.innerHTML = "";
-    for (var d = 1; d <= max; d++) {
-      var o = document.createElement("option");
-      o.value = String(d);
-      o.textContent = String(d);
-      sel.appendChild(o);
-    }
-    sel.value = String(Math.min(keep || 1, max));
-  }
-
   var editRoles = setupRoles("eRolesList", "eAddRole", "eRolesMax", "eRolesErr", document.getElementById("ePos"));
   attachTitleAutocomplete(document.getElementById("ePos"), {
     intendedUse: "primary",
@@ -1416,30 +1414,44 @@ export const PAGE = `<!doctype html>
     document.getElementById("eTitle").textContent = editingClaim
       ? "🪪 Claim & edit this entry"
       : "✏️ Edit your entry";
-    var em = document.getElementById("eMonth");
-    var edd = document.getElementById("eDay");
     var ejm = document.getElementById("eJMonth");
-    if (!em.options.length) {
+    if (!ejm.options.length) {
       for (var i = 0; i < 12; i++) {
-        var o = document.createElement("option");
-        o.value = String(i + 1);
-        o.textContent = MONTHS[i];
-        em.appendChild(o);
         var o2 = document.createElement("option");
         o2.value = String(i + 1);
         o2.textContent = MONTHS[i];
         ejm.appendChild(o2);
       }
-      em.addEventListener("change", function () {
-        fillDayOptions(edd, parseInt(em.value, 10), parseInt(edd.value || "1", 10));
-      });
     }
     document.getElementById("eName").value = b.name;
     document.getElementById("ePos").value = b.position || "";
     editRoles.setRoles(b.roles || []);
-    em.value = String(b.month);
-    fillDayOptions(edd, b.month, b.day);
-    document.getElementById("eYear").value = "";
+    // Legal names and birth year are never on the public list. They prefill
+    // only via /api/my-entry, which demands this browser's edit token — the
+    // one ownership proof that can't be spoofed. Without it (e.g. a "This is
+    // me" claim) the fields start empty and are re-entered on save.
+    document.getElementById("eLegalFirst").value = "";
+    document.getElementById("eLegalLast").value = "";
+    document.getElementById("eBdate").value = "";
+    var myToken = getTokens()[String(b.id)];
+    if (myToken) {
+      fetch("/api/my-entry", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id: b.id, token: myToken })
+      })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) {
+          if (!j || !j.ok || editing !== b) return;
+          document.getElementById("eLegalFirst").value = j.legal_first || "";
+          document.getElementById("eLegalLast").value = j.legal_last || "";
+          if (j.year) {
+            document.getElementById("eBdate").value =
+              j.year + "-" + ("0" + b.month).slice(-2) + "-" + ("0" + b.day).slice(-2);
+          }
+        })
+        .catch(function () {});
+    }
     ejm.value = String(b.join_month || 1);
     document.getElementById("eJYear").value = b.join_year || "";
     document.getElementById("eIg").value = b.instagram || "";
@@ -1465,14 +1477,23 @@ export const PAGE = `<!doctype html>
   document.getElementById("eSave").addEventListener("click", function () {
     if (!editing) return;
     var err = document.getElementById("eErr");
+    var bdateVal = document.getElementById("eBdate").value;
+    if (!bdateVal) {
+      err.textContent = "Please pick your full birthday — month, day, and year.";
+      err.hidden = false;
+      return;
+    }
+    var bd = splitDateInput(bdateVal);
     var payload = {
       id: editing.id,
       token: getTokens()[String(editing.id)],
       name: normSpace(document.getElementById("eName").value),
+      legal_first: normSpace(document.getElementById("eLegalFirst").value),
+      legal_last: normSpace(document.getElementById("eLegalLast").value),
       position: document.getElementById("ePos").value,
-      month: parseInt(document.getElementById("eMonth").value, 10),
-      day: parseInt(document.getElementById("eDay").value, 10),
-      year: document.getElementById("eYear").value || null,
+      month: bd.month,
+      day: bd.day,
+      year: bd.year,
       join_month: parseInt(document.getElementById("eJMonth").value, 10),
       join_year: document.getElementById("eJYear").value || null,
       instagram: document.getElementById("eIg").value,
@@ -1482,8 +1503,8 @@ export const PAGE = `<!doctype html>
     };
     if (avatarData !== undefined) payload.avatar = avatarData;
     if (editingClaim) payload.claim = true;
-    if (!payload.name) {
-      err.textContent = "Name can't be empty.";
+    if (!payload.name || !payload.legal_first || !payload.legal_last) {
+      err.textContent = "Please fill in your legal first name, legal last name, and preferred name.";
       err.hidden = false;
       return;
     }
@@ -1970,12 +1991,21 @@ export const PAGE = `<!doctype html>
       status.textContent = "📸 Please add your photo — it's required.";
       return;
     }
+    var bdateVal = document.getElementById("bdate").value;
+    if (!bdateVal) {
+      status.className = "err";
+      status.textContent = "🎂 Please pick your birthday.";
+      return;
+    }
+    var bd = splitDateInput(bdateVal);
     var payload = {
       name: normSpace(document.getElementById("name").value),
+      legal_first: normSpace(document.getElementById("legalFirst").value),
+      legal_last: normSpace(document.getElementById("legalLast").value),
       position: document.getElementById("position").value,
-      month: parseInt(monthSel.value, 10),
-      day: parseInt(daySel.value, 10),
-      year: document.getElementById("year").value || null,
+      month: bd.month,
+      day: bd.day,
+      year: bd.year,
       join_month: parseInt(jMonthSel.value, 10),
       join_year: document.getElementById("jyear").value || null,
       instagram: document.getElementById("fIg").value,
@@ -1984,7 +2014,7 @@ export const PAGE = `<!doctype html>
       avatar: formAvatarData,
       additional_roles: formRoles.getRoles()
     };
-    if (!payload.name) return;
+    if (!payload.name || !payload.legal_first || !payload.legal_last) return;
     var dupes = allBirthdays.filter(function (b) {
       return b.month === payload.month && b.day === payload.day &&
         normName(b.name) !== normName(payload.name);

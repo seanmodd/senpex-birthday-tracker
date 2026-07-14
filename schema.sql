@@ -1,7 +1,9 @@
 CREATE TABLE IF NOT EXISTS birthdays (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
+  name TEXT NOT NULL,      -- PREFERRED name: what the wall and cards display
   name_key TEXT NOT NULL,
+  legal_first TEXT,        -- legal names: required by the app since July 13,
+  legal_last TEXT,         --   2026; owner-only in the API, never on the wall
   company TEXT NOT NULL,
   position TEXT NOT NULL,
   month INTEGER NOT NULL,

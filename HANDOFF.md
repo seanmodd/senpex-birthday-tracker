@@ -1,5 +1,29 @@
 # HANDOFF — Senpex / Pckup Team Birthday Tracker
 
+> **ADDENDUM 5 (2026-07-13, ~9:00 PM PT):** form restructure per Sean —
+> (1) "Full name" replaced by THREE mandatory fields: legal first name,
+> legal last name, and preferred name (`name` column = preferred, shown on
+> cards; new nullable columns `legal_first`/`legal_last` added to prod +
+> local D1 via additive ALTER TABLE — exact statements:
+> `ALTER TABLE birthdays ADD COLUMN legal_first TEXT;` and
+> `ALTER TABLE birthdays ADD COLUMN legal_last TEXT;` — and to schema.sql;
+> these MUST run against a remote DB before deploying this code or every
+> birthdays query fails on the missing columns). A "?" tooltip on
+> Preferred name explains it's what the card shows. PII gating (hardened
+> after adversarial review): legal names + birth year are NEVER on the
+> public /api/birthdays list — the `mine` flag is spoofable (client-set
+> bt_name cookie / shared-network heuristic) so it only gates UI buttons,
+> not data. Edit-modal prefill comes from `POST /api/my-entry {id, token}`
+> which requires the row's edit TOKEN (the one strong proof); claim-mode
+> edits start with empty legal/date fields. (2) The three birthday inputs
+> became ONE native
+> `<input type="date">` in both modals — so a full date incl. year is
+> required by the UI going forward (server still tolerates null year for
+> the 5 pre-existing rows until they edit; year is never displayed).
+> (3) Dashed separators (matching Additional Roles) now precede Birthday,
+> Month/Year joined, and Photo in both modals. Existing rows lack legal
+> names until their owner next edits (mandatory-on-next-edit pattern).
+>
 > **ADDENDUM 4 (2026-07-13, ~8:35 PM PT):** the tidy-up release's
 > link-record commit (`3ba9733`) is now referenced as a related pill on the
 > "Commit codes as links" bullet — Sean flagged that it was the one commit
