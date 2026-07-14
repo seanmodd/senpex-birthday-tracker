@@ -1756,7 +1756,7 @@ export const PAGE = `<!doctype html>
     var kept = {};
     kept[normSpace(editing.position || "").toLowerCase()] = true;
     (editing.roles || []).forEach(function (r) { kept[normSpace(r).toLowerCase()] = true; });
-    function okTitle(v) { return !TITLES.length || isKnownTitle(v) || kept[normSpace(v).toLowerCase()] === true; }
+    function okTitle(v) { return !titlesLoaded || isKnownTitle(v) || kept[normSpace(v).toLowerCase()] === true; }
     if (!okTitle(payload.position)) {
       err.textContent = "Please choose the Primary Job Title from the list, or recommend a new one to add it instantly.";
       err.hidden = false;
@@ -1805,35 +1805,52 @@ export const PAGE = `<!doctype html>
   // ----- Job titles: approved library, autocomplete, additional roles -----
   var TITLE_GROUPS = [];
   var TITLES = []; // [{ t: title, tl: lowercase, d: dept }]
-  fetch("/api/titles")
-    .then(function (r) { return r.json(); })
-    .then(function (d) {
-      TITLE_GROUPS = d.groups || [];
-      TITLE_GROUPS.forEach(function (g) {
-        g.titles.forEach(function (t) {
-          TITLES.push({ t: t, tl: t.toLowerCase(), d: g.dept });
+  var titlesLoaded = false;          // gates mandatory validation (see below)
+  var recommendedSet = {};           // titles recommended this session (lowercase)
+  // Retry on failure so a transient /api/titles error can't leave the
+  // mandatory-title gate silently disabled for the whole session.
+  function loadTitles(attempt) {
+    fetch("/api/titles")
+      .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+      .then(function (d) {
+        TITLE_GROUPS = d.groups || [];
+        TITLE_GROUPS.forEach(function (g) {
+          g.titles.forEach(function (t) {
+            TITLES.push({ t: t, tl: t.toLowerCase(), d: g.dept });
+          });
         });
+        titlesLoaded = true;
+        // Cards may have rendered before the library arrived — re-render so
+        // the Department line (looked up from TITLES) can appear.
+        if (allBirthdays.length) renderWall();
+      })
+      .catch(function () {
+        if ((attempt || 0) < 5) setTimeout(function () { loadTitles((attempt || 0) + 1); }, 1500);
       });
-      // Cards may have rendered before the library arrived — re-render so
-      // the Department line (looked up from TITLES) can appear.
-      if (allBirthdays.length) renderWall();
-    })
-    .catch(function () {});
+  }
+  loadTitles(0);
 
   var ACRONYMS = { "ai": "AI", "qa": "QA", "it": "IT", "ios": "iOS", "api": "API",
     "ux": "UX", "ui": "UI", "mlops": "MLOps", "devops": "DevOps", "seo": "SEO",
     "sem": "SEM", "hr": "HR", "of": "of", "and": "and", "the": "the" };
-  // A title/role is only valid if it's in the approved library — which now
-  // also holds titles recommended this session (see recSubmit), so a fresh
-  // recommendation "shows up now" and passes the mandatory-selection gate.
+  // A title/role is valid if it's in the approved library OR was recommended
+  // this session — so a fresh recommendation "shows up now" and passes the
+  // mandatory-selection gate.
   function isKnownTitle(v) {
     var tl = normSpace(v || "").toLowerCase();
     if (!tl) return false;
+    if (recommendedSet[tl]) return true;
     for (var i = 0; i < TITLES.length; i++) if (TITLES[i].tl === tl) return true;
     return false;
   }
   function addRecommendedTitle(t) {
-    if (!isKnownTitle(t)) TITLES.push({ t: t, tl: t.toLowerCase(), d: "Recommended" });
+    var norm = normSpace(t);
+    var tl = norm.toLowerCase();
+    if (!tl) return;
+    recommendedSet[tl] = true;
+    // Also surface it in the autocomplete dropdown (avoid a duplicate entry).
+    var inLib = TITLES.some(function (x) { return x.tl === tl; });
+    if (!inLib) TITLES.push({ t: norm, tl: tl, d: "Recommended" });
   }
 
   function titleCase(str) {
@@ -2097,7 +2114,10 @@ export const PAGE = `<!doctype html>
     }
     document.getElementById("recName").value = norm;
     var match = nearestTitle(norm);
-    if (match && match.kind === "exact") {
+    // A title recommended earlier this session is an exact match now (it was
+    // added to the library), but re-clicking should relaunch the mail app —
+    // not claim it "already exists". Only block genuine pre-existing titles.
+    if (match && match.kind === "exact" && !recommendedSet[norm.toLowerCase()]) {
       errEl.textContent = '"' + match.title + '" already exists in the library — just select it from the list.';
       errEl.hidden = false;
       if (recSource) {
@@ -2372,15 +2392,15 @@ export const PAGE = `<!doctype html>
     };
     if (!payload.name || !payload.legal_first || !payload.legal_last) return;
     // Primary title and every additional role must be chosen from the list
-    // (a freshly recommended title counts — it's added to the list on submit).
-    // Guarded on TITLES.length so a submit before the library loads can't be
-    // wrongly blocked.
-    if (TITLES.length && !isKnownTitle(payload.position)) {
+    // (a freshly recommended title counts — it's in the library now). Guarded
+    // on titlesLoaded so a submit before the library loads (or if it failed
+    // to load) can't be wrongly blocked.
+    if (titlesLoaded && !isKnownTitle(payload.position)) {
       status.className = "err";
       status.textContent = "💼 Please choose your Primary Job Title from the list — or recommend a new one to add it instantly.";
       return;
     }
-    var unknownRole = TITLES.length && payload.additional_roles.filter(function (r) { return !isKnownTitle(r); })[0];
+    var unknownRole = titlesLoaded && payload.additional_roles.filter(function (r) { return !isKnownTitle(r); })[0];
     if (unknownRole) {
       status.className = "err";
       status.textContent = "💼 " + unknownRole + " is not in the list — pick each additional role from the dropdown, or recommend it.";
