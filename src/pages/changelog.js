@@ -26,12 +26,22 @@ const C = {
   coverage: "ecbb4cb212ae24b45c9cbd8ba1b00f276b3a7f02", // complete commit coverage + always-linked entries
   names: "bc3b8978e4d1a52cce93f21b92530f2c2075c5d6", // legal/preferred names, date picker, separators
   flags: "327d9182ebe3d2caf7aae42bdb09eac23ffd99c5", // flag outline ring removed
+  popup: "c5432ee27bebe89e90e2f0ce01235ecd5a6763a3", // person popup, dept + roles on cards, hover cakes
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 13, 2026",
+    sub: "Meet your teammates · added 10:58 PM PST",
+    items: [
+      { t: "Click a card, meet the person", d: "— every birthday card now opens a full profile popup: photo, department, primary title, additional roles, birthday countdown, join date, location, socials, calendar link, and the complete horoscope reading — everything about a teammate in one organized view.", c: C.popup },
+      { t: "Cards tell you more at a glance", d: "— each card now shows the person's department above a bold primary title, with their additional roles listed right below (replacing the old \"+N roles\" chip).", c: C.popup },
+      { t: "Cakes follow your cursor", d: "— 🎂 now bubbles up from wherever your cursor rests while hovering a card (instead of on click), and politely pauses while you're reading someone's horoscope.", c: C.popup },
+    ],
+  },
   {
     date: "July 13, 2026",
     sub: "Names, dates &amp; a cleaner form · added 10:37 PM PST",
