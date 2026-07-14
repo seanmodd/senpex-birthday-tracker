@@ -171,11 +171,15 @@ export const VISITORS_PAGE = `<!doctype html>
   .v-loc { font-weight: 600; font-size: 14px; }
   .v-ip { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
   .v-name { color: var(--brand); font-weight: 600; }
+  /* Uniform box + object-fit: contain — same footprint for every flag, real
+     proportions preserved (matches the birthday wall). */
   img.flag {
-    height: 13px; width: auto; border-radius: 2px;
-    vertical-align: -2px; margin-right: 6px;
+    width: 20px; height: 14px; object-fit: contain; object-position: center;
+    border-radius: 2px; vertical-align: -3px; margin-right: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
   }
-  #gtip img.flag, .dlg-sub img.flag { height: 12px; }
+  #gtip img.flag, .dlg-sub img.flag { width: 18px; height: 13px; }
   .v-right { margin-left: auto; text-align: right; flex: none; }
   .v-time { color: #cfc9c2; font-size: 13px; white-space: nowrap; }
   .v-path { color: var(--muted); font-size: 11.5px; margin-top: 2px; }

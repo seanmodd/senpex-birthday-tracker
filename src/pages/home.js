@@ -397,9 +397,16 @@ export const PAGE = `<!doctype html>
     border: 1px solid #ffc9b3; border-radius: 7px;
     padding: 8px 12px; margin-right: 10px; cursor: pointer;
   }
-  /* Fixed height + natural width: every flag shares the row height while
-     keeping its country's true proportions (JP is squarer than US, etc.). */
-  img.flag { height: 12px; width: auto; border-radius: 2px; vertical-align: -1px; }
+  /* Uniform box for every flag (same width AND height everywhere), with the
+     real flag scaled to fit inside via object-fit: contain — so proportions
+     stay correct (JP squarer than US) but the footprint is identical. A faint
+     tile makes the shared box read cleanly on both light and dark surfaces. */
+  img.flag {
+    width: 20px; height: 14px; object-fit: contain; object-position: center;
+    border-radius: 2px; vertical-align: -2px;
+    background: rgba(128, 128, 128, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.22);
+  }
   .p-when { font-size: 13.5px; color: var(--ink-2); }
   .p-when b { color: var(--brand-dark); }
   a.gcal {
@@ -493,8 +500,9 @@ export const PAGE = `<!doctype html>
     gap: 9px; flex-wrap: wrap; margin: 10px auto 2px; min-height: 20px;
   }
   .hero-flags img.flag {
-    height: 19px; width: auto; border-radius: 3px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    width: 30px; height: 21px; border-radius: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 1px 4px rgba(0, 0, 0, 0.4);
   }
   .hero-cta {
     margin-top: 18px;
@@ -2541,7 +2549,7 @@ export const PAGE = `<!doctype html>
       // Auto-spin only when un-zoomed, not being touched, no teammate is
       // being hovered in the roster, and idle for half a beat.
       if (tZoom === 1 && !pDown && !focusName && Date.now() - lastInteract > 500) {
-        gLon = gLon - 5.5 * dt;
+        gLon = gLon - 14 * dt;
         if (gLon < -180) gLon += 360;
       }
       drawTeamGlobe();
