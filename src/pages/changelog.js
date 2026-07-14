@@ -23,12 +23,21 @@ const C = {
   ghRefs: "ad9aaedf6e6c85450b18d1f7705d2593d2c1f48b", // per-bullet GitHub commit links
   tidy: "2dc85a5b2ee12744ba9aa39e786f95cc3f7cb3c8", // consolidation + hash pills
   tidyRecord: "3ba97336c6f03c4e795240e03d2f9a0984a90072", // recorded the tidy-up release's own pill hash
+  coverage: "ecbb4cb212ae24b45c9cbd8ba1b00f276b3a7f02", // complete commit coverage + always-linked entries
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 13, 2026",
+    sub: "Complete commit coverage · added 8:41 PM PST",
+    items: [
+      { t: "Every release commit is referenced", d: "— the changelog now shows a pill for every commit behind a release, including the little follow-up that recorded the tidy-up's own commit code (3ba9733 — previously the one commit of a changelogged release without a reference).", c: C.coverage },
+      { t: "Entries link from birth", d: "— new releases now record their changelog right after the feature commit exists, so every new bullet links to a real commit code from the moment it appears; placeholder pills are gone for good.", c: C.coverage },
+    ],
+  },
   {
     date: "July 11, 2026",
     sub: "Changelog tidy-up · added 4:55 PM PST",
