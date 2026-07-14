@@ -475,6 +475,14 @@ export const PAGE = `<!doctype html>
     to { opacity: 1; transform: none; }
   }
   .dialog.wide { max-width: 580px; max-height: 88vh; overflow-y: auto; }
+  .hero-flags {
+    display: flex; justify-content: center; align-items: center;
+    gap: 9px; flex-wrap: wrap; margin: 10px auto 2px; min-height: 20px;
+  }
+  .hero-flags img.flag {
+    width: 27px; border-radius: 3px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  }
   .hero-cta {
     margin-top: 18px;
     font: inherit; font-size: 15.5px; font-weight: 700;
@@ -562,6 +570,7 @@ export const PAGE = `<!doctype html>
   </div>
   <img class="logo" src="/logo.png?v=2" alt="Senpex / Pckup logo">
   <h1>Team Birthday Tracker</h1>
+  <div id="heroFlags" class="hero-flags" aria-label="Countries the team works from"></div>
   <p>Add your birthday so we know the most important day in your life!</p>
   <button class="hero-cta" id="openForm" type="button">🎈 Add your birthday</button>
 </header>
@@ -1364,11 +1373,32 @@ export const PAGE = `<!doctype html>
     }
   }
 
+  // One flag under the hero title per unique country the team works from —
+  // US first, the rest alphabetically. Rebuilt on every load, so a new
+  // submission from a new country shows up on its own.
+  function renderHeroFlags(list) {
+    var box = document.getElementById("heroFlags");
+    if (!box) return;
+    var seen = {};
+    list.forEach(function (b) {
+      if (b.country) seen[String(b.country).toUpperCase()] = true;
+    });
+    var codes = Object.keys(seen).sort();
+    var us = codes.indexOf("US");
+    if (us > 0) { codes.splice(us, 1); codes.unshift("US"); }
+    box.innerHTML = "";
+    codes.forEach(function (cc) {
+      var f = flagEl(cc);
+      if (f) { f.title = cc; box.appendChild(f); }
+    });
+  }
+
   function load() {
     fetch("/api/birthdays")
       .then(function (r) { return r.json(); })
       .then(function (list) {
         allBirthdays = list;
+        renderHeroFlags(list);
         renderWall();
       })
       .catch(function () {});
