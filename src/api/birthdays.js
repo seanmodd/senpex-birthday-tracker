@@ -244,7 +244,7 @@ export async function submit(request, env) {
 // tracker already shows publicly.
 export async function teamLocations(env) {
   const { results } = await env.DB.prepare(
-    "SELECT name, city, country, latitude, longitude, timezone " +
+    "SELECT name, position, city, country, latitude, longitude, timezone " +
       "FROM birthdays ORDER BY name"
   ).all();
   return json(results);

@@ -151,9 +151,15 @@ export const PAGE = `<!doctype html>
   .zp-sub { color: var(--brand-dark); font-size: 12px; font-weight: 600; margin-bottom: 6px; }
   .zp-text { color: var(--muted); font-size: 12.5px; line-height: 1.45; }
   .zp-job-title {
-    margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line);
+    margin-top: 7px;
     font-weight: 700; font-size: 12.5px; color: var(--brand-dark); margin-bottom: 3px;
   }
+  .zp-fit-hl {
+    background: var(--tint); color: var(--brand-deep); font-weight: 600;
+    padding: 1px 3px; border-radius: 4px;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  }
+  .zp-more { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line); }
   .p-dept {
     font-size: 11px; font-weight: 700; text-transform: uppercase;
     letter-spacing: 0.4px; color: var(--brand-dark); margin-bottom: 1px;
@@ -238,8 +244,25 @@ export const PAGE = `<!doctype html>
     box-shadow: 0 6px 18px rgba(26, 23, 20, 0.06);
     padding: 18px 22px; margin: 26px 4px 0;
   }
-  .tg-canvas { flex: 0 1 300px; min-width: 220px; margin: 0 auto; }
-  .tg-canvas canvas { width: 100%; height: auto; display: block; }
+  .tg-canvas { flex: 0 1 300px; min-width: 220px; margin: 0 auto; position: relative; }
+  .tg-canvas canvas {
+    width: 100%; height: auto; display: block;
+    touch-action: pan-y; cursor: grab; border-radius: 50%;
+  }
+  #tgtip {
+    position: absolute; z-index: 25; pointer-events: none;
+    background: #fff; border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(26, 23, 20, 0.18);
+    padding: 9px 12px; font-size: 12.5px; line-height: 1.5; max-width: 210px;
+  }
+  #tgtip .tt-name { font-weight: 700; font-size: 13px; }
+  #tgtip .tt-role { color: var(--brand-dark); font-weight: 600; font-size: 12px; }
+  #tgtip .tt-loc { color: var(--muted); }
+  #tgtip .tg-time { display: block; margin-left: 0; }
+  #tgReset {
+    position: absolute; top: 4px; right: 4px; z-index: 26;
+    font-size: 12px; padding: 7px 12px; min-height: 34px;
+  }
   .tg-side { flex: 1 1 280px; min-width: 250px; }
   .tg-title { margin: 0 0 4px; font-size: 17px; }
   .tg-sub { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
@@ -284,7 +307,8 @@ export const PAGE = `<!doctype html>
     margin-top: 8px; padding: 12px 14px; border: 1px solid var(--line);
     border-radius: 10px; background: var(--bg);
   }
-  .pv-socials { display: flex; gap: 8px; margin-top: 10px; }
+  .pv-socials { display: flex; gap: 8px; }
+  .pv-soc-note { margin: 0 0 9px; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
   #recmodal { z-index: 55; }
   .rec-note { font-size: 12.5px; color: var(--muted); margin-top: 8px; line-height: 1.45; }
   .rec-warn {
@@ -541,7 +565,11 @@ export const PAGE = `<!doctype html>
   <div id="todayBanner" class="today-banner" hidden></div>
 
   <div class="team-globe">
-    <div class="tg-canvas"><canvas id="tglobe" width="440" height="440" role="img" aria-label="Spinning globe showing where every teammate is in the world"></canvas></div>
+    <div class="tg-canvas">
+      <canvas id="tglobe" width="440" height="440" role="img" aria-label="Interactive globe showing where every teammate is in the world — drag to spin, click a marker to zoom in"></canvas>
+      <div id="tgtip" hidden></div>
+      <button id="tgReset" class="ghost" type="button" hidden>⤾ Reset view</button>
+    </div>
     <div class="tg-side">
       <h3 class="tg-title">🌍 One team, all around the world</h3>
       <p class="tg-sub">Where everyone is right now — and their local date &amp; time at this very moment.</p>
@@ -1089,18 +1117,31 @@ export const PAGE = `<!doctype html>
     return e;
   }
 
-  // Fills a container with a sign's dates, element/ruler, personality blurb,
-  // and role-fit note — shared by the card hover popover and the person popup.
+  // Fills a container with a sign's reading — shared by the card hover
+  // popover and the person popup. Order: the ⭐ Sign × role fit leads (with
+  // its second sentence — the "why they're perfect for the job" part —
+  // highlighted), then the element/ruler line and personality blurb.
   function signInfoInto(box, z, position) {
     var zinfo = ZINFO[z[0]];
     if (!zinfo) return false;
     box.appendChild(el("div", "zp-title", z[1] + " " + z[0] + " · " + zinfo[0]));
-    box.appendChild(el("div", "zp-sub", zinfo[1]));
-    box.appendChild(el("div", "zp-text", zinfo[2]));
     if (ZJOB[z[0]] && position) {
       box.appendChild(el("div", "zp-job-title", "⭐ Sign × role fit"));
-      box.appendChild(el("div", "zp-text", ZJOB[z[0]].split("{ROLE}").join(position)));
+      var fit = ZJOB[z[0]].split("{ROLE}").join(position);
+      var cut = fit.indexOf(". ");
+      var fitEl = el("div", "zp-text");
+      if (cut > 0) {
+        fitEl.appendChild(document.createTextNode(fit.slice(0, cut + 2)));
+        fitEl.appendChild(el("mark", "zp-fit-hl", fit.slice(cut + 2)));
+      } else {
+        fitEl.textContent = fit;
+      }
+      box.appendChild(fitEl);
     }
+    var more = el("div", "zp-more");
+    more.appendChild(el("div", "zp-sub", zinfo[1]));
+    more.appendChild(el("div", "zp-text", zinfo[2]));
+    box.appendChild(more);
     return true;
   }
 
@@ -2075,17 +2116,24 @@ export const PAGE = `<!doctype html>
       row("Location", loc);
     }
     det.appendChild(grid);
+    body.appendChild(det);
+
+    // Socials get their own segment — a nudge to actually reach out.
     var ig = socialLink("ig", b.instagram, "Instagram");
     var li = socialLink("li", b.linkedin, "LinkedIn");
     var xx = socialLink("x", b.x_handle, "X");
     if (ig || li || xx) {
+      var socSec = el("div", "pv-sec");
+      socSec.appendChild(el("span", "lbl", "💬 Get to know your teammate!"));
+      socSec.appendChild(el("p", "pv-soc-note",
+        "Say hi, follow, connect — a quick hello goes a long way across timezones."));
       var soc = el("div", "pv-socials");
       if (ig) soc.appendChild(ig);
       if (li) soc.appendChild(li);
       if (xx) soc.appendChild(xx);
-      det.appendChild(soc);
+      socSec.appendChild(soc);
+      body.appendChild(socSec);
     }
-    body.appendChild(det);
 
     var zsec = el("div", "pv-sec");
     zsec.appendChild(el("span", "lbl", "Horoscope"));
@@ -2203,16 +2251,21 @@ export const PAGE = `<!doctype html>
     var GC = 220, GR = 205;
     var D2R = Math.PI / 180;
     var gLon = -30, gLat = 18;
+    var gZoom = 1, tZoom = 1, tLon = null, tLat = null;
     var gRings = null;
     var team = [];
+    var dotHits = [];
+    var lastInteract = 0;
+    var pDown = false, pDragged = false, pX = 0, pY = 0;
 
     function gProject(lon, lat) {
       var l = lon * D2R, p = lat * D2R, l0 = gLon * D2R, p0 = gLat * D2R;
       var cosc = Math.sin(p0) * Math.sin(p) + Math.cos(p0) * Math.cos(p) * Math.cos(l - l0);
       if (cosc < 0) return null;
+      var R2 = GR * gZoom;
       return [
-        GC + GR * Math.cos(p) * Math.sin(l - l0),
-        GC - GR * (Math.cos(p0) * Math.sin(p) - Math.sin(p0) * Math.cos(p) * Math.cos(l - l0))
+        GC + R2 * Math.cos(p) * Math.sin(l - l0),
+        GC - R2 * (Math.cos(p0) * Math.sin(p) - Math.sin(p0) * Math.cos(p) * Math.cos(l - l0))
       ];
     }
     function gTrace(pts) {
@@ -2267,7 +2320,7 @@ export const PAGE = `<!doctype html>
     function drawTeamGlobe() {
       g.clearRect(0, 0, 440, 440);
       g.beginPath();
-      g.arc(GC, GC, GR, 0, 2 * Math.PI);
+      g.arc(GC, GC, GR * gZoom, 0, 2 * Math.PI);
       g.fillStyle = "#fdfcfa";
       g.fill();
       g.strokeStyle = "#e3dcd3";
@@ -2290,19 +2343,34 @@ export const PAGE = `<!doctype html>
         g.lineWidth = 0.8;
         g.stroke();
       }
+      // Dots: teammates sharing a city fan out around the spot in a small
+      // ring that widens as you zoom, so dense clusters stay decipherable.
+      dotHits = [];
       var pulse = 1 + 0.18 * Math.sin(Date.now() / 300);
+      var fan = 5 + Math.min(1, (gZoom - 1) / 1.8) * 15;
       team.forEach(function (p) {
-        if (p.dlat === undefined) return;
-        var xy = gProject(p.dlon, p.dlat);
+        if (p.latitude === null || p.latitude === undefined ||
+            p.longitude === null || p.longitude === undefined) return;
+        var xy = gProject(p.longitude, p.latitude);
         if (!xy) return;
+        var x = xy[0], y = xy[1];
+        if (p.gN > 1) {
+          var ang = (p.gI / p.gN) * 2 * Math.PI - Math.PI / 2;
+          x += Math.cos(ang) * fan;
+          y += Math.sin(ang) * fan;
+        }
         g.beginPath();
-        g.arc(xy[0], xy[1], 11 * pulse, 0, 2 * Math.PI);
+        g.arc(x, y, 11 * pulse, 0, 2 * Math.PI);
         g.fillStyle = "rgba(255, 92, 51, 0.16)";
         g.fill();
         g.beginPath();
-        g.arc(xy[0], xy[1], 5, 0, 2 * Math.PI);
+        g.arc(x, y, 5.5, 0, 2 * Math.PI);
         g.fillStyle = "#FF5C33";
         g.fill();
+        g.strokeStyle = "#fff";
+        g.lineWidth = 1.2;
+        g.stroke();
+        dotHits.push({ x: x, y: y, p: p });
       });
     }
 
@@ -2311,11 +2379,119 @@ export const PAGE = `<!doctype html>
       if (!lastT) lastT = t;
       var dt = Math.min(0.1, (t - lastT) / 1000);
       lastT = t;
-      gLon = gLon - 5.5 * dt;
-      if (gLon < -180) gLon += 360;
+      // Ease toward the zoom target (and its center) when one is set.
+      if (Math.abs(tZoom - gZoom) > 0.005) {
+        gZoom += (tZoom - gZoom) * Math.min(1, dt * 6);
+      }
+      if (tLat !== null) {
+        var dLon = tLon - gLon;
+        while (dLon > 180) dLon -= 360;
+        while (dLon < -180) dLon += 360;
+        gLon += dLon * Math.min(1, dt * 6);
+        gLat += (tLat - gLat) * Math.min(1, dt * 6);
+        if (Math.abs(dLon) < 0.2 && Math.abs(tLat - gLat) < 0.2) { tLon = null; tLat = null; }
+      }
+      // Auto-spin only when un-zoomed, not being touched, and idle a moment.
+      if (tZoom === 1 && !pDown && Date.now() - lastInteract > 3000) {
+        gLon = gLon - 5.5 * dt;
+        if (gLon < -180) gLon += 360;
+      }
       drawTeamGlobe();
       requestAnimationFrame(gFrame);
     }
+
+    // --- Interaction: drag to spin, hover a dot for the person, click a
+    // --- cluster to zoom in, click open water (or Reset) to zoom back out.
+    var tip = document.getElementById("tgtip");
+    var resetBtn = document.getElementById("tgReset");
+    function canvasPos(ev) {
+      var rect = cv.getBoundingClientRect();
+      var scale = 440 / rect.width;
+      return { x: (ev.clientX - rect.left) * scale, y: (ev.clientY - rect.top) * scale };
+    }
+    function hitDot(pos, slop) {
+      var best = null, bestD = (slop || 12) * (slop || 12);
+      for (var i = 0; i < dotHits.length; i++) {
+        var dx = dotHits[i].x - pos.x, dy = dotHits[i].y - pos.y;
+        var d = dx * dx + dy * dy;
+        if (d < bestD) { bestD = d; best = dotHits[i]; }
+      }
+      return best;
+    }
+    function showTip(hit) {
+      tip.innerHTML = "";
+      var p = hit.p;
+      tip.appendChild(el("div", "tt-name", p.name));
+      if (p.position) tip.appendChild(el("div", "tt-role", p.position));
+      var loc = el("div", "tt-loc");
+      var f = flagEl(p.country);
+      if (f) loc.appendChild(f);
+      loc.appendChild(document.createTextNode(
+        " " + (p.city ? p.city + " · " : "") + (p.country || "")));
+      tip.appendChild(loc);
+      var tEl = el("span", "tg-time");
+      tEl.setAttribute("data-tz", p.timezone || "");
+      tip.appendChild(tEl);
+      tickClocks();
+      var rect = cv.getBoundingClientRect();
+      var sx = hit.x / (440 / rect.width), sy = hit.y / (440 / rect.width);
+      tip.style.left = Math.max(0, Math.min(rect.width - 150, sx + 12)) + "px";
+      tip.style.top = Math.max(0, sy - 14) + "px";
+      tip.hidden = false;
+    }
+    function hideTip() { tip.hidden = true; }
+    function setZoom(z, lat, lon) {
+      tZoom = z;
+      if (lat !== undefined) { tLat = lat; tLon = lon; }
+      resetBtn.hidden = z === 1;
+      lastInteract = Date.now();
+    }
+    resetBtn.addEventListener("click", function () { hideTip(); setZoom(1); });
+
+    cv.addEventListener("pointerdown", function (ev) {
+      pDown = true; pDragged = false;
+      pX = ev.clientX; pY = ev.clientY;
+      lastInteract = Date.now();
+      try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
+    });
+    cv.addEventListener("pointermove", function (ev) {
+      lastInteract = Date.now();
+      if (pDown) {
+        var dx = ev.clientX - pX, dy = ev.clientY - pY;
+        if (Math.abs(dx) + Math.abs(dy) > 4) pDragged = true;
+        if (pDragged) {
+          var scale = 440 / cv.getBoundingClientRect().width;
+          gLon -= dx * 0.3 * scale / gZoom;
+          gLat += dy * 0.3 * scale / gZoom;
+          if (gLat > 78) gLat = 78;
+          if (gLat < -78) gLat = -78;
+          tLon = null; tLat = null;
+          pX = ev.clientX; pY = ev.clientY;
+          hideTip();
+          cv.style.cursor = "grabbing";
+        }
+        return;
+      }
+      var hit = hitDot(canvasPos(ev), 14);
+      if (hit) { showTip(hit); cv.style.cursor = "pointer"; }
+      else { hideTip(); cv.style.cursor = "grab"; }
+    });
+    cv.addEventListener("pointerup", function (ev) {
+      pDown = false;
+      cv.style.cursor = "grab";
+      if (pDragged) { pDragged = false; return; }
+      var hit = hitDot(canvasPos(ev), 16);
+      if (hit) {
+        if (gZoom < 2) setZoom(3.2, hit.p.latitude, hit.p.longitude);
+        showTip(hit);
+      } else {
+        hideTip();
+        if (tZoom > 1) setZoom(1);
+      }
+    });
+    cv.addEventListener("pointerleave", function () {
+      if (!pDown) { hideTip(); cv.style.cursor = "grab"; }
+    });
 
     var clockFmts = {};
     function clockFor(tz) {
@@ -2330,7 +2506,7 @@ export const PAGE = `<!doctype html>
       return clockFmts[tz];
     }
     function tickClocks() {
-      var els = document.querySelectorAll("#tgList .tg-time");
+      var els = document.querySelectorAll(".tg-time");
       var now = new Date();
       for (var i = 0; i < els.length; i++) {
         var tz = els[i].getAttribute("data-tz");
@@ -2367,14 +2543,21 @@ export const PAGE = `<!doctype html>
     fetch("/api/team-locations")
       .then(function (r) { return r.json(); })
       .then(function (d) {
-        team = (d || []).map(function (p, i) {
-          if (p.latitude !== null && p.latitude !== undefined &&
-              p.longitude !== null && p.longitude !== undefined) {
-            // Deterministic nudge so same-office teammates don't stack.
-            p.dlat = p.latitude + (((i * 37) % 10) - 5) * 0.06;
-            p.dlon = p.longitude + (((i * 53) % 10) - 5) * 0.06;
-          }
-          return p;
+        team = d || [];
+        // Group teammates who share a spot (same city) so the renderer can
+        // fan each group out into a ring of distinct, clickable dots.
+        var groups = {};
+        team.forEach(function (p) {
+          if (p.latitude === null || p.latitude === undefined) return;
+          var key = p.latitude.toFixed(1) + "," + p.longitude.toFixed(1);
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(p);
+        });
+        Object.keys(groups).forEach(function (key) {
+          groups[key].forEach(function (p, k) {
+            p.gI = k;
+            p.gN = groups[key].length;
+          });
         });
         buildTeamList();
       })
