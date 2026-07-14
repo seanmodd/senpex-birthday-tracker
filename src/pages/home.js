@@ -1742,6 +1742,24 @@ export const PAGE = `<!doctype html>
       err.hidden = false;
       return;
     }
+    // Titles must come from the list. Grandfather this entry's existing
+    // values so a legacy title/role (from before the library) never blocks
+    // an otherwise-unrelated edit.
+    var kept = {};
+    kept[normSpace(editing.position || "").toLowerCase()] = true;
+    (editing.roles || []).forEach(function (r) { kept[normSpace(r).toLowerCase()] = true; });
+    function okTitle(v) { return !TITLES.length || isKnownTitle(v) || kept[normSpace(v).toLowerCase()] === true; }
+    if (!okTitle(payload.position)) {
+      err.textContent = "Please choose the Primary Job Title from the list, or recommend a new one to add it instantly.";
+      err.hidden = false;
+      return;
+    }
+    var badRole = payload.additional_roles.filter(function (r) { return !okTitle(r); })[0];
+    if (badRole) {
+      err.textContent = badRole + " is not in the list — pick each additional role from the dropdown, or recommend it.";
+      err.hidden = false;
+      return;
+    }
     var btn = this;
     btn.disabled = true;
     fetch("/api/edit", {
@@ -1797,6 +1815,19 @@ export const PAGE = `<!doctype html>
   var ACRONYMS = { "ai": "AI", "qa": "QA", "it": "IT", "ios": "iOS", "api": "API",
     "ux": "UX", "ui": "UI", "mlops": "MLOps", "devops": "DevOps", "seo": "SEO",
     "sem": "SEM", "hr": "HR", "of": "of", "and": "and", "the": "the" };
+  // A title/role is only valid if it's in the approved library — which now
+  // also holds titles recommended this session (see recSubmit), so a fresh
+  // recommendation "shows up now" and passes the mandatory-selection gate.
+  function isKnownTitle(v) {
+    var tl = normSpace(v || "").toLowerCase();
+    if (!tl) return false;
+    for (var i = 0; i < TITLES.length; i++) if (TITLES[i].tl === tl) return true;
+    return false;
+  }
+  function addRecommendedTitle(t) {
+    if (!isKnownTitle(t)) TITLES.push({ t: t, tl: t.toLowerCase(), d: "Recommended" });
+  }
+
   function titleCase(str) {
     return normSpace(str).split(" ").map(function (w, i) {
       var key = w.toLowerCase();
@@ -1853,7 +1884,7 @@ export const PAGE = `<!doctype html>
         drop.appendChild(row);
         items.push({ row: row, title: x.t });
       });
-      var recBtn = el("button", "ac-rec", "Can't find the right title? Recommend a title");
+      var recBtn = el("button", "ac-rec", "Can't find the right title? Recommend a title and get it to show up now!");
       recBtn.type = "button";
       recBtn.addEventListener("mousedown", function (ev) {
         ev.preventDefault();
@@ -2114,6 +2145,9 @@ export const PAGE = `<!doctype html>
     document.getElementById("recFallback").hidden = false;
     warnEl.hidden = true;
     btn.textContent = "Open Email to Send Recommendation";
+    // "Show up now": the recommended title joins the library, so it appears
+    // in the autocomplete and satisfies the mandatory-selection check.
+    addRecommendedTitle(norm);
     if (recSource) {
       recSource.value = norm;
       recSource.dispatchEvent(new Event("change"));
@@ -2329,6 +2363,21 @@ export const PAGE = `<!doctype html>
       additional_roles: formRoles.getRoles()
     };
     if (!payload.name || !payload.legal_first || !payload.legal_last) return;
+    // Primary title and every additional role must be chosen from the list
+    // (a freshly recommended title counts — it's added to the list on submit).
+    // Guarded on TITLES.length so a submit before the library loads can't be
+    // wrongly blocked.
+    if (TITLES.length && !isKnownTitle(payload.position)) {
+      status.className = "err";
+      status.textContent = "💼 Please choose your Primary Job Title from the list — or recommend a new one to add it instantly.";
+      return;
+    }
+    var unknownRole = TITLES.length && payload.additional_roles.filter(function (r) { return !isKnownTitle(r); })[0];
+    if (unknownRole) {
+      status.className = "err";
+      status.textContent = "💼 " + unknownRole + " is not in the list — pick each additional role from the dropdown, or recommend it.";
+      return;
+    }
     var dupes = allBirthdays.filter(function (b) {
       return b.month === payload.month && b.day === payload.day &&
         normName(b.name) !== normName(payload.name);
