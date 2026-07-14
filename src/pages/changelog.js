@@ -38,12 +38,31 @@ const C = {
   sharpFlags: "19fddcb26d988629716a4c389da4a595bd3ac019", // 160px flag sources, cache-busted
   lightbox: "2dc02dad1c5b43214918f98da709741f0cf37774", // photo lightbox, 512px avatars, socials notice, 0.5s globe resume
   polish3: "93756676f7344418a5bfda09569ff1286272b073", // proportional flags, hover-to-fly globe, 768px photos
+  mandatoryTitles: "8282e2ffd994ac7264b18a0f2a5d3c513736afd6", // titles/roles must come from the library; recommend adds live
+  mandatoryFix: "32fc5f560ab8ed82c7fe7880252ca2adfd3e0865", // hardening from adversarial review of the title gate
+  uniformFlags: "a329038f8995659e068709615470d92f5da25b2e", // uniform flag tiles + faster globe spin
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 14, 2026",
+    sub: "Uniform flags &amp; a livelier globe · added 12:52 AM PST",
+    items: [
+      { t: "Flags line up perfectly", d: "— every flag now sits in an identical box (same width and height everywhere), with the real flag scaled to fit inside so its true proportions are never distorted. Japan and the USA finally share the same footprint.", c: C.uniformFlags },
+      { t: "The globe spins with more life", d: "— the team globe's idle rotation is noticeably quicker now.", c: C.uniformFlags },
+    ],
+  },
+  {
+    date: "July 14, 2026",
+    sub: "Titles come from the list now · added 12:46 AM PST",
+    items: [
+      { t: "Pick your title from the dropdown", d: "— the Primary Job Title and every Additional Role must now be chosen from the approved list, so the wall stays consistent and searchable. Existing cards keep their current titles.", c: C.mandatoryTitles, also: ["mandatoryFix"] },
+      { t: "Recommend a title, use it instantly", d: "— can't find the right one? The \"Recommend a title\" flow now adds your suggestion to the list on the spot, so you can select it and save right away while Sean reviews it by email.", c: C.mandatoryTitles },
+    ],
+  },
   {
     date: "July 14, 2026",
     sub: "Beautiful flags, a livelier globe, crisper photos · added 12:32 AM PST",
