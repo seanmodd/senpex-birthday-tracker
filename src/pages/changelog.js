@@ -22,6 +22,7 @@ const C = {
   mailto: "61886f4267a4e98731ec656b040fef8f699d91f4", // email-composer recommendation flow
   ghRefs: "ad9aaedf6e6c85450b18d1f7705d2593d2c1f48b", // per-bullet GitHub commit links
   tidy: "2dc85a5b2ee12744ba9aa39e786f95cc3f7cb3c8", // consolidation + hash pills
+  tidyRecord: "3ba97336c6f03c4e795240e03d2f9a0984a90072", // recorded the tidy-up release's own pill hash
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
@@ -33,7 +34,7 @@ const DAYS = [
     sub: "Changelog tidy-up · added 4:55 PM PST",
     items: [
       { t: "One section per day", d: "— same-day releases now consolidate under a single date heading, each release keeping its own time stamp inside it.", c: C.tidy },
-      { t: "Commit codes as links", d: "— every reference pill now shows the actual 7-character commit code it links to, so you can see at a glance which change shipped what.", c: C.tidy },
+      { t: "Commit codes as links", d: "— every reference pill now shows the actual 7-character commit code it links to, so you can see at a glance which change shipped what.", c: C.tidy, also: ["tidyRecord"] },
     ],
   },
   {

@@ -1,5 +1,20 @@
 # HANDOFF — Senpex / Pckup Team Birthday Tracker
 
+> **ADDENDUM 4 (2026-07-13, ~8:35 PM PT):** the tidy-up release's
+> link-record commit (`3ba9733`) is now referenced as a related pill on the
+> "Commit codes as links" bullet — Sean flagged that it was the one commit
+> of a changelogged release with no reference. The ship pattern in
+> Addendum 3 is RETIRED in favor of a cleaner one that never creates
+> placeholders or unreferenced release commits: **the feature commit ships
+> the product change only (no changelog edit); an immediate follow-up
+> "changelog: <release>" commit adds the bullets, referencing the feature
+> commit's now-known hash directly; deploy after the changelog commit.**
+> Changelog-only commits are plumbing and carry no bullets of their own
+> (established precedent: `6872aea`, `3ba9733`, the README-only commits) —
+> this is the documented, principled exception that terminates the
+> otherwise-infinite self-reference regress. Footer date advanced to
+> July 13 per the every-ship rule.
+>
 > **ADDENDUM 3 (2026-07-11, ~5:00 PM PT):** changelog presentation refined
 > per Sean: ONE section per unique date (same-day releases consolidate under
 > a single date heading, each keeping its time-stamped sub-line — the
