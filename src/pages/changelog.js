@@ -34,12 +34,20 @@ const C = {
   socialsCopy: "c39c6f7f59d64f6019b7035153cd83a7c0d94460", // socials notice: add LinkedIn, "sign-in API isn't live yet"
   openEdit2: "7d6e198e296ca48c30db4276cb7c93d841097133", // server-side open editing + edit modal matches the add form
   heroFlags: "b70f478ddfd6b2b321c4b5f3885b06e4304bf64d", // hero flag row: one flag per team country
+  legalPrefill: "d5cda91c788f170b2e930c0dcc6a5f036ff5124c", // legal names always prefill on edit; year stays token-gated
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 14, 2026",
+    sub: "Legal names stay put when editing · added 12:04 AM PST",
+    items: [
+      { t: "No more vanishing legal names", d: "— opening the edit form now always shows the legal first and last name on file, from any browser or device, so they're easy to review and keep current. They still never appear on the wall or anyone's card, and birth years remain visible only to the browser that owns the entry.", c: C.legalPrefill },
+    ],
+  },
   {
     date: "July 13, 2026",
     sub: "Flying the team's flags · added 11:57 PM PST",
