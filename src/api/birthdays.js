@@ -74,9 +74,11 @@ export async function listBirthdays(env, request) {
 
 // Shared field validation for submit and edit. Returns { error, status } or
 // the cleaned fields.
-function parseEntry(body) {
+function parseEntry(body, legalOptional) {
   // `name` is the PREFERRED name — the one shown on the card and the wall.
   // Legal first/last names are mandatory but never displayed to the team.
+  // Edits pass legalOptional: blanks mean "keep what's stored" there, since
+  // an editor without the row's token can't see the private values to retype.
   const name = String(body.name || "").trim().replace(/\s+/g, " ");
   const legalFirst = String(body.legal_first || "").trim().replace(/\s+/g, " ");
   const legalLast = String(body.legal_last || "").trim().replace(/\s+/g, " ");
@@ -88,9 +90,9 @@ function parseEntry(body) {
       ? null
       : Number.parseInt(body.year, 10);
 
-  if (!legalFirst || legalFirst.length > 60)
+  if ((!legalOptional && !legalFirst) || legalFirst.length > 60)
     return { error: "Please enter your legal first name (up to 60 characters)." };
-  if (!legalLast || legalLast.length > 60)
+  if ((!legalOptional && !legalLast) || legalLast.length > 60)
     return { error: "Please enter your legal last name (up to 60 characters)." };
   if (!name || name.length > 100)
     return { error: "Please enter your preferred name (up to 100 characters)." };
@@ -301,8 +303,12 @@ async function ownsEntry(env, request, row, token) {
   return (await namesOnNetwork(env, reqIp)).has(row.name_key);
 }
 
-// Owner-only edits: requires the edit token issued to the browser that
-// created (or last submitted) the entry. Without it → 403.
+// Open editing (July 13, per Sean): anyone may edit any card for now — no
+// 403. Ownership still decides an edit's blast radius: only a real owner or
+// claimer rotates the edit token, refreshes the row's geo/identity, and gets
+// the token back. An open edit can update the visible fields but can never
+// hijack the owner's access, teleport their globe dot, or blank their
+// private legal names/birth year (blanks fall back to what's stored).
 export async function editEntry(request, env) {
   let body;
   try {
@@ -314,7 +320,7 @@ export async function editEntry(request, env) {
   const token = String(body.token || "");
   if (!Number.isInteger(id) || id <= 0)
     return json({ error: "Missing entry id." }, 400);
-  const entry = parseEntry(body);
+  const entry = parseEntry(body, true);
   if (entry.error) return json({ error: entry.error }, 400);
   const { name, legalFirst, legalLast, position, month, day, year, joinMonth, joinYear, roles } = entry;
   const rolesJson = roles.length ? JSON.stringify(roles) : null;
@@ -326,31 +332,45 @@ export async function editEntry(request, env) {
   const xHandle = socials.x;
 
   const row = await env.DB.prepare(
-    "SELECT edit_token, name_key, ip, avatar FROM birthdays WHERE id = ?1"
+    "SELECT edit_token, name_key, ip, avatar, legal_first, legal_last, " +
+      "city, country, latitude, longitude, timezone " +
+      "FROM birthdays WHERE id = ?1"
   )
     .bind(id)
     .first();
   if (!row) return json({ error: "That entry no longer exists." }, 404);
-  // body.claim === true is the explicit "This is me" takeover from the UI.
-  // It needs no prior proof — same trust level as the existing ability to
-  // resubmit the form under any name — and hands this browser the token.
+  // body.claim === true is the explicit takeover from the UI (editing a card
+  // that isn't marked yours): same honor-system trust level as resubmitting
+  // the form under any name — it hands this browser the fresh token.
   const claimed = body.claim === true;
-  const authorized = claimed || (await ownsEntry(env, request, row, token));
-  if (!authorized)
-    return json(
-      { error: "You can only edit your own entry. If this card is yours, use its \"This is me\" button to claim it." },
-      403
-    );
-  const newToken = crypto.randomUUID();
+  const owns = claimed || (await ownsEntry(env, request, row, token));
+  const newToken = owns ? crypto.randomUUID() : row.edit_token;
 
-  const ip =
+  const reqIp =
     request.headers.get("cf-connecting-ip") ||
     request.headers.get("x-real-ip") ||
     null;
   const cf = request.cf || {};
-  const geoLat = cf.latitude !== undefined ? Number.parseFloat(cf.latitude) : null;
-  const geoLon = cf.longitude !== undefined ? Number.parseFloat(cf.longitude) : null;
-  const geoTz = cf.timezone || null;
+  // Identity-bearing fields follow ownership: an owner/claimer stamps their
+  // own network + location; an open edit leaves the owner's untouched.
+  const ip = owns ? reqIp : row.ip;
+  const geoCity = owns ? cf.city || null : row.city;
+  const geoCountry = owns ? cf.country || null : row.country;
+  const geoLat = owns
+    ? (cf.latitude !== undefined ? Number.parseFloat(cf.latitude) : null)
+    : row.latitude;
+  const geoLon = owns
+    ? (cf.longitude !== undefined ? Number.parseFloat(cf.longitude) : null)
+    : row.longitude;
+  const geoTz = owns ? cf.timezone || null : row.timezone;
+  // Private fields never blank out: an empty submission keeps what's stored
+  // (and the mandatory rule still holds — the final value can't be empty).
+  const finalLegalFirst = legalFirst || row.legal_first || null;
+  const finalLegalLast = legalLast || row.legal_last || null;
+  if (!finalLegalFirst)
+    return json({ error: "Please enter your legal first name (up to 60 characters)." }, 400);
+  if (!finalLegalLast)
+    return json({ error: "Please enter your legal last name (up to 60 characters)." }, 400);
 
   // Avatar: undefined = keep current, data URL = replace. A photo is
   // mandatory, so the result can never be empty.
@@ -369,7 +389,7 @@ export async function editEntry(request, env) {
   try {
     await env.DB.prepare(
       "UPDATE birthdays SET name = ?1, name_key = ?2, company = ?3, position = ?4, " +
-        "month = ?5, day = ?6, year = ?7, ip = ?8, edit_token = ?9, " +
+        "month = ?5, day = ?6, year = COALESCE(?7, year), ip = ?8, edit_token = ?9, " +
         "city = ?10, country = ?11, avatar = ?12, instagram = ?13, linkedin = ?14, " +
         "x_handle = ?15, join_month = ?16, join_day = ?17, join_year = ?18, " +
         "additional_roles = ?20, legal_first = ?21, legal_last = ?22, " +
@@ -378,9 +398,9 @@ export async function editEntry(request, env) {
     )
       .bind(
         name, name.toLowerCase(), COMPANY, position, month, day, year, ip,
-        newToken, cf.city || null, cf.country || null,
+        newToken, geoCity, geoCountry,
         avatar, instagram, linkedin, xHandle, joinMonth, null, joinYear, id, rolesJson,
-        legalFirst, legalLast, geoLat, geoLon, geoTz
+        finalLegalFirst, finalLegalLast, geoLat, geoLon, geoTz
       )
       .run();
   } catch (e) {
@@ -388,7 +408,9 @@ export async function editEntry(request, env) {
       return json({ error: "That name is already on the wall — use a different name." }, 409);
     throw e;
   }
-  return json({ ok: true, id: id, token: newToken });
+  // Only an owner/claimer gets the token back — an open edit must not
+  // capture ownership of someone else's card.
+  return json({ ok: true, id: id, token: owns ? newToken : null });
 }
 
 // Owner-only delete (same ownership rules as edit; claim allowed so nobody

@@ -419,7 +419,7 @@ export const PAGE = `<!doctype html>
     text-decoration: none; border-bottom: 1px dashed var(--line);
   }
   a.claimlink:hover { color: var(--brand-dark); border-bottom-color: var(--brand); }
-  #bform .row:last-of-type .field { flex: 1 1 100%; }
+  #bform .row:last-of-type .field, #eform .row:last-of-type .field { flex: 1 1 100%; }
   .claim-note {
     background: var(--tint); border: 1px solid #ffc9b3; border-radius: 8px;
     color: var(--brand-deep); font-size: 12.5px; line-height: 1.45;
@@ -786,87 +786,98 @@ export const PAGE = `<!doctype html>
 </div>
 
 <div id="emodal" class="overlay" hidden>
-  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="eTitle">
+  <div class="dialog wide" role="dialog" aria-modal="true" aria-labelledby="eTitle">
     <button class="dlg-x" id="eClose" type="button" aria-label="Close">×</button>
     <h3 id="eTitle">✏️ Edit your entry</h3>
     <p class="dlg-sub">Change anything — your name, position, or the date. Only you can edit this card.</p>
-    <p class="claim-note" id="claimNote" hidden>You're claiming this card as yours — after saving, you can edit or delete it from this browser. Please only claim your own entry.</p>
-    <div style="margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap">
-      <div style="flex:1 1 120px">
-        <label class="lbl" for="eLegalFirst">Legal first name</label>
-        <input id="eLegalFirst" maxlength="60" autocomplete="given-name">
-      </div>
-      <div style="flex:1 1 120px">
-        <label class="lbl" for="eLegalLast">Legal last name</label>
-        <input id="eLegalLast" maxlength="60" autocomplete="family-name">
-      </div>
-      <div style="flex:1 1 100%">
-        <label class="lbl" for="eName">Preferred name<span class="tip-wrap"><button type="button" class="tip" aria-describedby="ePrefTipPop">?</button><span class="tip-pop" role="tooltip" id="ePrefTipPop">Your preferred name is what appears on your birthday card and everywhere on the wall. Your legal first and last name are kept for company records and are never displayed to the team.</span></span></label>
-        <input id="eName" maxlength="100" autocomplete="nickname">
-      </div>
-    </div>
-    <div style="margin-bottom:10px">
-      <label class="lbl" for="ePos">Primary Job Title <span class="req-badge">Primary</span></label>
-      <div class="ac-wrap">
-        <input id="ePos" maxlength="100" placeholder="Start typing your job title…" autocomplete="off">
-      </div>
-      <span class="hint">Select the title that best represents your main role at the company.</span>
-      <div class="roles-sec" style="margin-top:12px">
-        <span class="lbl">Additional Roles <span style="text-transform:none">(optional)</span></span>
-        <div id="eRolesList"></div>
-        <div class="role-err" id="eRolesErr" hidden></div>
-        <button class="ghost" type="button" id="eAddRole" style="margin-top:10px">＋ Add Additional Role</button>
-        <p class="hint" id="eRolesMax" hidden>Maximum of four additional roles reached.</p>
-      </div>
-    </div>
-    <div class="sep-top">
-      <label class="lbl" for="eBdate">Birthday</label>
-      <input id="eBdate" type="date" min="1900-01-01" max="2020-12-31" style="margin-top:5px">
-    </div>
-    <div class="sep-top" style="display:flex;gap:10px;flex-wrap:wrap">
-      <div style="flex:2 1 140px">
-        <label class="lbl" for="eJMonth">Month joined</label>
-        <select id="eJMonth"></select>
-      </div>
-      <div style="flex:1 1 110px">
-        <label class="lbl" for="eJYear">Year joined</label>
-        <input id="eJYear" type="number" required min="1990" max="2030" placeholder="e.g. 2023">
-      </div>
-    </div>
-    <div class="sep-top">
-      <label class="lbl" for="eAvatar">Photo</label>
-      <div class="av-row">
-        <img id="eAvPrev" class="av-prev" alt="" hidden>
-        <input id="eAvatar" type="file" accept="image/*">
-      </div>
-    </div>
-    <div class="sep-top">
-      <span class="lbl">Socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="eSocTipPop">?</button><span class="tip-pop" role="tooltip" id="eSocTipPop">The Instagram, LinkedIn, and X "sign in" buttons aren't connected yet — the official sign-in API isn't live yet while we finish the integration. For now, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way.</span></span></span>
-      <p class="soc-note" style="margin:6px 0 0">🚧 <b>Under construction:</b> Instagram / LinkedIn / X sign-in API isn't live yet — just type your handle or paste your profile URL.</p>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
-      <div style="flex:1 1 130px">
-        <label class="lbl" for="eIg">Instagram</label>
-        <div class="soc-input">
-          <span class="soc-ico soc-click" data-soc="ig" data-igin="eIg" role="button" tabindex="0" title="Sign in with Instagram to verify (business/creator accounts)"></span>
-          <input id="eIg" maxlength="200" placeholder="@handle or sign in →">
+    <p class="claim-note" id="claimNote" hidden>Anyone can edit any card right now. If this is a teammate's card, be kind — changes show on the wall immediately, and their private details (legal name, birth year) stay protected either way.</p>
+    <form id="eform">
+      <div class="row">
+        <div class="field" style="flex:1 1 150px">
+          <label for="eLegalFirst">Legal first name</label>
+          <input id="eLegalFirst" maxlength="60" autocomplete="given-name">
+        </div>
+        <div class="field" style="flex:1 1 150px">
+          <label for="eLegalLast">Legal last name</label>
+          <input id="eLegalLast" maxlength="60" autocomplete="family-name">
+        </div>
+        <div class="field" style="flex:1 1 100%">
+          <label for="eName">Preferred name<span class="tip-wrap"><button type="button" class="tip" aria-describedby="ePrefTipPop">?</button><span class="tip-pop" role="tooltip" id="ePrefTipPop">Your preferred name is what appears on your birthday card and everywhere on the wall. Your legal first and last name are kept for company records and are never displayed to the team.</span></span></label>
+          <input id="eName" maxlength="100" autocomplete="nickname">
         </div>
       </div>
-      <div style="flex:1 1 130px">
-        <label class="lbl" for="eLi">LinkedIn</label>
-        <div class="soc-input">
-          <span class="soc-ico" data-soc="li"></span>
-          <input id="eLi" maxlength="200" placeholder="profile URL">
+      <div class="row">
+        <div class="field" style="flex:1 1 100%">
+          <label for="ePos">Primary Job Title <span class="req-badge">Primary</span></label>
+          <div class="ac-wrap">
+            <input id="ePos" maxlength="100" placeholder="Start typing your job title…" autocomplete="off">
+          </div>
+          <span class="hint">Select the title that best represents your main role at the company.</span>
+        </div>
+        <div class="field roles-sec" style="flex:1 1 100%">
+          <span class="lbl">Additional Roles <span style="text-transform:none">(optional)</span></span>
+          <div id="eRolesList"></div>
+          <div class="role-err" id="eRolesErr" hidden></div>
+          <button class="ghost" type="button" id="eAddRole" style="margin-top:10px">＋ Add Additional Role</button>
+          <p class="hint" id="eRolesMax" hidden>Maximum of four additional roles reached.</p>
         </div>
       </div>
-      <div style="flex:1 1 130px">
-        <label class="lbl" for="eX">X</label>
-        <div class="soc-input">
-          <span class="soc-ico soc-x soc-click" data-soc="x" data-xin="eX" role="button" tabindex="0" title="Sign in with X to verify your handle"></span>
-          <input id="eX" maxlength="200" placeholder="@handle or sign in →">
+      <div class="row sep-top">
+        <div class="field" style="flex:1 1 100%">
+          <label for="eBdate">Birthday</label>
+          <input id="eBdate" type="date" min="1900-01-01" max="2020-12-31">
+          <span class="hint">Pick the month, day, and year in one go — the year is never shown to the team.</span>
         </div>
       </div>
-    </div>
+      <div class="row sep-top">
+        <div class="field" style="flex:2 1 180px">
+          <label for="eJMonth">Month joined</label>
+          <select id="eJMonth"></select>
+        </div>
+        <div class="field" style="flex:1 1 120px">
+          <label for="eJYear">Year joined</label>
+          <input id="eJYear" type="number" required min="1990" max="2030" placeholder="e.g. 2023">
+        </div>
+      </div>
+      <div class="row sep-top">
+        <div class="field">
+          <span class="lbl">Photo</span>
+          <div class="av-row">
+            <img id="eAvPrev" class="av-prev" alt="" hidden>
+            <input id="eAvatar" type="file" accept="image/*">
+          </div>
+        </div>
+      </div>
+      <div class="row sep-top" style="margin-bottom:4px">
+        <div class="field" style="flex:1 1 100%">
+          <span class="lbl">Socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="eSocTipPop">?</button><span class="tip-pop" role="tooltip" id="eSocTipPop">The Instagram, LinkedIn, and X "sign in" buttons aren't connected yet — the official sign-in API isn't live yet while we finish the integration. For now, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way.</span></span></span>
+          <p class="soc-note">🚧 <b>Under construction:</b> Instagram / LinkedIn / X sign-in API isn't live yet — just type your handle or paste your profile URL.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="eIg">Instagram <span style="text-transform:none">— click the logo to sign in</span></label>
+          <div class="soc-input">
+            <span class="soc-ico soc-click" data-soc="ig" data-igin="eIg" role="button" tabindex="0" title="Sign in with Instagram to verify (business/creator accounts)"></span>
+            <input id="eIg" maxlength="200" placeholder="@handle, URL, or sign in →">
+          </div>
+        </div>
+        <div class="field">
+          <label for="eLi">LinkedIn</label>
+          <div class="soc-input">
+            <span class="soc-ico" data-soc="li"></span>
+            <input id="eLi" maxlength="200" placeholder="profile URL or handle">
+          </div>
+        </div>
+        <div class="field">
+          <label for="eX">X <span style="text-transform:none">— click the logo to sign in &amp; verify</span></label>
+          <div class="soc-input">
+            <span class="soc-ico soc-x soc-click" data-soc="x" data-xin="eX" role="button" tabindex="0" title="Sign in with X to verify your handle"></span>
+            <input id="eX" maxlength="200" placeholder="@handle, URL, or sign in →">
+          </div>
+        </div>
+      </div>
+    </form>
     <p id="eErr" hidden></p>
     <div class="dlg-row">
       <button class="ghost" id="eCancel" type="button">Cancel</button>
@@ -1561,7 +1572,7 @@ export const PAGE = `<!doctype html>
     editingClaim = claimMode === true;
     document.getElementById("claimNote").hidden = !editingClaim;
     document.getElementById("eTitle").textContent = editingClaim
-      ? "🪪 Claim & edit this entry"
+      ? "✏️ Edit this card"
       : "✏️ Edit your entry";
     var ejm = document.getElementById("eJMonth");
     if (!ejm.options.length) {
@@ -1623,16 +1634,20 @@ export const PAGE = `<!doctype html>
     if (ev.target === document.getElementById("emodal")) closeEditModal();
   });
 
+  // The edit fields live in a real <form> (so they share the add form's
+  // layout CSS) — swallow implicit Enter-submits; saving goes through eSave.
+  document.getElementById("eform").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+  });
   document.getElementById("eSave").addEventListener("click", function () {
     if (!editing) return;
     var err = document.getElementById("eErr");
     var bdateVal = document.getElementById("eBdate").value;
-    if (!bdateVal) {
-      err.textContent = "Please pick your full birthday — month, day, and year.";
-      err.hidden = false;
-      return;
-    }
-    var bd = splitDateInput(bdateVal);
+    // No date picked (it only prefills for the card's owner): keep the
+    // card's current month/day and let the server keep its stored year.
+    var bd = bdateVal
+      ? splitDateInput(bdateVal)
+      : { month: editing.month, day: editing.day, year: null };
     var payload = {
       id: editing.id,
       token: getTokens()[String(editing.id)],
@@ -1651,9 +1666,9 @@ export const PAGE = `<!doctype html>
       additional_roles: editRoles.getRoles()
     };
     if (avatarData !== undefined) payload.avatar = avatarData;
-    if (editingClaim) payload.claim = true;
-    if (!payload.name || !payload.legal_first || !payload.legal_last) {
-      err.textContent = "Please fill in your legal first name, legal last name, and preferred name.";
+    // Legal names may stay blank on an edit — the server keeps what's stored.
+    if (!payload.name) {
+      err.textContent = "Preferred name can't be empty.";
       err.hidden = false;
       return;
     }
@@ -1671,9 +1686,13 @@ export const PAGE = `<!doctype html>
           var status = document.getElementById("status");
           status.className = "ok";
           status.textContent = "✏️ Updated!";
-          document.cookie = "bt_name=" + encodeURIComponent(payload.name) +
-            "; path=/; max-age=31536000; SameSite=Lax";
-          if (res.j.id && res.j.token) saveToken(res.j.id, res.j.token);
+          // The server returns a token only to the owner/claimer — an open
+          // edit of someone else's card must not rebrand this browser.
+          if (res.j.id && res.j.token) {
+            document.cookie = "bt_name=" + encodeURIComponent(payload.name) +
+              "; path=/; max-age=31536000; SameSite=Lax";
+            saveToken(res.j.id, res.j.token);
+          }
           load();
         } else {
           err.textContent = res.j.error || "Couldn't save — try again.";
