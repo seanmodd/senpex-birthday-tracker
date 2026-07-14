@@ -39,10 +39,14 @@ export async function listBirthdays(env, request) {
       request.headers.get("x-real-ip") ||
       null
   );
+  // legal_first/legal_last ride along so the edit form can always prefill
+  // them (Sean's call, July 13) — they still never render on the wall.
+  // Birth year stays out: it's only released via the token-gated /api/my-entry.
   const { results } = await env.DB.prepare(
     "SELECT id, name, name_key, company, position, month, day, city, country, ip, " +
       "avatar IS NOT NULL AS has_avatar, instagram, linkedin, x_handle, " +
-      "join_month, join_day, join_year, additional_roles, created_at " +
+      "join_month, join_day, join_year, additional_roles, created_at, " +
+      "legal_first, legal_last " +
       "FROM birthdays ORDER BY month, day, name"
   ).all();
   const ipCounts = {};

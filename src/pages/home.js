@@ -643,7 +643,7 @@ export const PAGE = `<!doctype html>
           <input id="legalLast" required maxlength="60" placeholder="e.g. Petrovski" autocomplete="family-name">
         </div>
         <div class="field" style="flex:1 1 100%">
-          <label for="name">Preferred name<span class="tip-wrap"><button type="button" class="tip" aria-describedby="prefTipPop">?</button><span class="tip-pop" role="tooltip" id="prefTipPop">Your preferred name is what appears on your birthday card and everywhere on the wall. Your legal first and last name are kept for company records and are never displayed to the team.</span></span></label>
+          <label for="name">Preferred name<span class="tip-wrap"><button type="button" class="tip" aria-describedby="prefTipPop">?</button><span class="tip-pop" role="tooltip" id="prefTipPop">Your preferred name is what appears on your birthday card and everywhere on the wall. Your legal first and last name are for company records — they never show on the wall itself, only here in the form.</span></span></label>
           <input id="name" required maxlength="100" placeholder="e.g. Alex Petrovski" autocomplete="nickname">
         </div>
       </div>
@@ -799,7 +799,7 @@ export const PAGE = `<!doctype html>
     <button class="dlg-x" id="eClose" type="button" aria-label="Close">×</button>
     <h3 id="eTitle">✏️ Edit your entry</h3>
     <p class="dlg-sub">Change anything — your name, position, or the date. Only you can edit this card.</p>
-    <p class="claim-note" id="claimNote" hidden>Anyone can edit any card right now. If this is a teammate's card, be kind — changes show on the wall immediately, and their private details (legal name, birth year) stay protected either way.</p>
+    <p class="claim-note" id="claimNote" hidden>Anyone can edit any card right now. If this is a teammate's card, be kind — changes show on the wall immediately (their birth year stays protected either way).</p>
     <form id="eform">
       <div class="row">
         <div class="field" style="flex:1 1 150px">
@@ -811,7 +811,7 @@ export const PAGE = `<!doctype html>
           <input id="eLegalLast" maxlength="60" autocomplete="family-name">
         </div>
         <div class="field" style="flex:1 1 100%">
-          <label for="eName">Preferred name<span class="tip-wrap"><button type="button" class="tip" aria-describedby="ePrefTipPop">?</button><span class="tip-pop" role="tooltip" id="ePrefTipPop">Your preferred name is what appears on your birthday card and everywhere on the wall. Your legal first and last name are kept for company records and are never displayed to the team.</span></span></label>
+          <label for="eName">Preferred name<span class="tip-wrap"><button type="button" class="tip" aria-describedby="ePrefTipPop">?</button><span class="tip-pop" role="tooltip" id="ePrefTipPop">Your preferred name is what appears on your birthday card and everywhere on the wall. Your legal first and last name are for company records — they never show on the wall itself, only here in the form.</span></span></label>
           <input id="eName" maxlength="100" autocomplete="nickname">
         </div>
       </div>
@@ -1616,12 +1616,12 @@ export const PAGE = `<!doctype html>
     document.getElementById("eName").value = b.name;
     document.getElementById("ePos").value = b.position || "";
     editRoles.setRoles(b.roles || []);
-    // Legal names and birth year are never on the public list. They prefill
-    // only via /api/my-entry, which demands this browser's edit token — the
-    // one ownership proof that can't be spoofed. Without it (e.g. a "This is
-    // me" claim) the fields start empty and are re-entered on save.
-    document.getElementById("eLegalFirst").value = "";
-    document.getElementById("eLegalLast").value = "";
+    // Legal names always prefill (Sean's call, July 13) — they ride on the
+    // birthdays list, though the wall itself never displays them. The birth
+    // year stays stricter: the date only prefills via /api/my-entry, which
+    // demands this browser's edit token.
+    document.getElementById("eLegalFirst").value = b.legal_first || "";
+    document.getElementById("eLegalLast").value = b.legal_last || "";
     document.getElementById("eBdate").value = "";
     var myToken = getTokens()[String(b.id)];
     if (myToken) {
