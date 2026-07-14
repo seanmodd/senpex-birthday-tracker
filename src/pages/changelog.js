@@ -28,12 +28,23 @@ const C = {
   flags: "327d9182ebe3d2caf7aae42bdb09eac23ffd99c5", // flag outline ring removed
   popup: "c5432ee27bebe89e90e2f0ce01235ecd5a6763a3", // person popup, dept + roles on cards, hover cakes
   globe: "5a4da60407a804a469b6113d3873403581daba50", // team globe + live local times, created dates, socials note
+  globe2: "1d4d7a00cb3d188cfdd710d2f1240de0301edee6", // interactive globe, horoscope reorder, popup socials section
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 13, 2026",
+    sub: "A globe you can play with · added 11:17 PM PST",
+    items: [
+      { t: "Spin, zoom, and meet the dots", d: "— the team globe is now fully interactive: drag it to spin, click a cluster of markers (say, everyone in Baku) to zoom right in and see them fan out into separate dots, and hit Reset view to float back out.", c: C.globe2 },
+      { t: "Every dot is a person", d: "— hover or tap any orange marker for a friendly card with their name, primary job title, city &amp; country, and their live local time, ticking by the second.", c: C.globe2 },
+      { t: "Role fit comes first", d: "— horoscope readings now lead with ⭐ Sign × role fit, with the sentence that explains why they're perfect for their job highlighted; the element and personality notes follow.", c: C.globe2 },
+      { t: "Get to know your teammate!", d: "— the person popup gives socials their own section with a nudge to actually say hi: a quick hello goes a long way across timezones.", c: C.globe2 },
+    ],
+  },
   {
     date: "July 13, 2026",
     sub: "One team, all around the world · added 11:09 PM PST",
