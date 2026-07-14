@@ -172,10 +172,10 @@ export const VISITORS_PAGE = `<!doctype html>
   .v-ip { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
   .v-name { color: var(--brand); font-weight: 600; }
   img.flag {
-    width: 18px; height: auto; border-radius: 2px;
+    height: 13px; width: auto; border-radius: 2px;
     vertical-align: -2px; margin-right: 6px;
   }
-  #gtip img.flag, .dlg-sub img.flag { width: 16px; }
+  #gtip img.flag, .dlg-sub img.flag { height: 12px; }
   .v-right { margin-left: auto; text-align: right; flex: none; }
   .v-time { color: #cfc9c2; font-size: 13px; white-space: nowrap; }
   .v-path { color: var(--muted); font-size: 11.5px; margin-top: 2px; }

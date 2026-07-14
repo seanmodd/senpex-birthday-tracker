@@ -164,11 +164,12 @@ export async function submit(request, env) {
   const linkedin = socials.linkedin;
   const xHandle = socials.x;
 
-  // Photo is mandatory on every submission.
+  // Photo is mandatory on every submission. Cap fits a 768px high-quality
+  // JPEG data URL (~0.8 MB) with margin; still tiny at team scale.
   const avatar =
     typeof body.avatar === "string" &&
     body.avatar.indexOf("data:image/") === 0 &&
-    body.avatar.length <= 250000
+    body.avatar.length <= 1200000
       ? body.avatar
       : null;
   if (!avatar)
@@ -383,7 +384,7 @@ export async function editEntry(request, env) {
     avatar =
       typeof body.avatar === "string" &&
       body.avatar.indexOf("data:image/") === 0 &&
-      body.avatar.length <= 250000
+      body.avatar.length <= 1200000
         ? body.avatar
         : null;
   }

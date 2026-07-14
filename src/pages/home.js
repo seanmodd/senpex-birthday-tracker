@@ -271,9 +271,11 @@ export const PAGE = `<!doctype html>
     background: var(--tint); border: 1px solid #ffc9b3; border-radius: 8px; padding: 6px 10px;
   }
   .tg-row {
-    display: flex; align-items: baseline; gap: 8px; padding: 7px 0;
+    display: flex; align-items: baseline; gap: 8px; padding: 7px 6px;
     border-top: 1px dashed var(--line); font-size: 13.5px; flex-wrap: wrap;
+    border-radius: 8px; cursor: default;
   }
+  .tg-row:hover { background: var(--tint); }
   .tg-row:first-child { border-top: 0; }
   .tg-loc { color: var(--muted); font-size: 12.5px; }
   .tg-time {
@@ -395,7 +397,9 @@ export const PAGE = `<!doctype html>
     border: 1px solid #ffc9b3; border-radius: 7px;
     padding: 8px 12px; margin-right: 10px; cursor: pointer;
   }
-  img.flag { width: 16px; height: auto; border-radius: 2px; }
+  /* Fixed height + natural width: every flag shares the row height while
+     keeping its country's true proportions (JP is squarer than US, etc.). */
+  img.flag { height: 12px; width: auto; border-radius: 2px; vertical-align: -1px; }
   .p-when { font-size: 13.5px; color: var(--ink-2); }
   .p-when b { color: var(--brand-dark); }
   a.gcal {
@@ -489,7 +493,7 @@ export const PAGE = `<!doctype html>
     gap: 9px; flex-wrap: wrap; margin: 10px auto 2px; min-height: 20px;
   }
   .hero-flags img.flag {
-    width: 27px; border-radius: 3px;
+    height: 19px; width: auto; border-radius: 3px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
   }
   .hero-cta {
@@ -939,20 +943,24 @@ export const PAGE = `<!doctype html>
   }
 
 
-  // Shared client-side photo pipeline: square-crop + downscale to 512px JPEG
-  // — small enough for D1, big enough for the click-to-enlarge photo popup.
+  // Shared client-side photo pipeline: square-crop + downscale to 768px JPEG
+  // at high quality — crisp in the click-to-enlarge lightbox (which shows
+  // ~460 CSS px ≈ 920 device px on retina) while staying well under the D1
+  // avatar cap. High-quality resampling on for the downscale.
   function readAvatarFile(file, cb) {
     var fr = new FileReader();
     fr.onload = function () {
       var img = new Image();
       img.onload = function () {
-        var S = 512;
+        var S = 768;
         var c = document.createElement("canvas");
         c.width = S; c.height = S;
         var cctx = c.getContext("2d");
+        cctx.imageSmoothingEnabled = true;
+        cctx.imageSmoothingQuality = "high";
         var m = Math.min(img.width, img.height);
         cctx.drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, S, S);
-        cb(c.toDataURL("image/jpeg", 0.82));
+        cb(c.toDataURL("image/jpeg", 0.9));
       };
       img.src = fr.result;
     };
@@ -2342,6 +2350,7 @@ export const PAGE = `<!doctype html>
     var gZoom = 1, tZoom = 1, tLon = null, tLat = null;
     var gRings = null;
     var team = [];
+    var focusName = null; // roster row under the cursor → highlighted dot + fly-to
     var dotHits = [];
     var lastInteract = 0;
     var pDown = false, pDragged = false, pX = 0, pY = 0;
@@ -2447,13 +2456,14 @@ export const PAGE = `<!doctype html>
           x += Math.cos(ang) * fan;
           y += Math.sin(ang) * fan;
         }
+        var focused = focusName && p.name === focusName;
         g.beginPath();
-        g.arc(x, y, 11 * pulse, 0, 2 * Math.PI);
-        g.fillStyle = "rgba(255, 92, 51, 0.16)";
+        g.arc(x, y, (focused ? 16 : 11) * pulse, 0, 2 * Math.PI);
+        g.fillStyle = focused ? "rgba(64, 170, 255, 0.28)" : "rgba(255, 92, 51, 0.16)";
         g.fill();
         g.beginPath();
-        g.arc(x, y, 5.5, 0, 2 * Math.PI);
-        g.fillStyle = "#FF5C33";
+        g.arc(x, y, focused ? 7 : 5.5, 0, 2 * Math.PI);
+        g.fillStyle = focused ? "#40AAFF" : "#FF5C33";
         g.fill();
         g.strokeStyle = "#fff";
         g.lineWidth = 1.2;
@@ -2479,8 +2489,9 @@ export const PAGE = `<!doctype html>
         gLat += (tLat - gLat) * Math.min(1, dt * 6);
         if (Math.abs(dLon) < 0.2 && Math.abs(tLat - gLat) < 0.2) { tLon = null; tLat = null; }
       }
-      // Auto-spin only when un-zoomed, not being touched, and idle a moment.
-      if (tZoom === 1 && !pDown && Date.now() - lastInteract > 500) {
+      // Auto-spin only when un-zoomed, not being touched, no teammate is
+      // being hovered in the roster, and idle for half a beat.
+      if (tZoom === 1 && !pDown && !focusName && Date.now() - lastInteract > 500) {
         gLon = gLon - 5.5 * dt;
         if (gLon < -180) gLon += 360;
       }
@@ -2619,6 +2630,19 @@ export const PAGE = `<!doctype html>
         var tEl = el("span", "tg-time");
         tEl.setAttribute("data-tz", p.timezone || "");
         row.appendChild(tEl);
+        // Hovering a teammate flies the globe to them and lights their dot up.
+        if (p.latitude !== null && p.latitude !== undefined) {
+          row.addEventListener("mouseenter", function () {
+            focusName = p.name;
+            tLat = p.latitude;
+            tLon = p.longitude;
+            lastInteract = Date.now();
+          });
+          row.addEventListener("mouseleave", function () {
+            if (focusName === p.name) focusName = null;
+            lastInteract = Date.now();
+          });
+        }
         list.appendChild(row);
       });
       tickClocks();
