@@ -24,12 +24,25 @@ const C = {
   tidy: "2dc85a5b2ee12744ba9aa39e786f95cc3f7cb3c8", // consolidation + hash pills
   tidyRecord: "3ba97336c6f03c4e795240e03d2f9a0984a90072", // recorded the tidy-up release's own pill hash
   coverage: "ecbb4cb212ae24b45c9cbd8ba1b00f276b3a7f02", // complete commit coverage + always-linked entries
+  names: "bc3b8978e4d1a52cce93f21b92530f2c2075c5d6", // legal/preferred names, date picker, separators
+  flags: "327d9182ebe3d2caf7aae42bdb09eac23ffd99c5", // flag outline ring removed
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 13, 2026",
+    sub: "Names, dates &amp; a cleaner form · added 10:37 PM PST",
+    items: [
+      { t: "Your name, three ways", d: "— the form now asks for your legal first name, legal last name, and a preferred name (all required). The preferred name is what appears on your birthday card — a little \"?\" tooltip next to the field explains exactly that.", c: C.names },
+      { t: "Pick your birthday in one go", d: "— the separate month, day, and year fields are now a single calendar date picker, in both the add form and the edit popup.", c: C.names },
+      { t: "Legal details stay private", d: "— legal names and birth year never appear on the wall or the public API; they're returned only to the browser that owns the entry, proven by its edit token.", c: C.names },
+      { t: "A tidier form", d: "— the same dashed separator that sits above Additional Roles now also precedes the Birthday, Month/Year joined, and Your Photo sections.", c: C.names },
+      { t: "Flags without the frame", d: "— country flags across the wall and visitor tracker lost the gray outline ring that boxed them in.", c: C.flags },
+    ],
+  },
   {
     date: "July 13, 2026",
     sub: "Complete commit coverage · added 8:41 PM PST",
