@@ -32,12 +32,21 @@ const C = {
   openEdit: "f6658d1b7bb7b8aa9b6b5665e545fc85cae4f246", // edit on every card + socials under-construction notice
   globefix: "cf0acfef59b33d3d946542579260e4d31abcc1e3", // local-time fallback, HQ tz note, scrollable dialogs
   socialsCopy: "c39c6f7f59d64f6019b7035153cd83a7c0d94460", // socials notice: add LinkedIn, "sign-in API isn't live yet"
+  openEdit2: "7d6e198e296ca48c30db4276cb7c93d841097133", // server-side open editing + edit modal matches the add form
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 13, 2026",
+    sub: "Editing actually works for everyone now · added 11:51 PM PST",
+    items: [
+      { t: "The \"only your own entry\" wall is gone", d: "— saving an edit no longer gets rejected when the site can't prove the card is yours; edits now go through for everyone. Guardrails stay: an edit of someone else's card can't take over their card, move their globe dot, or expose their legal name and birth year — and leaving those private fields blank simply keeps what's stored.", c: C.openEdit2 },
+      { t: "The edit popup matches the add form", d: "— same clean layout, full-width social fields you can actually read, and the same built-in scrolling — no more squeezed placeholders or cut-off popups.", c: C.openEdit2 },
+    ],
+  },
   {
     date: "July 13, 2026",
     sub: "Clearer socials heads-up · added 11:37 PM PST",
