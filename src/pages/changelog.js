@@ -29,12 +29,21 @@ const C = {
   popup: "c5432ee27bebe89e90e2f0ce01235ecd5a6763a3", // person popup, dept + roles on cards, hover cakes
   globe: "5a4da60407a804a469b6113d3873403581daba50", // team globe + live local times, created dates, socials note
   globe2: "1d4d7a00cb3d188cfdd710d2f1240de0301edee6", // interactive globe, horoscope reorder, popup socials section
+  openEdit: "f6658d1b7bb7b8aa9b6b5665e545fc85cae4f246", // edit on every card + socials under-construction notice
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 13, 2026",
+    sub: "Editing for everyone &amp; a heads-up on socials · added 11:24 PM PST",
+    items: [
+      { t: "Everyone can edit — for now", d: "— every birthday card now shows an ✏️ Edit button for everybody: your own card edits directly, and anyone else's opens through the claim flow so the required details are re-entered honestly. Deleting still belongs to the card's owner.", c: C.openEdit },
+      { t: "🚧 Socials sign-in is under construction", d: "— a clear notice (plus a \"?\" tooltip) in both the add form and the edit popup explains that the Instagram / X sign-in buttons aren't connected yet while we finish the official API integration — for now, just type your handle or paste your profile URL.", c: C.openEdit },
+    ],
+  },
   {
     date: "July 13, 2026",
     sub: "A globe you can play with · added 11:17 PM PST",
