@@ -33,12 +33,20 @@ const C = {
   globefix: "cf0acfef59b33d3d946542579260e4d31abcc1e3", // local-time fallback, HQ tz note, scrollable dialogs
   socialsCopy: "c39c6f7f59d64f6019b7035153cd83a7c0d94460", // socials notice: add LinkedIn, "sign-in API isn't live yet"
   openEdit2: "7d6e198e296ca48c30db4276cb7c93d841097133", // server-side open editing + edit modal matches the add form
+  heroFlags: "b70f478ddfd6b2b321c4b5f3885b06e4304bf64d", // hero flag row: one flag per team country
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 13, 2026",
+    sub: "Flying the team's flags · added 11:57 PM PST",
+    items: [
+      { t: "Every country, right up top", d: "— the hero now shows a flag for every country the team works from, US first and the rest alphabetical. When someone joins from a country we haven't seen before, their flag appears on its own — real flag images, so they render everywhere (emoji flags show as plain letters on Windows).", c: C.heroFlags },
+    ],
+  },
   {
     date: "July 13, 2026",
     sub: "Editing actually works for everyone now · added 11:51 PM PST",
