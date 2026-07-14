@@ -27,12 +27,22 @@ const C = {
   names: "bc3b8978e4d1a52cce93f21b92530f2c2075c5d6", // legal/preferred names, date picker, separators
   flags: "327d9182ebe3d2caf7aae42bdb09eac23ffd99c5", // flag outline ring removed
   popup: "c5432ee27bebe89e90e2f0ce01235ecd5a6763a3", // person popup, dept + roles on cards, hover cakes
+  globe: "5a4da60407a804a469b6113d3873403581daba50", // team globe + live local times, created dates, socials note
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 13, 2026",
+    sub: "One team, all around the world · added 11:09 PM PST",
+    items: [
+      { t: "The team globe", d: "— a spinning globe now sits above the wall showing where every single teammate is in the world, with a live roster beside it: name, flag, city, and the exact date &amp; time it is for them at this very moment, ticking by the second.", c: C.globe },
+      { t: "Created dates on cards", d: "— every birthday card now shows when it was added, tucked into the bottom-right corner (e.g. \"Created: 07/13/26\").", c: C.globe },
+      { t: "Why we ask for socials", d: "— the add-birthday form now explains the point of sharing your profiles: our team spans the planet, and socials keep our community and culture close across every timezone.", c: C.globe },
+    ],
+  },
   {
     date: "July 13, 2026",
     sub: "Meet your teammates · added 10:58 PM PST",
