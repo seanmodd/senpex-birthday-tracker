@@ -678,8 +678,8 @@ export const PAGE = `<!doctype html>
       </div>
       <div class="row sep-top" style="margin-bottom:4px">
         <div class="field" style="flex:1 1 100%">
-          <span class="lbl">Your socials</span>
-          <p class="soc-note">🌍 Why all three? Our team lives all around the world — sharing your socials helps teammates put a face to the name, cheer you on from afar, and keep our community and culture close across every timezone.</p>
+          <span class="lbl">Your socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="socTipPop">?</button><span class="tip-pop" role="tooltip" id="socTipPop">The Instagram and X "sign in" buttons aren't connected yet — we're still working on the proper official API integrations. Until that's live, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way.</span></span></span>
+          <p class="soc-note">🌍 Why all three? Our team lives all around the world — sharing your socials helps teammates put a face to the name, cheer you on from afar, and keep our community and culture close across every timezone.<br><br>🚧 <b>Under construction:</b> signing in with Instagram / X isn't live yet while we finish the official API integration — for now, please just type your handle or paste your profile URL.</p>
         </div>
       </div>
       <div class="row">
@@ -834,6 +834,10 @@ export const PAGE = `<!doctype html>
         <img id="eAvPrev" class="av-prev" alt="" hidden>
         <input id="eAvatar" type="file" accept="image/*">
       </div>
+    </div>
+    <div class="sep-top">
+      <span class="lbl">Socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="eSocTipPop">?</button><span class="tip-pop" role="tooltip" id="eSocTipPop">The Instagram and X "sign in" buttons aren't connected yet — we're still working on the proper official API integrations. Until that's live, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way.</span></span></span>
+      <p class="soc-note" style="margin:6px 0 0">🚧 <b>Under construction:</b> Instagram / X sign-in isn't live yet — just type your handle or paste your profile URL.</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
       <div style="flex:1 1 130px">
@@ -1177,11 +1181,6 @@ export const PAGE = `<!doctype html>
     });
 
     var myTokens = getTokens();
-    // One person = one birthday: once this browser owns any card, it has no
-    // business claiming another.
-    var ownsAny = list.some(function (x) {
-      return myTokens[String(x.id)] || x.mine;
-    });
     list.forEach(function (b) {
       var days = daysUntil(b.month, b.day);
       var card = el("div", "card person" + (days === 0 ? " today" : ""));
@@ -1249,15 +1248,20 @@ export const PAGE = `<!doctype html>
             "Created: " + cd[1] + "/" + cd[2] + "/" + cd[0].slice(2)));
         }
       }
-      if (myTokens[String(b.id)] || b.mine) {
-        var actions = el("div", "actions");
-        var ed = el("a", "editbtn", "✏️ Edit");
-        ed.href = "#";
-        ed.addEventListener("click", function (ev) {
-          ev.preventDefault();
-          openEditModal(b, false);
-        });
-        actions.appendChild(ed);
+      // Open editing (for now): every card shows Edit for everyone. Your own
+      // card edits directly; someone else's opens through the claim path, so
+      // the mandatory fields are re-entered honestly and tokens stay sane.
+      // Delete remains owner-only.
+      var isMine = !!(myTokens[String(b.id)] || b.mine);
+      var actions = el("div", "actions");
+      var ed = el("a", "editbtn", "✏️ Edit");
+      ed.href = "#";
+      ed.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        openEditModal(b, !isMine);
+      });
+      actions.appendChild(ed);
+      if (isMine) {
         var del = el("a", "delbtn", "🗑 Delete");
         del.href = "#";
         del.addEventListener("click", function (ev) {
@@ -1265,16 +1269,8 @@ export const PAGE = `<!doctype html>
           deleteEntry(b);
         });
         actions.appendChild(del);
-        card.appendChild(actions);
-      } else if (!ownsAny) {
-        var claim = el("a", "claimlink", "🪪 This is me — let me edit it");
-        claim.href = "#";
-        claim.addEventListener("click", function (ev) {
-          ev.preventDefault();
-          openEditModal(b, true);
-        });
-        card.appendChild(claim);
       }
+      card.appendChild(actions);
       // Click anywhere non-interactive on the card → the person popup.
       card.addEventListener("click", function (ev) {
         if (ev.target.closest("a, button, .zwrap, input, select")) return;
