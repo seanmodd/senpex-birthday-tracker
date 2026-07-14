@@ -174,7 +174,6 @@ export const VISITORS_PAGE = `<!doctype html>
   img.flag {
     width: 18px; height: auto; border-radius: 2px;
     vertical-align: -2px; margin-right: 6px;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14);
   }
   #gtip img.flag, .dlg-sub img.flag { width: 16px; }
   .v-right { margin-left: auto; text-align: right; flex: none; }

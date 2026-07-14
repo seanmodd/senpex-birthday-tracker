@@ -305,10 +305,7 @@ export const PAGE = `<!doctype html>
     border: 1px solid #ffc9b3; border-radius: 7px;
     padding: 8px 12px; margin-right: 10px; cursor: pointer;
   }
-  img.flag {
-    width: 16px; height: auto; border-radius: 2px;
-    box-shadow: 0 0 0 1px rgba(26, 23, 20, 0.12);
-  }
+  img.flag { width: 16px; height: auto; border-radius: 2px; }
   .p-when { font-size: 13.5px; color: var(--ink-2); }
   .p-when b { color: var(--brand-dark); }
   a.gcal {
