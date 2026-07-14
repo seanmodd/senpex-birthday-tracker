@@ -113,7 +113,7 @@ birthday-tracker/
 
 | File | What it does |
 |------|--------------|
-| [`pages/home.js`](src/pages/home.js) | The birthday wall: today-banner, Upcoming/Later sections, cards (avatars, zodiac popovers, flags, socials, calendar links), the popup form with photo pipeline and sign-in buttons, edit/claim modals, cake clicks. |
+| [`pages/home.js`](src/pages/home.js) | The birthday wall: today-banner, Upcoming/Later sections, cards (avatars, department + bold primary title + additional roles, zodiac popovers, flags, socials, calendar links), the click-to-open person popup (full profile incl. horoscope), the popup form with photo pipeline and sign-in buttons, edit/claim modals, and hover cakes that bubble from the cursor (pausing over the horoscope). |
 | [`pages/visitors.js`](src/pages/visitors.js) | The tracker: hand-rolled canvas globe (orthographic projection, flick physics, play/pause), live feed, stats with hover breakdowns, fly-to + blue highlight. |
 | [`pages/changelog.js`](src/pages/changelog.js) | The changelog — one dated entry per day, times in PST. Data-driven: each bullet is an object carrying its text plus the verified GitHub commit hash(es) that shipped it, rendered into per-bullet commit links. |
 

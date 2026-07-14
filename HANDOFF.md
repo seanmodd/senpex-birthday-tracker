@@ -1,5 +1,18 @@
 # HANDOFF — Senpex / Pckup Team Birthday Tracker
 
+> **ADDENDUM 6 (2026-07-13, ~10:55 PM PT):** person popup + card layout per
+> Sean — clicking a card (non-interactive area) opens `#pmodal`/`pvBody`
+> built by `openPersonModal(b)`: avatar, name, zodiac badge, Department
+> (via `deptOf()` — the title-library group of the primary title, omitted
+> for pending/non-library titles), bold primary + additional roles,
+> birthday/joined/location grid, socials, a Horoscope box sharing the card
+> popover's content via `signInfoInto()`, and the GCal link. Cards now show
+> "Department: <group>", the primary title bold, and roles listed below
+> (the "+N roles" chip and its `rmodal` are REMOVED). Cakes: no longer on
+> click — they bubble up from the cursor while hovering a card (spawn every
+> 320ms at cursor, `hover: hover` devices only) and pause while the cursor
+> is on the `.zwrap` horoscope badge/popover.
+>
 > **ADDENDUM 5 (2026-07-13, ~9:00 PM PT):** form restructure per Sean —
 > (1) "Full name" replaced by THREE mandatory fields: legal first name,
 > legal last name, and preferred name (`name` column = preferred, shown on

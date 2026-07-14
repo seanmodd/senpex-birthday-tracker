@@ -154,15 +154,16 @@ export const PAGE = `<!doctype html>
     margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line);
     font-weight: 700; font-size: 12.5px; color: var(--brand-dark); margin-bottom: 3px;
   }
-  .p-pos { color: var(--muted); font-size: 13px; min-height: 17px; }
-  .roles-chip {
-    display: inline-flex; align-items: center; min-height: 28px;
-    font-size: 11.5px; font-weight: 700; color: var(--brand-deep);
-    background: var(--tint); border: 1px solid #ffc9b3; border-radius: 999px;
-    padding: 2px 10px; margin-top: 2px; text-decoration: none;
-    align-self: flex-start; cursor: pointer;
+  .p-dept {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.4px; color: var(--brand-dark); margin-bottom: 1px;
   }
-  .roles-chip:hover { border-color: var(--brand); }
+  .p-pos { color: var(--muted); font-size: 13px; min-height: 17px; }
+  .p-pos b { color: var(--ink); font-weight: 700; font-size: 13.5px; }
+  .p-roles {
+    list-style: none; margin: 3px 0 0; padding: 0;
+    color: var(--muted); font-size: 12.5px; line-height: 1.5;
+  }
   .req-badge {
     display: inline-block; font-size: 10px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.4px;
@@ -229,9 +230,31 @@ export const PAGE = `<!doctype html>
     background: #fff; color: var(--ink);
   }
   .wall-search input:focus { outline: 2px solid var(--brand); border-color: transparent; }
-  .rolesview .lbl { display: block; margin-bottom: 4px; }
-  .rolesview .rv-primary { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-  .rolesview ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+  /* Person popup: everything about one teammate, opened by clicking their card. */
+  #pmodal .dialog { max-width: 480px; }
+  .pv-head { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+  .pv-head .av-img, .pv-head .av-init { width: 64px; height: 64px; border-radius: 50%; }
+  .pv-head .av-init { display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .pv-name { font-size: 20px; font-weight: 700; }
+  .pv-zbadge {
+    display: inline-block; margin-top: 3px; font-size: 12.5px; font-weight: 600;
+    color: var(--brand-deep); background: var(--tint);
+    border: 1px solid #ffc9b3; border-radius: 999px; padding: 3px 10px;
+  }
+  .pv-sec {
+    margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line);
+  }
+  .pv-sec .lbl { display: block; margin-bottom: 5px; }
+  .pv-dept { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--brand-dark); }
+  .pv-primary { font-size: 15.5px; font-weight: 700; margin: 2px 0; }
+  .pv-roles { list-style: none; margin: 2px 0 0; padding: 0; color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+  .pv-grid { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 13.5px; }
+  .pv-grid .k { color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .pv-zbox {
+    margin-top: 8px; padding: 12px 14px; border: 1px solid var(--line);
+    border-radius: 10px; background: var(--bg);
+  }
+  .pv-socials { display: flex; gap: 8px; margin-top: 10px; }
   #recmodal { z-index: 55; }
   .rec-note { font-size: 12.5px; color: var(--muted); margin-top: 8px; line-height: 1.45; }
   .rec-warn {
@@ -344,7 +367,7 @@ export const PAGE = `<!doctype html>
     color: var(--brand-deep); font-size: 12.5px; line-height: 1.45;
     padding: 9px 11px; margin: 0 0 12px;
   }
-  .person { position: relative; }
+  .person { position: relative; cursor: pointer; }
   .cake-float {
     position: absolute; font-size: 26px; pointer-events: none; z-index: 5;
     animation: cakeUp 1.3s ease-out forwards;
@@ -641,18 +664,10 @@ export const PAGE = `<!doctype html>
   </div>
 </div>
 
-<div id="rmodal" class="overlay" hidden>
-  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="rTitle">
-    <button class="dlg-x" id="rClose" type="button" aria-label="Close">×</button>
-    <h3 id="rTitle">Roles</h3>
-    <div class="rolesview">
-      <span class="lbl">Primary Job Title</span>
-      <div class="rv-primary" id="rvPrimary"></div>
-      <div id="rvAddWrap">
-        <span class="lbl">Additional Roles</span>
-        <ul id="rvRoles"></ul>
-      </div>
-    </div>
+<div id="pmodal" class="overlay" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-label="About this teammate">
+    <button class="dlg-x" id="pClose" type="button" aria-label="Close">×</button>
+    <div id="pvBody"></div>
   </div>
 </div>
 
@@ -1030,6 +1045,32 @@ export const PAGE = `<!doctype html>
     return e;
   }
 
+  // Fills a container with a sign's dates, element/ruler, personality blurb,
+  // and role-fit note — shared by the card hover popover and the person popup.
+  function signInfoInto(box, z, position) {
+    var zinfo = ZINFO[z[0]];
+    if (!zinfo) return false;
+    box.appendChild(el("div", "zp-title", z[1] + " " + z[0] + " · " + zinfo[0]));
+    box.appendChild(el("div", "zp-sub", zinfo[1]));
+    box.appendChild(el("div", "zp-text", zinfo[2]));
+    if (ZJOB[z[0]] && position) {
+      box.appendChild(el("div", "zp-job-title", "⭐ Sign × role fit"));
+      box.appendChild(el("div", "zp-text", ZJOB[z[0]].split("{ROLE}").join(position)));
+    }
+    return true;
+  }
+
+  // Department = the approved-library group of the person's primary title
+  // (null for pending recommended titles that aren't in the library yet).
+  function deptOf(title) {
+    if (!title) return null;
+    var tl = title.toLowerCase();
+    for (var i = 0; i < TITLES.length; i++) {
+      if (TITLES[i].tl === tl) return TITLES[i].d;
+    }
+    return null;
+  }
+
   function render(list) {
     var grid = document.getElementById("grid");
     var grid2 = document.getElementById("grid2");
@@ -1067,30 +1108,19 @@ export const PAGE = `<!doctype html>
       var z = zodiac(b.month, b.day);
       var zw = el("span", "zwrap");
       zw.appendChild(el("span", "zbadge", z[1] + " " + z[0]));
-      var zinfo = ZINFO[z[0]];
-      if (zinfo) {
-        var zp = el("div", "zpop");
-        zp.appendChild(el("div", "zp-title", z[1] + " " + z[0] + " · " + zinfo[0]));
-        zp.appendChild(el("div", "zp-sub", zinfo[1]));
-        zp.appendChild(el("div", "zp-text", zinfo[2]));
-        if (ZJOB[z[0]] && b.position) {
-          zp.appendChild(el("div", "zp-job-title", "⭐ Sign × role fit"));
-          zp.appendChild(el("div", "zp-text", ZJOB[z[0]].split("{ROLE}").join(b.position)));
-        }
-        zw.appendChild(zp);
-      }
+      var zp = el("div", "zpop");
+      if (signInfoInto(zp, z, b.position)) zw.appendChild(zp);
       top.appendChild(zw);
       card.appendChild(top);
-      card.appendChild(el("div", "p-pos", b.position));
+      var dept = deptOf(b.position);
+      if (dept) card.appendChild(el("div", "p-dept", "Department: " + dept));
+      var pos = el("div", "p-pos");
+      pos.appendChild(el("b", null, b.position));
+      card.appendChild(pos);
       if (b.roles && b.roles.length) {
-        var rc = el("a", "roles-chip",
-          "+" + b.roles.length + " additional role" + (b.roles.length === 1 ? "" : "s"));
-        rc.href = "#";
-        rc.addEventListener("click", function (ev) {
-          ev.preventDefault();
-          openRolesModal(b);
-        });
-        card.appendChild(rc);
+        var rl = el("ul", "p-roles");
+        b.roles.forEach(function (r) { rl.appendChild(el("li", null, "• " + r)); });
+        card.appendChild(rl);
       }
       if (b.city || b.country) {
         var loc = el("div", "p-loc");
@@ -1153,14 +1183,43 @@ export const PAGE = `<!doctype html>
         });
         card.appendChild(claim);
       }
+      // Click anywhere non-interactive on the card → the person popup.
       card.addEventListener("click", function (ev) {
         if (ev.target.closest("a, button, .zwrap, input, select")) return;
-        var cake = el("span", "cake-float", "🎂");
-        cake.style.right = (10 + Math.random() * 40) + "px";
-        cake.style.bottom = "12px";
-        card.appendChild(cake);
-        cake.addEventListener("animationend", function () { cake.remove(); });
+        openPersonModal(b);
       });
+      // Hover cakes: 🎂 bubbles up from wherever the cursor is on the card,
+      // pausing while the cursor rests on the horoscope badge/popover.
+      if (window.matchMedia("(hover: hover)").matches) {
+        var cakeTimer = null, cakeX = 0, cakeY = 0, cakePaused = false;
+        function spawnCake() {
+          if (cakePaused) return;
+          var cake = el("span", "cake-float", "🎂");
+          cake.style.left = (cakeX - 13) + "px";
+          cake.style.top = (cakeY - 30) + "px";
+          card.appendChild(cake);
+          cake.addEventListener("animationend", function () { cake.remove(); });
+        }
+        card.addEventListener("mousemove", function (ev) {
+          var r = card.getBoundingClientRect();
+          cakeX = ev.clientX - r.left;
+          cakeY = ev.clientY - r.top;
+          cakePaused = !!(ev.target.closest && ev.target.closest(".zwrap"));
+        });
+        card.addEventListener("mouseenter", function (ev) {
+          var r = card.getBoundingClientRect();
+          cakeX = ev.clientX - r.left;
+          cakeY = ev.clientY - r.top;
+          cakePaused = !!(ev.target.closest && ev.target.closest(".zwrap"));
+          spawnCake();
+          if (cakeTimer) clearInterval(cakeTimer);
+          cakeTimer = setInterval(spawnCake, 320);
+        });
+        card.addEventListener("mouseleave", function () {
+          if (cakeTimer) { clearInterval(cakeTimer); cakeTimer = null; }
+          cakePaused = false;
+        });
+      }
       // Today's people are announced in the banner; within 30 days stays
       // under Upcoming, everything further out moves to Later.
       if (days === 0) todays.push(b);
@@ -1325,7 +1384,7 @@ export const PAGE = `<!doctype html>
       closeModal();
       document.getElementById("emodal").hidden = true;
       document.getElementById("fmodal").hidden = true;
-      document.getElementById("rmodal").hidden = true;
+      document.getElementById("pmodal").hidden = true;
       document.getElementById("recmodal").hidden = true;
     }
   });
@@ -1547,6 +1606,9 @@ export const PAGE = `<!doctype html>
           TITLES.push({ t: t, tl: t.toLowerCase(), d: g.dept });
         });
       });
+      // Cards may have rendered before the library arrived — re-render so
+      // the Department line (looked up from TITLES) can appear.
+      if (allBirthdays.length) renderWall();
     })
     .catch(function () {});
 
@@ -1914,25 +1976,85 @@ export const PAGE = `<!doctype html>
   });
 
   // ----- Roles view modal (from the +N roles chip on cards) -----
-  function openRolesModal(b) {
-    document.getElementById("rTitle").textContent = b.name + " — Roles";
-    document.getElementById("rvPrimary").textContent = b.position;
-    var wrapEl = document.getElementById("rvAddWrap");
-    var ul = document.getElementById("rvRoles");
-    ul.innerHTML = "";
+  // ----- Person popup: the full picture of one teammate, from their card -----
+  function openPersonModal(b) {
+    var body = document.getElementById("pvBody");
+    body.innerHTML = "";
+    var days = daysUntil(b.month, b.day);
+    var z = zodiac(b.month, b.day);
+
+    var head = el("div", "pv-head");
+    head.appendChild(avatarEl(b));
+    var hd = el("div");
+    hd.appendChild(el("div", "pv-name", (days === 0 ? "🎉 " : "") + b.name));
+    hd.appendChild(el("span", "pv-zbadge", z[1] + " " + z[0]));
+    head.appendChild(hd);
+    body.appendChild(head);
+
+    var role = el("div", "pv-sec");
+    var dept = deptOf(b.position);
+    if (dept) role.appendChild(el("div", "pv-dept", "Department: " + dept));
+    role.appendChild(el("div", "pv-primary", b.position));
     if (b.roles && b.roles.length) {
-      b.roles.forEach(function (r) { ul.appendChild(el("li", null, r)); });
-      wrapEl.hidden = false;
-    } else {
-      wrapEl.hidden = true;
+      var ul = el("ul", "pv-roles");
+      b.roles.forEach(function (r) { ul.appendChild(el("li", null, "• " + r)); });
+      role.appendChild(ul);
     }
-    document.getElementById("rmodal").hidden = false;
+    body.appendChild(role);
+
+    var det = el("div", "pv-sec");
+    var grid = el("div", "pv-grid");
+    function row(k, val) {
+      grid.appendChild(el("span", "k", k));
+      var v = el("span", "v");
+      if (typeof val === "string") v.textContent = val;
+      else v.appendChild(val);
+      grid.appendChild(v);
+    }
+    row("Birthday", MONTHS[b.month - 1] + " " + b.day +
+      (days === 0 ? " · Today! 🎂" : " · in " + days + (days === 1 ? " day" : " days")));
+    if (b.join_month && b.join_year)
+      row("Joined", MONTHS[b.join_month - 1] + " " + b.join_year);
+    if (b.city || b.country) {
+      var loc = el("span");
+      var lf = flagEl(b.country);
+      if (lf) loc.appendChild(lf);
+      loc.appendChild(document.createTextNode(
+        (b.city ? b.city : "") + (b.city && b.country ? " · " : "") + (b.country || "")));
+      row("Location", loc);
+    }
+    det.appendChild(grid);
+    var ig = socialLink("ig", b.instagram, "Instagram");
+    var li = socialLink("li", b.linkedin, "LinkedIn");
+    var xx = socialLink("x", b.x_handle, "X");
+    if (ig || li || xx) {
+      var soc = el("div", "pv-socials");
+      if (ig) soc.appendChild(ig);
+      if (li) soc.appendChild(li);
+      if (xx) soc.appendChild(xx);
+      det.appendChild(soc);
+    }
+    body.appendChild(det);
+
+    var zsec = el("div", "pv-sec");
+    zsec.appendChild(el("span", "lbl", "Horoscope"));
+    var zbox = el("div", "pv-zbox");
+    if (signInfoInto(zbox, z, b.position)) zsec.appendChild(zbox);
+    body.appendChild(zsec);
+
+    var cal = el("a", "gcal", "＋ Google Calendar");
+    cal.href = gcalUrl(b);
+    cal.target = "_blank";
+    cal.rel = "noopener";
+    body.appendChild(cal);
+
+    document.getElementById("pmodal").hidden = false;
   }
-  document.getElementById("rClose").addEventListener("click", function () {
-    document.getElementById("rmodal").hidden = true;
+  document.getElementById("pClose").addEventListener("click", function () {
+    document.getElementById("pmodal").hidden = true;
   });
-  document.getElementById("rmodal").addEventListener("click", function (ev) {
-    if (ev.target === document.getElementById("rmodal")) document.getElementById("rmodal").hidden = true;
+  document.getElementById("pmodal").addEventListener("click", function (ev) {
+    if (ev.target === document.getElementById("pmodal")) document.getElementById("pmodal").hidden = true;
   });
 
   // ----- Wall search: name + primary title rank above additional-role matches -----
