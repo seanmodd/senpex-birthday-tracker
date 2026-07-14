@@ -30,12 +30,22 @@ const C = {
   globe: "5a4da60407a804a469b6113d3873403581daba50", // team globe + live local times, created dates, socials note
   globe2: "1d4d7a00cb3d188cfdd710d2f1240de0301edee6", // interactive globe, horoscope reorder, popup socials section
   openEdit: "f6658d1b7bb7b8aa9b6b5665e545fc85cae4f246", // edit on every card + socials under-construction notice
+  globefix: "cf0acfef59b33d3d946542579260e4d31abcc1e3", // local-time fallback, HQ tz note, scrollable dialogs
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 13, 2026",
+    sub: "Globe &amp; popup polish · added 11:32 PM PST",
+    items: [
+      { t: "No more \"local time unknown\"", d: "— if a teammate's exact timezone isn't on file yet, the globe now estimates it from their longitude so you always see roughly what time it is for them (it sharpens to the precise zone the next time they edit).", c: C.globefix },
+      { t: "A home base to compare against", d: "— the team globe now notes that HQ runs on (UTC-08:00) Pacific Time (US &amp; Canada), so everyone's local time has a clear reference point.", c: C.globefix },
+      { t: "Taller popups scroll now", d: "— the edit and add-birthday popups scroll within the screen instead of running off the bottom, so every field and the Save button stay reachable on any window size.", c: C.globefix },
+    ],
+  },
   {
     date: "July 13, 2026",
     sub: "Editing for everyone &amp; a heads-up on socials · added 11:24 PM PST",
