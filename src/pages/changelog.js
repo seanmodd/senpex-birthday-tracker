@@ -36,12 +36,22 @@ const C = {
   heroFlags: "b70f478ddfd6b2b321c4b5f3885b06e4304bf64d", // hero flag row: one flag per team country
   legalPrefill: "d5cda91c788f170b2e930c0dcc6a5f036ff5124c", // legal names always prefill on edit; year stays token-gated
   sharpFlags: "19fddcb26d988629716a4c389da4a595bd3ac019", // 160px flag sources, cache-busted
+  lightbox: "2dc02dad1c5b43214918f98da709741f0cf37774", // photo lightbox, 512px avatars, socials notice, 0.5s globe resume
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 14, 2026",
+    sub: "See your teammates properly · added 12:17 AM PST",
+    items: [
+      { t: "Click a photo to enlarge it", d: "— tap anyone's profile picture (on their card or in their popup) and it opens big in a lightbox with their name. New photo uploads are now stored at 512px so they look great enlarged — older photos sharpen up next time their owner re-uploads.", c: C.lightbox },
+      { t: "X sign-in is live — and says so", d: "— the socials notice now celebrates that X sign-in works (click the logo, authorize, done) and only flags Instagram / LinkedIn as under construction. The Instagram logo lost its button styling since it isn't clickable yet.", c: C.lightbox },
+      { t: "The globe barely pauses now", d: "— after you spin or hover it, the team globe resumes its idle rotation in half a second instead of three.", c: C.lightbox },
+    ],
+  },
   {
     date: "July 14, 2026",
     sub: "Sharper flags · added 12:09 AM PST",
