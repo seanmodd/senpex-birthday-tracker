@@ -289,6 +289,15 @@ export const PAGE = `<!doctype html>
   .wall-search input:focus { outline: 2px solid var(--brand); border-color: transparent; }
   /* Person popup: everything about one teammate, opened by clicking their card. */
   #pmodal .dialog { max-width: 480px; }
+  #photomodal { z-index: 70; }
+  .av-click { cursor: zoom-in; }
+  .photo-dialog { max-width: 520px; text-align: center; }
+  .photo-dialog img {
+    width: 100%; max-width: 460px; aspect-ratio: 1; object-fit: cover;
+    border-radius: 14px; display: block; margin: 14px auto 0;
+    background: var(--bg);
+  }
+  .ph-name { margin: 12px 0 0; font-weight: 700; font-size: 16.5px; }
   .pv-head { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
   .pv-head .av-img, .pv-head .av-init { width: 64px; height: 64px; border-radius: 50%; }
   .pv-head .av-init { display: flex; align-items: center; justify-content: center; font-size: 22px; }
@@ -692,16 +701,16 @@ export const PAGE = `<!doctype html>
       </div>
       <div class="row sep-top" style="margin-bottom:4px">
         <div class="field" style="flex:1 1 100%">
-          <span class="lbl">Your socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="socTipPop">?</button><span class="tip-pop" role="tooltip" id="socTipPop">The Instagram, LinkedIn, and X "sign in" buttons aren't connected yet — the official sign-in API isn't live yet while we finish the integration. For now, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way.</span></span></span>
-          <p class="soc-note">🌍 Why all three? Our team lives all around the world — sharing your socials helps teammates put a face to the name, cheer you on from afar, and keep our community and culture close across every timezone.<br><br>🚧 <b>Under construction:</b> the Instagram / LinkedIn / X sign-in API isn't live yet while we finish the official integration — for now, please just type your handle or paste your profile URL.</p>
+          <span class="lbl">Your socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="socTipPop">?</button><span class="tip-pop" role="tooltip" id="socTipPop">Instagram and LinkedIn sign-in APIs aren't live yet — for those, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way. X sign-in IS live: click the X logo, authorize in the popup, and your verified @handle fills itself in.</span></span></span>
+          <p class="soc-note">🌍 Why all three? Our team lives all around the world — sharing your socials helps teammates put a face to the name, cheer you on from afar, and keep our community and culture close across every timezone.<br><br>🚧 <b>Under construction:</b> Instagram / LinkedIn sign-in isn't live yet — type those by hand (handle or profile URL). ✅ <b>X sign-in IS live</b> — click the X logo to verify your handle!</p>
         </div>
       </div>
       <div class="row">
         <div class="field">
-          <label for="fIg">Instagram <span style="text-transform:none">— click the logo to sign in</span></label>
+          <label for="fIg">Instagram</label>
           <div class="soc-input">
-            <span class="soc-ico soc-click" data-soc="ig" data-igin="fIg" role="button" tabindex="0" title="Sign in with Instagram to verify (business/creator accounts)"></span>
-            <input id="fIg" required maxlength="200" placeholder="@handle, URL, or sign in →">
+            <span class="soc-ico" data-soc="ig"></span>
+            <input id="fIg" required maxlength="200" placeholder="@handle or profile URL">
           </div>
         </div>
         <div class="field">
@@ -754,6 +763,14 @@ export const PAGE = `<!doctype html>
   <div class="dialog" role="dialog" aria-modal="true" aria-label="About this teammate">
     <button class="dlg-x" id="pClose" type="button" aria-label="Close">×</button>
     <div id="pvBody"></div>
+  </div>
+</div>
+
+<div id="photomodal" class="overlay" hidden>
+  <div class="dialog photo-dialog" role="dialog" aria-modal="true" aria-label="Teammate photo">
+    <button class="dlg-x" id="phClose" type="button" aria-label="Close">×</button>
+    <img id="phImg" alt="">
+    <p id="phName" class="ph-name"></p>
   </div>
 </div>
 
@@ -859,16 +876,16 @@ export const PAGE = `<!doctype html>
       </div>
       <div class="row sep-top" style="margin-bottom:4px">
         <div class="field" style="flex:1 1 100%">
-          <span class="lbl">Socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="eSocTipPop">?</button><span class="tip-pop" role="tooltip" id="eSocTipPop">The Instagram, LinkedIn, and X "sign in" buttons aren't connected yet — the official sign-in API isn't live yet while we finish the integration. For now, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way.</span></span></span>
-          <p class="soc-note">🚧 <b>Under construction:</b> Instagram / LinkedIn / X sign-in API isn't live yet — just type your handle or paste your profile URL.</p>
+          <span class="lbl">Socials<span class="tip-wrap"><button type="button" class="tip" aria-describedby="eSocTipPop">?</button><span class="tip-pop" role="tooltip" id="eSocTipPop">Instagram and LinkedIn sign-in APIs aren't live yet — for those, just type your handle (like @yourname) or paste your profile URL and it will be verified the standard way. X sign-in IS live: click the X logo, authorize in the popup, and your verified @handle fills itself in.</span></span></span>
+          <p class="soc-note">🚧 <b>Under construction:</b> Instagram / LinkedIn sign-in isn't live yet — type those by hand. ✅ <b>X sign-in IS live</b> — click the X logo to verify your handle!</p>
         </div>
       </div>
       <div class="row">
         <div class="field">
-          <label for="eIg">Instagram <span style="text-transform:none">— click the logo to sign in</span></label>
+          <label for="eIg">Instagram</label>
           <div class="soc-input">
-            <span class="soc-ico soc-click" data-soc="ig" data-igin="eIg" role="button" tabindex="0" title="Sign in with Instagram to verify (business/creator accounts)"></span>
-            <input id="eIg" maxlength="200" placeholder="@handle, URL, or sign in →">
+            <span class="soc-ico" data-soc="ig"></span>
+            <input id="eIg" maxlength="200" placeholder="@handle or profile URL">
           </div>
         </div>
         <div class="field">
@@ -922,14 +939,14 @@ export const PAGE = `<!doctype html>
   }
 
 
-  // Shared client-side photo pipeline: square-crop + downscale to 192px JPEG
-  // so uploads stay tiny no matter what people pick.
+  // Shared client-side photo pipeline: square-crop + downscale to 512px JPEG
+  // — small enough for D1, big enough for the click-to-enlarge photo popup.
   function readAvatarFile(file, cb) {
     var fr = new FileReader();
     fr.onload = function () {
       var img = new Image();
       img.onload = function () {
-        var S = 192;
+        var S = 512;
         var c = document.createElement("canvas");
         c.width = S; c.height = S;
         var cctx = c.getContext("2d");
@@ -1041,13 +1058,27 @@ export const PAGE = `<!doctype html>
     return img;
   }
 
+  // Click any profile photo to see it big in a lightbox.
+  function openPhotoModal(b) {
+    var img = document.getElementById("phImg");
+    img.src = "/avatar/" + b.id;
+    img.alt = b.name;
+    document.getElementById("phName").textContent = b.name;
+    document.getElementById("photomodal").hidden = false;
+  }
+
   function avatarEl(b) {
     if (b.has_avatar) {
       var img = document.createElement("img");
-      img.className = "av-img";
+      img.className = "av-img av-click";
       img.src = "/avatar/" + b.id;
       img.alt = b.name;
+      img.title = "View photo";
       img.onerror = function () { img.style.display = "none"; };
+      img.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        openPhotoModal(b);
+      });
       return img;
     }
     var parts = b.name.split(" ");
@@ -1519,6 +1550,7 @@ export const PAGE = `<!doctype html>
       document.getElementById("emodal").hidden = true;
       document.getElementById("fmodal").hidden = true;
       document.getElementById("pmodal").hidden = true;
+      document.getElementById("photomodal").hidden = true;
       document.getElementById("recmodal").hidden = true;
     }
   });
@@ -2205,6 +2237,12 @@ export const PAGE = `<!doctype html>
   document.getElementById("pmodal").addEventListener("click", function (ev) {
     if (ev.target === document.getElementById("pmodal")) document.getElementById("pmodal").hidden = true;
   });
+  document.getElementById("phClose").addEventListener("click", function () {
+    document.getElementById("photomodal").hidden = true;
+  });
+  document.getElementById("photomodal").addEventListener("click", function (ev) {
+    if (ev.target === document.getElementById("photomodal")) document.getElementById("photomodal").hidden = true;
+  });
 
   // ----- Wall search: name + primary title rank above additional-role matches -----
   var wallQuery = "";
@@ -2442,7 +2480,7 @@ export const PAGE = `<!doctype html>
         if (Math.abs(dLon) < 0.2 && Math.abs(tLat - gLat) < 0.2) { tLon = null; tLat = null; }
       }
       // Auto-spin only when un-zoomed, not being touched, and idle a moment.
-      if (tZoom === 1 && !pDown && Date.now() - lastInteract > 3000) {
+      if (tZoom === 1 && !pDown && Date.now() - lastInteract > 500) {
         gLon = gLon - 5.5 * dt;
         if (gLon < -180) gLon += 360;
       }
