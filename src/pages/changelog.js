@@ -35,12 +35,20 @@ const C = {
   openEdit2: "7d6e198e296ca48c30db4276cb7c93d841097133", // server-side open editing + edit modal matches the add form
   heroFlags: "b70f478ddfd6b2b321c4b5f3885b06e4304bf64d", // hero flag row: one flag per team country
   legalPrefill: "d5cda91c788f170b2e930c0dcc6a5f036ff5124c", // legal names always prefill on edit; year stays token-gated
+  sharpFlags: "19fddcb26d988629716a4c389da4a595bd3ac019", // 160px flag sources, cache-busted
 };
 
 // Each item: t = bold title, d = description HTML (keeps the leading em dash),
 // c = primary commit hash (or a full URL for the rare non-commit reference),
 // also = optional related commit hashes, label = link text override.
 const DAYS = [
+  {
+    date: "July 14, 2026",
+    sub: "Sharper flags · added 12:09 AM PST",
+    items: [
+      { t: "Flags in high fidelity", d: "— every flag on the site now comes from a 160px source instead of 32px, so the hero row, cards, roster, and visitor tracker all render crisp on retina screens instead of pixelated (still under a kilobyte per flag).", c: C.sharpFlags },
+    ],
+  },
   {
     date: "July 14, 2026",
     sub: "Legal names stay put when editing · added 12:04 AM PST",
